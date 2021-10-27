@@ -1,0 +1,22 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: party_finder_postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=ideal-entropy-fanfold-synopsis-grazier
+      - POSTGRES_DB=party_finder
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - 55432:5432
+    volumes:
+      - ./docker_data/postgresql/data:/var/lib/postgresql/data
+  web:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: party_finder_web
+    # restart: always
+    ports:
+      - 8088:8088
