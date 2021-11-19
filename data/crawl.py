@@ -26,6 +26,25 @@ def get_tags(session):
     return tags
 
 
+def get_game_rank_list(session):
+    global http_headers
+    game_resp = session.get('https://steam250.com/top250', headers=http_headers)
+    game_soup = BeautifulSoup(game_resp.text, 'lxml')
+    games = []
+    for i in range(1, 251):  # game rank from 1 to 250
+        game_div = game_soup.find('div', id=str(i))
+        img_src = game_div.find('div').a.img['data-src']
+        games.append({
+            'name': game_div.find(class_='title').a.text,
+            'link': game_div.find('div').a['href'],
+            'img': (
+                f'https:{img_src}' if img_src.startswith('//') else img_src  # add uri scheme
+            ).replace('capsule_sm_120.jpg', 'capsule_184x69.jpg'),  # replace big size image
+        })
+    return games
+
+
+
 if __name__ == '__main__':
     # set dataset directory, create directory if not exist
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -36,6 +55,18 @@ if __name__ == '__main__':
     # create session
     session = requests.Session()
 
-    tags = get_tags(session)
-    with open(os.path.join(dataset_path, 'tags.json'), 'w') as f:
-        json.dump(tags, f, ensure_ascii=False, indent=4)
+    # ********** Download from server **********
+    # Download tags
+    # tags = get_tags(session)
+    # with open(os.path.join(dataset_path, 'tags.json'), 'w') as f:
+    #     json.dump(tags, f, ensure_ascii=False, indent=4)
+    
+    # Download game rank list
+    # game_rank_list = get_game_rank_list(session)
+    # with open(os.path.join(dataset_path, 'game_rank_list.json'), 'w', encoding='utf-8') as f:
+    #     json.dump(game_rank_list, f, ensure_ascii=False, indent=4)
+
+    # ********** Load from local **********
+    # load tags from file
+    with open(os.path.join(dataset_path, 'tags.json')) as f:
+        tags = json.load(f)
