@@ -85,18 +85,18 @@ if __name__ == '__main__':
     #     json.dump(game_rank_list, f, ensure_ascii=False, indent=4)
     
     # Download game-tag list
-    with open(os.path.join(dataset_path, 'game_rank_list.json'), encoding='utf-8') as f:
-        game_rank_list = json.load(f)
-    game_tag_list = []
-    for idx, game_rank in enumerate(game_rank_list):
-        sleep_time = np.random.normal(1.5, 0.2)
-        print(f'{idx + 1} / {len(game_rank_list)} download...', end=' ')
-        sys.stdout.flush()  # print msg in stdout
-        game_tag_list.append(get_game_tag_list(session, game_rank['link']))
-        print(f'end. (sleep={sleep_time:.2f}sec.)')
-        time.sleep(sleep_time)  # random sleep for prevent ban
-    with open(os.path.join(dataset_path, 'game_tag_list.json'), 'w') as f:
-        json.dump(game_tag_list, f, ensure_ascii=False, indent=4)
+    # with open(os.path.join(dataset_path, 'game_rank_list.json'), encoding='utf-8') as f:
+    #     game_rank_list = json.load(f)
+    # game_tag_list = []
+    # for idx, game_rank in enumerate(game_rank_list):
+    #     sleep_time = np.random.normal(1.5, 0.2)
+    #     print(f'{idx + 1} / {len(game_rank_list)} download...', end=' ')
+    #     sys.stdout.flush()  # print msg in stdout
+    #     game_tag_list.append(get_game_tag_list(session, game_rank['link']))
+    #     print(f'end. (sleep={sleep_time:.2f}sec.)')
+    #     time.sleep(sleep_time)  # random sleep for prevent ban
+    # with open(os.path.join(dataset_path, 'game_tag_list.json'), 'w') as f:
+    #     json.dump(game_tag_list, f, ensure_ascii=False, indent=4)
 
     # ********** Load from local **********
     # load tags from local file
