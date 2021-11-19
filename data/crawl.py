@@ -37,6 +37,7 @@ def get_game_rank_list(session):
         games.append({
             'name': game_div.find(class_='title').a.text,
             'link': game_div.find('div').a['href'],
+            'id': int(game_div.find('div').a['href'].split('/')[-1]),
             'img': (
                 f'https:{img_src}' if img_src.startswith('//') else img_src  # add uri scheme
             ).replace('capsule_sm_120.jpg', 'capsule_184x69.jpg'),  # replace big size image
