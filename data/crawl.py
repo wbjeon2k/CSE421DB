@@ -1,9 +1,11 @@
 import json
 import os
+import time
+import sys
 
+import numpy as np
 import requests
 from bs4 import BeautifulSoup
-
 
 http_headers = {
     'User-Agent': (
@@ -11,6 +13,8 @@ http_headers = {
         '(KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'
     ), # Chrome UA
 }
+
+# parser = 'lxml'  # or html.parser
 
 def get_tags(session):
     global http_headers
@@ -45,6 +49,19 @@ def get_game_rank_list(session):
     return games
 
 
+def get_game_tag_list(session, link):
+    global http_headers
+    game_resp = session.get(link, headers=http_headers)
+    game_soup = BeautifulSoup(game_resp.text, 'lxml')
+    tags = [
+        int(each.a['href'].split('/')[-1])
+        for each in game_soup.find('ol', class_='tags').find_all('li')
+    ]
+    return {
+        'id': int(link.split('/')[-1]),
+        'tags': tags
+    }
+
 
 if __name__ == '__main__':
     # set dataset directory, create directory if not exist
@@ -66,8 +83,32 @@ if __name__ == '__main__':
     # game_rank_list = get_game_rank_list(session)
     # with open(os.path.join(dataset_path, 'game_rank_list.json'), 'w', encoding='utf-8') as f:
     #     json.dump(game_rank_list, f, ensure_ascii=False, indent=4)
+    
+    # Download game-tag list
+    with open(os.path.join(dataset_path, 'game_rank_list.json'), encoding='utf-8') as f:
+        game_rank_list = json.load(f)
+    game_tag_list = []
+    for idx, game_rank in enumerate(game_rank_list):
+        sleep_time = np.random.normal(1.5, 0.2)
+        print(f'{idx + 1} / {len(game_rank_list)} download...', end=' ')
+        sys.stdout.flush()  # print msg in stdout
+        game_tag_list.append(get_game_tag_list(session, game_rank['link']))
+        print(f'end. (sleep={sleep_time:.2f}sec.)')
+        time.sleep(sleep_time)  # random sleep for prevent ban
+    with open(os.path.join(dataset_path, 'game_tag_list.json'), 'w') as f:
+        json.dump(game_tag_list, f, ensure_ascii=False, indent=4)
 
     # ********** Load from local **********
-    # load tags from file
-    with open(os.path.join(dataset_path, 'tags.json')) as f:
-        tags = json.load(f)
+    # load tags from local file
+    # with open(os.path.join(dataset_path, 'tags.json')) as f:
+    #     tags = json.load(f)
+
+    # load from 250 rank games from local file
+    # with open(os.path.join(dataset_path, 'game_rank_list.json'), encoding='utf-8') as f:
+    #     game_rank_list = json.load(f)
+
+    # load from game-tag list from local file
+    with open(os.path.join(dataset_path, 'game_tag_list.json'), encoding='utf-8') as f:
+        game_tag_list = json.load(f)
+    
+    print(game_tag_list)
