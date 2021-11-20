@@ -1,0 +1,9 @@
+{% if test_list %}
+<ul>
+    {% for TC in test_list %}
+    <li><a href="/test/{{ TC.id }}/">{{ TC.msg }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>게시글이 없습니다.</p>
+{% endif %}
