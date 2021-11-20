@@ -1,8 +1,8 @@
 
 CREATE TABLE Board
 (
-	boardID              SERIAL PRIMARY KEY,
-	clanID               INTEGER NOT NULL
+	boardID              SERIAL,
+	clanID               INTEGER NULL
 );
 
 ALTER TABLE Board
@@ -10,7 +10,7 @@ ADD PRIMARY KEY (boardID);
 
 CREATE TABLE Clan
 (
-	clanID               SERIAL PRIMARY KEY,
+	clanID               SERIAL,
 	name                 VARCHAR(64) NOT NULL,
 	leaderID            INTEGER NOT NULL
 );
@@ -20,7 +20,7 @@ ADD PRIMARY KEY (clanID);
 
 CREATE TABLE Comment
 (
-	commentID            SERIAL PRIMARY KEY,
+	commentID            SERIAL,
 	content              VARCHAR(256) NOT NULL,
 	createDatetime      TIMESTAMP NOT NULL,
 	serviceUserID               INTEGER NOT NULL,
@@ -32,7 +32,7 @@ ADD PRIMARY KEY (commentID);
 
 CREATE TABLE Game
 (
-	gameID               SERIAL PRIMARY KEY,
+	gameID               SERIAL,
 	name                 VARCHAR(128) NOT NULL
 );
 
@@ -59,7 +59,7 @@ ADD PRIMARY KEY (reviewID);
 
 CREATE TABLE Party
 (
-	partyID              SERIAL PRIMARY KEY,
+	partyID              SERIAL,
 	name                 VARCHAR(64) NOT NULL,
 	playStartDatetime  DATE NOT NULL,
 	leaderID            INTEGER NOT NULL,
@@ -72,11 +72,11 @@ ADD PRIMARY KEY (partyID);
 
 CREATE TABLE Post
 (
-	postID               SERIAL PRIMARY KEY,
+	postID               SERIAL,
 	title                VARCHAR(128) NOT NULL,
-	content              LONG VARCHAR NOT NULL,
+	content              TEXT NOT NULL,
 	createDatetime      TIMESTAMP NOT NULL,
-	isNotice            BIT NOT NULL DEFAULT 0,
+	isNotice            BOOLEAN NOT NULL DEFAULT false,
 	thumbsUp            INTEGER NOT NULL DEFAULT 0,
 	thumbsDown          INTEGER NOT NULL DEFAULT 0,
 	viewCount           INTEGER NOT NULL DEFAULT 0,
@@ -89,7 +89,7 @@ ADD PRIMARY KEY (postID);
 
 CREATE TABLE Review
 (
-	reviewID             SERIAL PRIMARY KEY,
+	reviewID             SERIAL,
 	createDatetime      TIMESTAMP NOT NULL,
 	content              VARCHAR(512) NULL,
 	score                INTEGER NOT NULL
@@ -100,7 +100,7 @@ ADD PRIMARY KEY (reviewID);
 
 CREATE TABLE Tag
 (
-	tagID                SERIAL PRIMARY KEY,
+	tagID                SERIAL,
 	name                 VARCHAR(64) NOT NULL
 );
 
@@ -109,11 +109,11 @@ ADD PRIMARY KEY (tagID);
 
 CREATE TABLE ServiceUser
 (
-	serviceUserID               SERIAL PRIMARY KEY,
+	serviceUserID               SERIAL,
 	email                VARCHAR(128) NOT NULL,
 	encryptedPassword   VARCHAR(256) NOT NULL,
 	nickname             VARCHAR(64) NOT NULL,
-	isAdmin             BIT NOT NULL DEFAULT 0,
+	isAdmin             BOOLEAN NOT NULL DEFAULT false,
 	clanID               INTEGER NULL
 );
 
@@ -129,20 +129,20 @@ CREATE TABLE ServiceUser_Party
 ALTER TABLE ServiceUser_Party
 ADD PRIMARY KEY (serviceUserID,partyID);
 
-CREATE TABLE UserReview
+CREATE TABLE ServiceUserReview
 (
 	reviewID             INTEGER NOT NULL,
 	serviceUserID               INTEGER NOT NULL
 );
 
-ALTER TABLE UserReview
+ALTER TABLE ServiceUserReview
 ADD PRIMARY KEY (reviewID);
 
 ALTER TABLE Board
 ADD CONSTRAINT Clan_Board FOREIGN KEY (clanID) REFERENCES Clan (clanID);
 
 ALTER TABLE Comment
-ADD CONSTRAINT User_Comment FOREIGN KEY (serviceUserID) REFERENCES User (serviceUserID);
+ADD CONSTRAINT ServiceUser_Comment FOREIGN KEY (serviceUserID) REFERENCES ServiceUser (serviceUserID);
 
 ALTER TABLE Comment
 ADD CONSTRAINT Post_Comment FOREIGN KEY (postID) REFERENCES Post (postID);
@@ -164,7 +164,7 @@ ALTER TABLE Party
 ADD CONSTRAINT Game_Party FOREIGN KEY (gameID) REFERENCES Game (gameID);
 
 ALTER TABLE Post
-ADD CONSTRAINT User_Post FOREIGN KEY (serviceUserID) REFERENCES User (serviceUserID);
+ADD CONSTRAINT ServiceUser_Post FOREIGN KEY (serviceUserID) REFERENCES ServiceUser (serviceUserID);
 
 ALTER TABLE Post
 ADD CONSTRAINT Board_Post FOREIGN KEY (boardID) REFERENCES Board (boardID);
@@ -172,15 +172,15 @@ ADD CONSTRAINT Board_Post FOREIGN KEY (boardID) REFERENCES Board (boardID);
 ALTER TABLE ServiceUser
 ADD CONSTRAINT Clan_User FOREIGN KEY (clanID) REFERENCES Clan (clanID);
 
-ALTER TABLE User_Party
-ADD CONSTRAINT R_22 FOREIGN KEY (serviceUserID) REFERENCES User (serviceUserID);
+ALTER TABLE ServiceUser_Party
+ADD CONSTRAINT R_22 FOREIGN KEY (serviceUserID) REFERENCES ServiceUser (serviceUserID);
 
-ALTER TABLE User_Party
+ALTER TABLE ServiceUser_Party
 ADD CONSTRAINT R_23 FOREIGN KEY (partyID) REFERENCES Party (partyID);
 
-ALTER TABLE UserReview
+ALTER TABLE ServiceUserReview
 ADD CONSTRAINT Review_UserReview FOREIGN KEY (reviewID) REFERENCES Review (reviewID)
 		ON DELETE CASCADE;
 
-ALTER TABLE UserReview
-ADD CONSTRAINT User_UserReview FOREIGN KEY (serviceUserID) REFERENCES User (serviceUserID);
+ALTER TABLE ServiceUserReview
+ADD CONSTRAINT ServiceUser_UserReview FOREIGN KEY (serviceUserID) REFERENCES ServiceUser (serviceUserID);
