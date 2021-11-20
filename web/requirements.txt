@@ -1,6 +1,2 @@
 flask
-#psycopg2-binary==2.9.2
-SQLALchemy
-flask_sqlalchemy
-flask-SQLAlchemy
-flask-migrate
+psycopg2-binary
