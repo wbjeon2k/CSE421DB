@@ -1,9 +1,11 @@
 from flask import Flask, render_template
 from flask import Blueprint, redirect, url_for
-#from models import db, testModel
-from models import TestModel, db
-from flask_sqlalchemy import SQLAlchemy
-from flask import Flask
+
+from jinja2 import Template
+import psycopg2 as pg2
+import json
+from psycopg2 import Error
+from models import TestModel
 from datetime import datetime
 
 app = Flask(__name__)
@@ -11,46 +13,122 @@ app = Flask(__name__)
 
 POSTGRES = {
     'user': 'postgres',
-    'pw': 'password',
-    'db': 'my_database',
-    'host': 'localhost',
-    'port': '5432',
+    'pw': 'postgres',
+    'db': 'party_finder',
+    'host': 'party_finder_postgres',
+    'port': '5432'
 }
 
-def default_config():
-    app.config['DEBUG'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = ('postgresql://%(user)s:\%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES)
-    app.app_context().push()
-    db.init_app(app)
+FROMLOCAL = {
+    'user': 'postgres',
+    'pw': 'postgres',
+    'db': 'party_finder',
+    'host': 'localhost',
+    'port': '55432'
+}
 
-# main homepage blueprint
-bp = Blueprint('main', __name__, url_prefix='/main')
+'''
+!!!실제 제출할때는 connect 정보 바꿔야 한다!!!
+'''
+def get_connect():
+        #when running at docker container party_finder
+        #conn=pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="party_finder_postgres",port="5432")
+        #when running at local
+        conn = pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="localhost",port="55432")
+        return conn
 
-def dummy_gen():
-    for i in range(300):
-        obj = TestModel(id= i, msg = "%d th object generated"%i)
-        db.session.add(obj)
-    db.session.commit()
+class connection:  
+    def __init__(self):
+        self.connect_info = pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="localhost",port="55432")
+    
+    def get_connect():
+        #when running at docker container party_finder
+        #conn=pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="party_finder_postgres",port="5432")
+        #when running at local
+        conn = pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="localhost",port="55432")
+        return conn
+
 
 @app.route("/")
 def main():
     return 'This is main page'
 
-@app.route("/test/generate")
-def testgen():
-    dummy_gen()
-    return 'Generated 300 dummy contents.'
-
-@app.route("/test")
-def test_main():
-    test_list = TestModel.query.order_by(TestModel.id.desc())
-    print(test_list)
-    return render_template('testlist.html', test_list = test_list)
-
-@app.route("/jinja2/base")
+@app.route("/test/base")
 def page_jinja2_base():
     return render_template("base.html")
 
+@app.route("/test/gen", methods=["GET", "POST"])
+def test_table_gen():
+    conn = get_connect()
+    cur = conn.cursor()
+    
+    try:
+        cur.execute("DROP TABLE IF EXISTS sample_db;")
+        conn.commit()
+    except Exception as e:
+        print("ERROR at drop table :", e)
+        
+    create_tc_table = '''
+        CREATE TABLE sample_db (
+        id INTEGER NOT NULL PRIMARY KEY,
+        msg VARCHAR(50) NOT NULL,
+        content VARCHAR(50) NOT NULL
+        );
+    '''
+    cur.execute(create_tc_table)
+    conn.commit()
+    
+    insert_tc_format = '''
+        INSERT INTO sample_db VALUES (%i, %s)
+    '''
+    msg_format = "message"
+    content_format = "content number %i"
+    for i in range(300):
+        cur.execute('INSERT INTO sample_db (id, msg, content) VALUES (%s, %s, %s)', (i,msg_format, (content_format % i)))
+        #conn.commit()
+    conn.commit()
+    cur.close()
+    
+    ret = 'successfully added sample_db'
+    return ret
+    
+
+### list 전체 fetchall, serialize, template 에 rendering.
+@app.route("/test/chk")
+def test_table_chk():
+    conn = get_connect()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM sample_db")
+    select_all = cur.fetchall()
+    ret = []
+    for t in select_all:
+        ret.append(TestModel(t[0], t[1], t[2]).serialize())
+    #to_json = json.dumps(ret)
+    print(ret)
+    return render_template('test_list.html', test_list=ret)
+    #return to_json
+    
+    
+### ID가 같은 객체 1개 fetchone, serialize 하여 template 에 rendering.
+@app.route('/test/detail/<int:id>/')
+def detail(id):
+    conn = get_connect()
+    cur = conn.cursor()
+    #https://dololak.tistory.com/533
+    cur.execute("SELECT * FROM sample_db WHERE id = %s", (id,))
+    get_one = cur.fetchone()
+    serialzed = TestModel(get_one[0], get_one[1], get_one[2]).serialize()
+    return render_template('test_detail.html', test=serialzed)
+    
+
 if __name__ == '__main__':
-    default_config()
+    get_connect()
+    
+    #main_blueprint = Blueprint('main', __name__, url_prefix='/main')
+    #app.register_blueprint(main_blueprint)
+    
+    import views.party_views as party_views
+    app.register_blueprint(party_views.bp)
+    
     app.run()
+    
