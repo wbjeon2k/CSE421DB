@@ -29,13 +29,23 @@ class BaseModel(db.Model):
         }
 
 
-class TestModel(BaseModel, db.Model):
+class TestModel(db.Model):
     """Model for the test table"""
     __tablename__ = 'test'
 
     id = db.Column(db.Integer, primary_key=True)
     msg = db.Column(db.String())
     
-    def __init__(self,ID,MSG):
-        self.id = ID
-        self.msg = MSG
+    def __init__(self,id,msg):
+        self.id = id
+        self.msg = msg
+        
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+    
+    """for JSON type"""
+    def serialize(self):
+        return {
+            'id': self.id, 
+            'msg': self.msg
+        }
