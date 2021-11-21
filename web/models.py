@@ -20,6 +20,17 @@ to_json = json.dumps(ret)
 return to_json
 """
 
+'''
+cursor.fetchall() 을 통해서 가져온 데이터들을
+
+return_list = []
+for f in fetchall():
+    return_list.append(f.serialize())
+    
+와 같은 방식으로 JSON serialize 하기 위한 인터페이스 입니다.
+이런 방식으로 다른 테이블에 대한 인터페이스를 만들어도 되는지 의견 받고싶어요!
+'''
+
 class TestModel:
     """Model for the test table"""
     __tablename__ = 'test'
@@ -44,6 +55,8 @@ class PartyModel:
     """Model for the party table"""
     __tablename__ = 'party'
     
+    # 자동으로 parameter 들을 넣어주는 방법은 찾지 못했습니다.
+    # PartyModel(x[0], x[1], ....) 형태로 넣는 수 밖에 없습니다.
     def __init__(self,partyID,name,playStartDatetime,leaderID, joinLink, gameID):
         self.partyID = partyID 
         self.name = name 
@@ -61,7 +74,9 @@ class PartyModel:
             'joinLink' : self.joinLink,
             'gameID' : self.gameID
         }
-        
+    
+    #cursor.fetchall() 을 통해 받아온 리스트 전체를
+    #JSON 형태로 serialize 하는 메서드 입니다.
     def serialize_party_list(list_of_party):
         ret = []
         for party in list_of_party:

@@ -33,6 +33,7 @@ FROMLOCAL = {
 def get_connect():
         #when running at docker container party_finder
         #conn=pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="party_finder_postgres",port="5432")
+        
         #when running at local
         conn = pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="localhost",port="55432")
         return conn
@@ -44,19 +45,22 @@ class connection:
     def get_connect():
         #when running at docker container party_finder
         #conn=pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="party_finder_postgres",port="5432")
+        
         #when running at local
         conn = pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="localhost",port="55432")
         return conn
 
-
+#test main page for connection test
 @app.route("/")
 def main():
     return 'This is main page'
 
+#test page for Jinja2 template html rendering test
 @app.route("/test/base")
 def page_jinja2_base():
     return render_template("base.html")
 
+#generate sample_db table for test/chk
 @app.route("/test/gen", methods=["GET", "POST"])
 def test_table_gen():
     conn = get_connect()
