@@ -1,11 +1,11 @@
-from flask import Flask, render_template
-from flask import Blueprint, redirect, url_for
+import json
 
 import psycopg2 as pg2
-from models import TestModel, PartyModel
-from app import connection
+from flask import Blueprint, Flask, redirect, render_template, url_for
 from jinja2 import Template
-import json
+
+from app import connection
+from models import PartyModel, TestModel
 
 # /party/... url 들을 포워딩 해주는 blueprint
 bp = Blueprint('games', __name__, url_prefix='/game')
