@@ -19,7 +19,7 @@ def party_main():
     """
     conn = connection.get_connect()
     cur = conn.cursor()
-    
+
     #cur.execute(all_game_sql)
     cur.execute("SELECT * FROM game")
     all_game = cur.fetchall()
@@ -32,7 +32,7 @@ def party_main():
 @bp.route('/game/detail/<int:gameId>')
 def party_details(gameId):
     game_review_sql_format = """
-        SELECT * FROM game WHERE partyID = %s    
+        SELECT * FROM game WHERE partyID = %s
     """
     conn = connection.get_connect()
     cur = conn.cursor()
