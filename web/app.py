@@ -117,6 +117,7 @@ def initialize_data():
             for tag_id in game_tag['tags']:
                 cur.execute('INSERT INTO Game_Tag (gameID, tagID) VALUES (%s, %s)', (game_tag['id'], tag_id))
     except UniqueViolation:  # already inserted data -> Violate unique key constraint in PK
+        conn.rollback()  # rollback all queries; not reflected to real db
         return 'Faild; Already inserted data'
     conn.commit()
     return 'Success; Insert initial data'
