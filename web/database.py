@@ -8,7 +8,6 @@ from psycopg2 import OperationalError
 
 
 db_connection_info = dotenv_values()
-print(db_connection_info)
 
 POSTGRES = {
     'user': 'postgres',
