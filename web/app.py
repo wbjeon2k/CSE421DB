@@ -89,6 +89,33 @@ def detail(id):
     return render_template('test_detail.html', test=serialzed)
 
 
+### Load initial data
+@app.route('/initialize/data/')
+def initialize_data():
+    conn = Connection.get_connect()
+    cur = conn.cursor()
+
+    with open('../data/datasets/tags.json') as f:
+        tags = json.load(f)
+    for tag in tags:
+        cur.execute('INSERT INTO Tag (tagID, name) VALUES (%s, %s)', (tag['id'], tag['name']))
+    conn.commit()
+
+    with open('../data/datasets/game_rank_list.json', encoding='utf-8') as f:
+        games = json.load(f)
+    for game in games:
+        cur.execute('INSERT INTO Game (gameID, name) VALUES (%s, %s)', (game['id'], game['name']))
+    conn.commit()
+
+    with open('../data/datasets/game_tag_list.json') as f:
+        game_tags = json.load(f)
+    for game_tag in game_tags:
+        for tag_id in game_tag['tags']:
+            cur.execute('INSERT INTO Game_Tag (gameID, tagID) VALUES (%s, %s)', (game_tag['id'], tag_id))
+    conn.commit()
+    return 'Success; Insert initial data'
+
+
 if __name__ == '__main__':
     conn = Connection.get_connect()
     cur = conn.cursor()
