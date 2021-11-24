@@ -8,6 +8,9 @@ from psycopg2 import Error
 from models import TestModel
 from datetime import datetime
 
+import os
+import sys
+
 app = Flask(__name__)
 #db = SQLAlchemy()
 
@@ -131,8 +134,19 @@ if __name__ == '__main__':
     #main_blueprint = Blueprint('main', __name__, url_prefix='/main')
     #app.register_blueprint(main_blueprint)
     
+    sql_file = open('./DB_SQL.sql','r').read()
+    print(sql_file)
+    cursor = get_connect().cursor()
+    cursor.execute(sql_file)
+    #cdir = os.path.dirname(os.path.abspath())
+    #TODO: link with loader
+    print("load successful")
+    
     import views.party_views as party_views
     app.register_blueprint(party_views.bp)
+    
+    import views.game_views as game_views
+    app.register_blueprint(game_views.bp)
     
     app.run()
     

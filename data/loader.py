@@ -2,7 +2,7 @@ import json
 
 import psycopg2 as pg2
 
-if __name__ == '__main__':
+def load():
     conn=pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="localhost",port="55432")
     cur = conn.cursor()
 
@@ -24,3 +24,4 @@ if __name__ == '__main__':
         for tag_id in game_tag['tags']:
             cur.execute('INSERT INTO Game_Tag (gameID, tagID) VALUES (%s, %s)', (game_tag['id'], tag_id))
     conn.commit()
+    
