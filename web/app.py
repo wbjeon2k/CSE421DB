@@ -47,7 +47,7 @@ def get_connect():
                 conn = pg2.connect(**POSTGRES)  # Try to connect to DB
             except OperationalError:
                 if i < MAX_RETRY_COUNT - 1:  # Last loop pass sleep even though fail to connect
-                    sleep_time = i * 2  # Sleep time is accumulated for each failure
+                    sleep_time = (i + 1) * 2  # Sleep time is accumulated for each failure
                     print(f'PostgreSQL container not ready yet. Sleep {sleep_time} sec and try reconnection', file=sys.stderr)
                     # Flush stdout, stderr for printing to docker log
                     sys.stdout.flush()
