@@ -1,23 +1,27 @@
 import json
 import os
 import sys
+import time
 from datetime import datetime
 
 import psycopg2 as pg2
+from dotenv import dotenv_values
 from flask import Blueprint, Flask, redirect, render_template, url_for
 from jinja2 import Template
-from psycopg2 import Error
+from psycopg2 import Error, OperationalError
 
 from models import TestModel
 
 app = Flask(__name__)
 #db = SQLAlchemy()
 
+db_connection_info = dotenv_values()
+
 POSTGRES = {
     'user': 'postgres',
-    'pw': 'postgres',
-    'db': 'party_finder',
-    'host': 'party_finder_postgres',
+    'password': db_connection_info['POSTGRES_PASSWORD'],
+    'database': db_connection_info['POSTGRES_DB'],
+    'host': db_connection_info['POSTGRES_CONTAINER_NAME'],
     'port': '5432'
 }
 
@@ -34,7 +38,29 @@ FROMLOCAL = {
 '''
 def get_connect():
         #when running at docker container party_finder
-        conn=pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="party_finder_postgres",port="5432")
+        # If webserver container up before db container, webserver cannot connect to DB
+        # Therefore, if fail to connection, sleep some times and retry connection
+        conn = None
+        MAX_RETRY_COUNT = 6  # retry max count, if db connection failed, retry connection
+        for i in range(MAX_RETRY_COUNT):
+            try:
+                conn = pg2.connect(**POSTGRES)  # Try to connect to DB
+            except OperationalError:
+                if i < MAX_RETRY_COUNT - 1:  # Last loop pass sleep even though fail to connect
+                    sleep_time = i * 2  # Sleep time is accumulated for each failure
+                    print(f'PostgreSQL container not ready yet. Sleep {sleep_time} sec and try reconnection', file=sys.stderr)
+                    # Flush stdout, stderr for printing to docker log
+                    sys.stdout.flush()
+                    sys.stderr.flush()
+                    time.sleep(sleep_time)
+                    continue
+            break
+        else:  # If for is end without break -> Exceed max try count
+            raise ConnectionError('Cannot connect to DB')
+
+        print('DB Connection success', file=sys.stderr)
+        sys.stdout.flush()
+        sys.stderr.flush()
 
         #when running at local
         # conn = pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="localhost",port="55432")
