@@ -4,7 +4,7 @@ import psycopg2 as pg2
 from flask import Blueprint, Flask, redirect, render_template, url_for
 from jinja2 import Template
 
-from app import connection
+from database import Connection
 from models import PartyModel, TestModel
 
 # /party/... url 들을 포워딩 해주는 blueprint
@@ -17,7 +17,7 @@ def party_main():
     all_game_sql = """
         SELECT * FROM game
     """
-    conn = connection.get_connect()
+    conn = Connection.get_connect()
     cur = conn.cursor()
 
     #cur.execute(all_game_sql)
@@ -34,7 +34,7 @@ def party_details(gameId):
     game_review_sql_format = """
         SELECT * FROM game WHERE partyID = %s
     """
-    conn = connection.get_connect()
+    conn = Connection.get_connect()
     cur = conn.cursor()
     cur.execute(game_review_sql_format, gameId)
     party = cur.fetchall()
