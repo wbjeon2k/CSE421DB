@@ -1,15 +1,14 @@
-from flask import Flask, render_template
-from flask import Blueprint, redirect, url_for
-
-from jinja2 import Template
-import psycopg2 as pg2
 import json
-from psycopg2 import Error
-from models import TestModel
-from datetime import datetime
-
 import os
 import sys
+from datetime import datetime
+
+import psycopg2 as pg2
+from flask import Blueprint, Flask, redirect, render_template, url_for
+from jinja2 import Template
+from psycopg2 import Error
+
+from models import TestModel
 
 app = Flask(__name__)
 #db = SQLAlchemy()
@@ -35,20 +34,20 @@ FROMLOCAL = {
 '''
 def get_connect():
         #when running at docker container party_finder
-        #conn=pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="party_finder_postgres",port="5432")
-        
+        conn=pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="party_finder_postgres",port="5432")
+
         #when running at local
-        conn = pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="localhost",port="55432")
+        # conn = pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="localhost",port="55432")
         return conn
 
-class connection:  
+class connection:
     def __init__(self):
         self.connect_info = pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="localhost",port="55432")
-    
+
     def get_connect():
         #when running at docker container party_finder
         #conn=pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="party_finder_postgres",port="5432")
-        
+
         #when running at local
         conn = pg2.connect(database="party_finder",user="postgres",password="ideal-entropy-fanfold-synopsis-grazier",host="localhost",port="55432")
         return conn
@@ -68,13 +67,13 @@ def page_jinja2_base():
 def test_table_gen():
     conn = get_connect()
     cur = conn.cursor()
-    
+
     try:
         cur.execute("DROP TABLE IF EXISTS sample_db;")
         conn.commit()
     except Exception as e:
         print("ERROR at drop table :", e)
-        
+
     create_tc_table = '''
         CREATE TABLE sample_db (
         id INTEGER NOT NULL PRIMARY KEY,
@@ -84,7 +83,7 @@ def test_table_gen():
     '''
     cur.execute(create_tc_table)
     conn.commit()
-    
+
     insert_tc_format = '''
         INSERT INTO sample_db VALUES (%i, %s)
     '''
@@ -95,10 +94,10 @@ def test_table_gen():
         #conn.commit()
     conn.commit()
     cur.close()
-    
+
     ret = 'successfully added sample_db'
     return ret
-    
+
 
 ### list 전체 fetchall, serialize, template 에 rendering.
 @app.route("/test/chk")
@@ -114,8 +113,8 @@ def test_table_chk():
     print(ret)
     return render_template('test_list.html', test_list=ret)
     #return to_json
-    
-    
+
+
 ### ID가 같은 객체 1개 fetchone, serialize 하여 template 에 rendering.
 @app.route('/test/detail/<int:id>/')
 def detail(id):
@@ -126,14 +125,14 @@ def detail(id):
     get_one = cur.fetchone()
     serialzed = TestModel(get_one[0], get_one[1], get_one[2]).serialize()
     return render_template('test_detail.html', test=serialzed)
-    
+
 
 if __name__ == '__main__':
     get_connect()
-    
+
     #main_blueprint = Blueprint('main', __name__, url_prefix='/main')
     #app.register_blueprint(main_blueprint)
-    
+
     sql_file = open('./DB_SQL.sql','r').read()
     print(sql_file)
     cursor = get_connect().cursor()
@@ -141,12 +140,11 @@ if __name__ == '__main__':
     #cdir = os.path.dirname(os.path.abspath())
     #TODO: link with loader
     print("load successful")
-    
+
     import views.party_views as party_views
     app.register_blueprint(party_views.bp)
-    
+
     import views.game_views as game_views
     app.register_blueprint(game_views.bp)
-    
+
     app.run()
-    
