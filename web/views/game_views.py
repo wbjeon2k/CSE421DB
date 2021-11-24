@@ -15,13 +15,13 @@ bp = Blueprint('games', __name__, url_prefix='/game')
 @bp.route('/')
 def party_main():
     all_game_sql = """
-        SELECT * FROM Game
+        SELECT * FROM game
     """
     conn = connection.get_connect()
     cur = conn.cursor()
     
     #cur.execute(all_game_sql)
-    cur.execute("SELECT * FROM Game")
+    cur.execute("SELECT * FROM game")
     all_game = cur.fetchall()
     all_game_list = PartyModel.serialize_party_list(all_game)
     #all_party_json_list = json.dumps(all_party_list)
@@ -32,7 +32,7 @@ def party_main():
 @bp.route('/game/detail/<int:gameId>')
 def party_details(gameId):
     game_review_sql_format = """
-        SELECT * FROM Party WHERE partyID = %s    
+        SELECT * FROM game WHERE partyID = %s    
     """
     conn = connection.get_connect()
     cur = conn.cursor()

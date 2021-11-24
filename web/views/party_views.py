@@ -15,7 +15,7 @@ bp = Blueprint('party', __name__, url_prefix='/party')
 @bp.route('/')
 def party_main():
     all_party_sql = """
-        SELECT * FROM Party ORDER BY partyID
+        SELECT * FROM party ORDER BY partyID
     """
     conn = connection.get_connect()
     cur = conn.cursor()
@@ -31,7 +31,7 @@ def party_main():
 @bp.route('/party/detail/<int:partyId>')
 def party_details(partyId):
     party_finder_sql_format = """
-        SELECT * FROM Party WHERE partyID = %s    
+        SELECT * FROM party WHERE partyID = %s    
     """
     conn = connection.get_connect()
     cur = conn.cursor()
