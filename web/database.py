@@ -37,12 +37,11 @@ class Connection:  # Factory pattern, Only one connection object create per one 
                     sys.stdout.flush()
                     sys.stderr.flush()
                     time.sleep(sleep_time)
-                    continue
+                continue
             break
         else:  # If for is end without break -> Exceed max try count
             raise ConnectionError('Cannot connect to DB')
 
-        print('DB Connection success', file=sys.stderr)
         sys.stdout.flush()
         sys.stderr.flush()
 
