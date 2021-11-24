@@ -19,10 +19,12 @@ app = Flask(__name__)
 def main():
     return 'This is main page'
 
+
 #test page for Jinja2 template html rendering test
 @app.route("/test/base")
 def page_jinja2_base():
     return render_template("base.html")
+
 
 #generate sample_db table for test/chk
 @app.route("/test/gen", methods=["GET", "POST"])
