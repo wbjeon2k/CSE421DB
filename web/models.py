@@ -52,7 +52,7 @@ class TestModel:
         }
 
 class GameModel:
-    """Model for the test table"""
+    """Model for the game table"""
     __tablename__ = 'test'
     
     def __init__(self,gameID,name):
