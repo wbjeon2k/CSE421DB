@@ -33,9 +33,9 @@ FROMLOCAL = {
     'port': '55432'
 }
 
-'''
+"""
 !!!실제 제출할때는 connect 정보 바꿔야 한다!!!
-'''
+"""
 def get_connect():
         #when running at docker container party_finder
         # If webserver container up before db container, webserver cannot connect to DB
@@ -100,19 +100,19 @@ def test_table_gen():
     except Exception as e:
         print("ERROR at drop table :", e)
 
-    create_tc_table = '''
+    create_tc_table = """
         CREATE TABLE sample_db (
         id INTEGER NOT NULL PRIMARY KEY,
         msg VARCHAR(50) NOT NULL,
         content VARCHAR(50) NOT NULL
         );
-    '''
+    """
     cur.execute(create_tc_table)
     conn.commit()
 
-    insert_tc_format = '''
+    insert_tc_format = """
         INSERT INTO sample_db VALUES (%i, %s)
-    '''
+    """
     msg_format = "message"
     content_format = "content number %i"
     for i in range(300):
