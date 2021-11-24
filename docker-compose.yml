@@ -2,7 +2,7 @@ version: '3'
 services:
   postgres:
     image: postgres:14-alpine
-    container_name: party_finder_postgres
+    container_name: ${POSTGRES_CONTAINER_NAME}
     restart: always
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
