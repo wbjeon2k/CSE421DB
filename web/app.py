@@ -5,6 +5,7 @@ import time
 from datetime import datetime
 
 import psycopg2 as pg2
+from psycopg2.errors import UniqueViolation
 from flask import Blueprint, Flask, redirect, render_template, url_for
 
 from database import Connection
@@ -19,10 +20,12 @@ app = Flask(__name__)
 def main():
     return 'This is main page'
 
+
 #test page for Jinja2 template html rendering test
 @app.route("/test/base")
 def page_jinja2_base():
     return render_template("base.html")
+
 
 #generate sample_db table for test/chk
 @app.route("/test/gen", methods=["GET", "POST"])
@@ -87,6 +90,37 @@ def detail(id):
     get_one = cur.fetchone()
     serialzed = TestModel(get_one[0], get_one[1], get_one[2]).serialize()
     return render_template('test_detail.html', test=serialzed)
+
+
+### Load initial data
+@app.route('/initialize/data/')
+def initialize_data():
+    conn = Connection.get_connect()
+    cur = conn.cursor()
+
+    try:
+        with open('../data/datasets/tags.json') as f:
+            tags = json.load(f)
+        for tag in tags:
+            cur.execute('INSERT INTO Tag (tagID, name) VALUES (%s, %s)', (tag['id'], tag['name']))
+        conn.commit()
+
+        with open('../data/datasets/game_rank_list.json', encoding='utf-8') as f:
+            games = json.load(f)
+        for game in games:
+            cur.execute('INSERT INTO Game (gameID, name) VALUES (%s, %s)', (game['id'], game['name']))
+        conn.commit()
+
+        with open('../data/datasets/game_tag_list.json') as f:
+            game_tags = json.load(f)
+        for game_tag in game_tags:
+            for tag_id in game_tag['tags']:
+                cur.execute('INSERT INTO Game_Tag (gameID, tagID) VALUES (%s, %s)', (game_tag['id'], tag_id))
+    except UniqueViolation:  # already inserted data -> Violate unique key constraint in PK
+        conn.rollback()  # rollback all queries; not reflected to real db
+        return 'Faild; Already inserted data'
+    conn.commit()
+    return 'Success; Insert initial data'
 
 
 if __name__ == '__main__':
