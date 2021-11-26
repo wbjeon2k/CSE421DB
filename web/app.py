@@ -99,6 +99,7 @@ if __name__ == '__main__':
     sql_file = open('./DB_SQL.sql','r').read()
     print(sql_file)
     cur.execute(sql_file)
+
     conn.commit()
     #cdir = os.path.dirname(os.path.abspath())
     #TODO: link with loader

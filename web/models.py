@@ -62,17 +62,23 @@ class GameModel:
 
     """for JSON type"""
     def serialize(self):
+        #attributes in a same sequence as sql file!
         return {
             'gameID': self.gameID ,
             'name': self.name,
         }
-
+        
+    def asGameModel(self, tup):
+        self.gameID = tup[0]
+        self.name = tup[1]
+        return self
+        
     #cursor.fetchall() 을 통해 받아온 리스트 전체를
     #JSON 형태로 serialize 하는 메서드 입니다.
     def serialize_game_list(list_of_games):
         ret = []
         for game in list_of_games:
-                ret.append(game.serialize())
+                ret.append(GameModel(game[0], game[1]))
         return ret
 
 
