@@ -60,7 +60,6 @@ flycheck_*.el
 instance/*
 !instance/.gitignore
 .webassets-cache
-.env
 
 ### Flask.Python Stack ###
 # Byte-compiled / optimized / DLL files
@@ -475,3 +474,4 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/python,macos,windows,linux,visualstudiocode,jetbrains+all,vim,emacs,virtualenv,flask
 
 docker_data/*
+!.env

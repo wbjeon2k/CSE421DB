@@ -1,11 +1,11 @@
-from flask import Flask, render_template
-from flask import Blueprint, redirect, url_for
+import json
 
 import psycopg2 as pg2
-from models import *
-from app import connection
+from flask import Blueprint, Flask, redirect, render_template, url_for
 from jinja2 import Template
-import json
+
+from database import Connection
+from models import *
 
 # /game/... url 들을 포워딩 해주는 blueprint
 bp = Blueprint('game', __name__, url_prefix='/game')
@@ -17,9 +17,9 @@ def pgame_main():
     all_game_sql = """
         SELECT * FROM game
     """
-    conn = connection.get_connect()
+    conn = Connection.get_connect()
     cur = conn.cursor()
-    
+
     #cur.execute(all_game_sql)
     cur.execute("SELECT * FROM game;")
     all_game = cur.fetchall()
@@ -33,13 +33,12 @@ def pgame_main():
 
 # game 에 달린 review 들 return.
 # 현재는 serialize 된 json 그대로 return.
-# blueprint 의 prefix 가 자동으로 붙는 상태.
-# 마지막에 / 붙여야 한다...
-@bp.route('/detail/<int:gameID>/')
-def party_details(gameID):
-    print("In detail: ")
-    game_review_sql_format = 'SELECT * FROM game WHERE gameID = %s'  
-    conn = connection.get_connect()
+@bp.route('/game/detail/<int:gameId>')
+def party_details(gameId):
+    game_review_sql_format = """
+        SELECT * FROM game WHERE partyID = %s
+    """
+    conn = Connection.get_connect()
     cur = conn.cursor()
     cur.execute(game_review_sql_format, (gameID,))
     #fetchall 은 list, fetchone 은 tuple 형태. 주의!
