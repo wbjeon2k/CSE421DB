@@ -61,7 +61,7 @@ CREATE TABLE Party
 (
 	partyID              SERIAL,
 	name                 VARCHAR(64) NOT NULL,
-	playStartDatetime  DATE NOT NULL,
+	playStartDatetime  TIMESTAMP NOT NULL,
 	leaderID            INTEGER NOT NULL,
 	joinLink            VARCHAR(512) NOT NULL,
 	gameID               INTEGER NOT NULL
