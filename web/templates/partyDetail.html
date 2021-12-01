@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container"> <!-- Design needed -->
+    <div class="row">
+        <div class="col">
+            PartyID
+        </div>
+        <div class="col">
+            {{party['partyID']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Name
+        </div>
+        <div class="col">
+            {{party['name']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Leader
+        </div>
+        <div class="col">
+            {{party['leader']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Game
+        </div>
+        <div class="col">
+            {{party['game']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Date
+        </div>
+        <div class="col">
+            {{party['playStartDateTime']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Users
+        </div>
+        <div class="col">
+            {{party['users']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+    {% if not is_my_party %}
+    <button type="button" class="btn btn-primary" onclick="location.href = 'join/'">Join</button>
+    {% endif %}
+</div>
+{% endblock content %}
