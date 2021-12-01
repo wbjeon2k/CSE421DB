@@ -130,8 +130,33 @@ def party_detail_method(partyid):
                 return error
             redirect(url_for('parties/%d/' % partyid))    
         else:
-            redirect(url_for('parties/%d/' % partyid))
-            
+            redirect(url_for('parties/%d/' % partyid))       
     else:
         redirect(url_for('parties/%d/' % partyid))    
     
+@bp.route('/parties/<int:partyid>/join/', method = 'GET')
+def party_secession_method(partyid):
+    conn = Connection.get_connect()
+    cur = conn.cursor()
+    if 'user' in session:
+        search_party_sql = """
+            SELECT COUNT(*) FROM ServiceUser_Party
+            WHERE serviceUserID = %s AND partyID = %s;
+        """
+        user_id = session['user_id']
+        cur.execute(search_party_sql, (user_id, partyid,))
+        search_cnt = cur.fetchone()[0]
+        if(search_cnt != 0):
+            redirect(url_for('parties/%d/' % partyid))
+        elif(search_cnt == 0):
+            party_exit_sql = """
+                DELETE FROM ServiceUser_Party
+                WHERE serviceUserID = %s AND partyID = %s;
+            """
+            cur.execute(party_exit_sql, (user_id, partyid))
+            conn.commit()
+            redirect(url_for('parties/%d/' % partyid))    
+        else:
+            redirect(url_for('parties/%d/' % partyid))       
+    else:
+        redirect(url_for('parties/%d/' % partyid)) 
