@@ -56,9 +56,10 @@ class GameModel:
     """Model for the game table"""
     __tablename__ = 'test'
 
-    def __init__(self,gameID,name):
+    def __init__(self,gameID,name,popularity):
         self.gameID = gameID
         self.name = name
+        self.popularity = popularity
 
     """for JSON type"""
     def serialize(self):
@@ -66,11 +67,13 @@ class GameModel:
         return {
             'gameID': self.gameID ,
             'name': self.name,
+            'popularity': self.popularity
         }
         
     def asGameModel(self, tup):
         self.gameID = tup[0]
         self.name = tup[1]
+        self.popularity = tup[2]
         return self
         
     #cursor.fetchall() 을 통해 받아온 리스트 전체를
@@ -78,7 +81,7 @@ class GameModel:
     def serialize_game_list(list_of_games):
         ret = []
         for game in list_of_games:
-                ret.append(GameModel(game[0], game[1]))
+                ret.append(GameModel(game[0], game[1], game[2]))
         return ret
 
 
