@@ -49,6 +49,8 @@ def register_main_get():
                 #https://pythonise.com/series/learning-flask/flask-session-object
                 user_dict = 
                 session['user']=user_dict
+            else:
+                return render_template('login_template.html', error='Wrong email or password')
         elif(user_count == 0):
             return render_template('login_template.html', error='Wrong email or password')
         else:
