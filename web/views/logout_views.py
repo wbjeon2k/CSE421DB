@@ -13,12 +13,12 @@ from database import Connection
 from models import *
 import hashlib
 
-# /game/... url 들을 포워딩 해주는 blueprint
+# logout blueprint
 bp = Blueprint('logout', __name__, url_prefix='/logout')
 
 @bp.route('/', methods=['GET'])
 def logout_main():
     if 'user' in session:
 	    del session['user']
-    
+        
     return redirect(url_for('/'))

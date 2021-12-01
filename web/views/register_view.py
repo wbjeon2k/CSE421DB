@@ -47,6 +47,8 @@ def register_main_post():
             insert_user_sql = """
                 INSERT INTO SerivceUser VALUES (%s,%s,%s,DEFAULT,NULL);
             """
+            
+            #TODO: session 과 연결을 해야하는가?
             try:
                 cur.execute(insert_user_sql,(register_email, enc_pw, register_nickname))
                 conn.commit()

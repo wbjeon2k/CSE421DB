@@ -17,15 +17,19 @@ bp = Blueprint('parties', __name__, url_prefix='/parties')
 # 모든 파티들을 1번 부터 n 번 순서대로 표시.
 @bp.route('/')
 def party_main():
+    #parties 처음 들어왔을때 보여지는 table
     all_party_sql_default = """
         SELECT * FROM party ORDER BY playStartDatetime ASC
     """
+    # sort key 있을때 ASC order sort
     all_party_sql_sort_asc = """
         SELECT * FROM party ORDER BY %s ASC;
     """
+    # sort key 있을때 DESC order sort
     all_party_sql_sort_desc = """
         SELECT * FROM party ORDER BY %s DESC;
     """
+    # ServiceUser_Party table 에서 serviceUserID 일치하는 모든 party.
     my_parties_sql = """
         SELECT * FROM Party WHERE Party.partyID IN
         (SELECT ServiceUser_Party.partyID FROM ServiceUser_Party
@@ -34,13 +38,18 @@ def party_main():
     conn = Connection.get_connect()
     cur = conn.cursor()
 
+    #TODO: session['user_id'] 처리?
+    #session 이 global 인지, local 인지 확인 필요.
+    #TODO: user_id 로 조회 하는게 맞는건지 확인 필요.
     service_user_id = session['user_id']
+    
     my_parties_list = []
     if(service_user_id != NULL):
         cur.execute(my_parties_sql, (service_user_id,))
         my_parties_list = cur.fetchall()
     else:
         my_parties_list = []
+    #JSON serialize
     my_parties = PartyModel.serialize_party_list(my_parties_list)
         
     sort_key_name = request.args.get('sort')
@@ -57,7 +66,7 @@ def party_main():
     
     all_parties_list = cur.fetchall()
     parties = PartyModel.serialize_party_list(all_parties_list)
-    #all_party_json_list = json.dumps(all_party_list)
+    
     return render_template('party_list.html', parties = parties, my_parties = my_parties)
 
 # 새로운 파티 생성 get method
@@ -109,6 +118,7 @@ def party_detail_method(partyid):
     cur = conn.cursor()
     is_my_party = False
     if 'user' in session:
+        # serviceUserID, partyID 모두 같은 ServiceUser_Party row count.
         search_party_sql = """
             SELECT COUNT(*) FROM ServiceUser_Party
             WHERE serviceUserID = %s AND partyID = %s;
@@ -116,6 +126,7 @@ def party_detail_method(partyid):
         user_id = session['user_id']
         cur.execute(search_party_sql, (user_id, partyid,))
         search_cnt = cur.fetchone()[0]
+        
         if(search_cnt != 0):
             redirect(url_for('parties/%d/' % partyid))
         elif(search_cnt == 0):

@@ -16,17 +16,19 @@ bp = Blueprint('games', __name__, url_prefix='/games')
 #https://stackoverflow.com/questions/24892035/how-can-i-get-the-named-parameters-from-a-url-using-flask
 #https://stackoverflow.com/questions/8134602/psycopg2-insert-multiple-rows-with-one-query
 
-# /party 첫 페이지.
-# 모든 파티들을 1번 부터 n 번 순서대로 표시.
+# /games 첫 페이지.
 @bp.route('/')
 def game_main():
+    # 처음 /games 에 들어가면 보이는 table.
     game_default_sql = """
         SELECT gameID, name, (SELECT COUNT(*) FROM Party WHERE Party.gameID = Game.gameID) as population FROM Game;
     """
+    # sort key 로 name/popular 들어왔을때 ASC order sort.
     game_order_by_asc_sql = """
         SELECT gameID, name, (SELECT COUNT(*) FROM Party WHERE Party.gameID = Game.gameID) as population FROM Game
         ORDER BY %s ASC;
     """
+    # sort key 로 name/popular 들어왔을때 DESC order sort.
     game_order_by_desc_sql = """
         SELECT gameID, name, (SELECT COUNT(*) FROM Party WHERE Party.gameID = Game.gameID) as population FROM Game
         ORDER BY %s DESC;
@@ -38,24 +40,28 @@ def game_main():
     order_key = request.args.get('order')
     
     if(sort_key_name == NULL):
+        # ?sort 가 없는 상황.
         cur.execute(game_default_sql)
     elif(order_key == 'asc' and sort_key_name != NULL):
         cur.execute(game_order_by_asc_sql, (sort_key_name,))
     elif(order_key == 'desc' and sort_key_name != NULL):
         cur.execute(game_order_by_desc_sql, (sort_key_name,))
     else:
+        # exception 을 던지지 않기 위한 예외처리.
         cur.execute(game_default_sql)
         
     all_game = cur.fetchall()
     
+    #game table JSON serialize
     all_game_list = []
     for games in all_game:
         all_game_list.append(GameModel(games[0], games[1], games[2]).serialize())
-    #all_party_json_list = json.dumps(all_party_list)
-    print(all_game_list)
+    
+    #TODO: template html 파일 이름, parameter 확인
     return render_template('game_list.html', game_list=all_game_list)
 
-# game 에 속한 party 들 return.
+# TODO: game 에서 표시 할 컨텐츠 정하기
+# 아래는 임시. 작동하는 코드 아님.
 @bp.route('/game/detail/<int:gameid>')
 def party_details(gameid):
     game_review_sql_format = """
