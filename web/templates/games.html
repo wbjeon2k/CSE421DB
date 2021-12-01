@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<button type="button" class="btn btn-primary" onclick="location.href = '?sort=name&order=asc'">Name</button>  
+<button type="button" class="btn btn-primary" onclick="location.href = '?sort=popular&order=asc'">Popular</button> <!-- href to "/games/?sort=popular&order=asc"-->
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">GameID</th>
+      <th scope="col">Name</th>
+      <th scope="col">Users</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for game in games %}
+    <tr>
+      <td class="col-1"> {{game[0]}}</th>
+      <td class="col-7">{{game[1]}}</td>
+      <td class="col-4">{{game[2]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}
