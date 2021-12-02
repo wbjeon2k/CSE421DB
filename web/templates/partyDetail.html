@@ -51,10 +51,10 @@
         </div>
     </div>
     {% if not is_my_party %}
-    <button type="button" class="btn btn-primary" onclick="location.href = 'join/'">Join</button>
+    <a href="join/" class="btn btn-primary">Join</a>
     {% endif %}
     {% if is_my_party %}
-    <button type="button" class="btn btn-primary" onclick="location.href = 'secession/'">Secession</button>
+    <a href="secession/" class="btn btn-primary">Secession</a>
     {% endif %}
     <table class="table">
         <thead>

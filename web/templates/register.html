@@ -1,18 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form>
+
+<form method="POST" action="/reigster/">
     <div class="mb-3">
         <label for="email" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="email" name="email">
+        <input type="email" class="form-control" id="email" name="email" required>
     </div>
     <div class="mb-3">
         <label for="nickname" class="form-label">Nickname</label>
-        <input type="text" class="form-control" id="nickname" name="nickname">
+        <input type="text" class="form-control" id="nickname" name="nickname" required>
     </div>
     <div class="mb-3">
         <label for="rawPassword" class="form-label">Password</label>
-        <input type="password" class="form-control" id="rawPassword" name="rawPassword">
+        <input type="password" class="form-control" id="rawPassword" name="rawPassword" required>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>

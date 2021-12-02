@@ -2,24 +2,17 @@
 
 {% block content %}
 
-<button type="button" class="btn btn-primary" onclick="location.href = 'new/'">Create</button>
-
-<p>
-<button type="button" class="btn btn-primary" onclick="location.href = '?sort=name&order=asc'">Name</button>  
-<button type="button" class="btn btn-primary" onclick="location.href = '?sort=date&order=asc'">Date</button>
-<button type="button" class="btn btn-primary" onclick="location.href = '?sort=game&order=asc'">Game</button>  
-<button type="button" class="btn btn-primary" onclick="location.href = '?sort=popular&order=asc'">Popular</button>
-</p>
-
+<a href="new/" class="btn btn-primary">Create</a>
 
 <table class="table table-hover">
     <thead>
       <tr>
         <th scope="col">PartyID</th>
-        <th scope="col">Name</th>
+        <th scope="col">Name<a href="?sort=name&order=asc">▲</a><a href="?sort=name&order=desc">▼</a></th>
+        <th scope="col">Game<a href="?sort=game&order=asc">▲</a><a href="?sort=game&order=desc">▼</a></th>
         <th scope="col">Leader</th>
-        <th scope="col">Date</th>
-        <th scope="col">Users</th>
+        <th scope="col">Date<a href="?sort=date&order=asc">▲</a><a href="?sort=date&order=desc">▼</a></th>
+        <th scope="col">Users<a href="?sort=popular&order=asc">▲</a><a href="?sort=popular&order=desc">▼</a></th>
       </tr>
     </thead>
     <tbody>
@@ -27,6 +20,7 @@
       <tr onclick = "location.href = '{{myparty['partyID']}}/'">
         <td class="col-1"> {{myparty['partyID']}}</th> <!-- Dictionary for test -->
         <td class="col-5">{{myparty['name']}}</td>
+        <td class="col-5">{{myparty['game']}}</td>
         <td class="col-2">{{myparty['leader']}}</td>
         <td class="col-2">{{myparty['date']}}</td>
         <td class="col-2">{{myparty['users']}}</td>
@@ -39,10 +33,11 @@
   <thead>
     <tr>
       <th scope="col">PartyID</th>
-      <th scope="col">Name</th>
-      <th scope="col">Leader</th>
-      <th scope="col">Date</th>
-      <th scope="col">Popular</th>
+        <th scope="col">Name<a href="?sort=name&order=asc">▲</a><a href="?sort=name&order=desc">▼</a></th>
+        <th scope="col">Game<a href="?sort=game&order=asc">▲</a><a href="?sort=game&order=desc">▼</a></th>
+        <th scope="col">Leader</th>
+        <th scope="col">Date<a href="?sort=date&order=asc">▲</a><a href="?sort=date&order=desc">▼</a></th>
+        <th scope="col">Users<a href="?sort=popular&order=asc">▲</a><a href="?sort=popular&order=desc">▼</a></th>
     </tr>
   </thead>
   <tbody>
@@ -50,6 +45,7 @@
     <tr onclick = "location.href = '{{party['partyID']}}/'">
       <td class="col-1"> {{party['partyID']}}</th> <!-- Dictionary for test -->
       <td class="col-5">{{party['name']}}</td>
+      <td class="col-5">{{party['game']}}</td>
       <td class="col-2">{{party['leader']}}</td>
       <td class="col-2">{{party['date']}}</td>
       <td class="col-2">{{party['users']}}</td>

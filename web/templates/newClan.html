@@ -2,10 +2,10 @@
 
 {% block content %}
 
-<form>
+<form method="POST" action="/clans/new/">
     <div class="mb-3">
         <label for="name" class="form-label">Clan Name</label>
         <input type="text" class="form-control" id="name" name="name">
     </div>
-    <button type="submit" class="btn btn-primary" onclick="location.href = '..//'">Submit</button>
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>

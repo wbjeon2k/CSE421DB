@@ -9,16 +9,20 @@
         <div class="col">
             {{clan['clanID']}} <!-- Dictionary for test -->
         </div>
+        <!--{{len(members)}}-->
     </div>
 
-    {% if not is_my_clan %} <!-- Session 유저가 clan 이 이미 들어있으면 버튼이 아예 안떠야함-->
-    <button type="button" class="btn btn-primary" onclick="location.href = 'join/'">Join</button>
+    {% if not is_my_clan %} <!-- Session 유저가 clan 이 이미 들어있으면 버튼이 아예 안떠야함  session['user']['clanID']
+    유저 확인 먼저 하기    if session.get('user') and session['user'].get('clanID') == clan['clanID']
+
+ -->
+    <a href="join/" class="btn btn-primary">Join</a>
     {% endif %}
 
     {% if is_my_clan %}
-    <button type="button" class="btn btn-primary" onclick="location.href = 'secession/'">Secession</button>
+    <a href="secession/" class="btn btn-primary">Secession</a>
     {% endif %}
-    
+
     <table class="table">
         <thead>
           <tr>
@@ -27,7 +31,7 @@
           </tr>
         </thead>
         <tbody>
-            {% for user in clan['member'] %}
+            {% for member in members %}
             <!-- TODO : user 정보 출력하기-->
             {% endfor %}
         </tbody>

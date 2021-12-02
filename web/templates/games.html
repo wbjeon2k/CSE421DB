@@ -7,7 +7,7 @@
 <table class="table">
   <thead>
     <tr>
-      <th scope="col">GameID</th>
+      <th scope="col">GameID <!--화살표 두개 넣고 링크 걸기 --></th>
       <th scope="col">Name</th>
       <th scope="col">Users</th>
     </tr>
@@ -15,7 +15,7 @@
   <tbody>
     {% for game in games %}
     <tr>
-      <td class="col-1"> {{game['gameID']}}</th> <!-- List for test gameID-->
+      <td class="col-1"> {{game['gameID']}}</th> <!-- Dictionary for test gameID-->
       <td class="col-7">{{game['name']}}</td>
       <td class="col-4">{{game['users']}}</td>
     </tr>
