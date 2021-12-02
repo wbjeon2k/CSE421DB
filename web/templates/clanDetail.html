@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container"> <!-- 컨텐츠 내부 채워넣어야함 -->
+    <div class="row">
+        <div class="col">
+            Clan ID
+        </div>
+        <div class="col">
+            {{clan['clanID']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+
+    {% if not is_my_clan %} <!-- Session 유저가 clan 이 이미 들어있으면 버튼이 아예 안떠야함-->
+    <button type="button" class="btn btn-primary" onclick="location.href = 'join/'">Join</button>
+    {% endif %}
+
+    {% if is_my_clan %}
+    <button type="button" class="btn btn-primary" onclick="location.href = 'secession/'">Secession</button>
+    {% endif %}
+    
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">User ID</th>
+            <th scope="col">Nickname</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for user in clan['member'] %}
+            <!-- TODO : user 정보 출력하기-->
+            {% endfor %}
+        </tbody>
+      </table>
+</div>
+{% endblock content %}
