@@ -48,13 +48,13 @@ def register_main_post():
                 INSERT INTO SerivceUser VALUES (%s,%s,%s,DEFAULT,NULL);
             """
             
-            #TODO: session 과 연결을 해야하는가?
+            #TODO: session 과 연결을 해야하는가? 자동 로그인 하는걸로 
             try:
                 cur.execute(insert_user_sql,(register_email, enc_pw, register_nickname))
                 conn.commit()
             except Exception as e:
                 return render_template('register_template.html', error = "User register failed. Try again.")
-            
+            #session 을 하면 main page로 redirect
             return redirect(url_for('/login'))
         else:
             return render_template('register_template.html', error = "Unknown register error. Try again.")

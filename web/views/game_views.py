@@ -62,7 +62,8 @@ def game_main():
 
 # TODO: game 에서 표시 할 컨텐츠 정하기
 # 아래는 임시. 작동하는 코드 아님.
-@bp.route('/game/detail/<int:gameid>')
+# game 순위, game 파티, game review, game tag
+@bp.route('/game/detail/<int:gameid>/')
 def party_details(gameid):
     game_review_sql_format = """
         SELECT * FROM Party WHERE gameID = %s

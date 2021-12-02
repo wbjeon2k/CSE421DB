@@ -21,6 +21,7 @@ def party_main():
     all_party_sql_default = """
         SELECT * FROM party ORDER BY playStartDatetime ASC
     """
+    # ASC desc 합치기
     # sort key 있을때 ASC order sort
     all_party_sql_sort_asc = """
         SELECT * FROM party ORDER BY %s ASC;
@@ -41,10 +42,11 @@ def party_main():
     #TODO: session['user_id'] 처리?
     #session 이 global 인지, local 인지 확인 필요.
     #TODO: user_id 로 조회 하는게 맞는건지 확인 필요.
-    service_user_id = session['user_id']
+    service_user_id = session['user'].get('user_id')
     
     my_parties_list = []
-    if(service_user_id != NULL):
+    #TODO: null 아니라 none
+    if(service_user_id != None):
         cur.execute(my_parties_sql, (service_user_id,))
         my_parties_list = cur.fetchall()
     else:
@@ -92,13 +94,15 @@ def new_party_post_method():
         gameid = session.get('gameid')
         name = request.form.get('name')
         datetime_from_front = request.form.get('playStartDatetime')
+        #TODO: format 
+        #https://dateutil.readthedocs.io/en/stable/
         playStartDatetime = datetime.strftime(datetime_from_front)
         joinLink = request.form.get('joinLink')
         leaderID = session['user_id']
         
         try:
             cur.execute(
-            sql.SQL("INSERT INTO {} VALUES (%s, %s, %s, %s, %s, %s) RETURNING partyID").format(sql.identifier('Party'))
+            sql.SQL("INSERT INTO {} VALUES ( DEFAULT , %s, %s, %s, %s, %s) RETURNING partyID").format(sql.identifier('Party'))
                     ,[name, playStartDatetime,leaderID,joinLink,gameid]
                     )
         except Exception as error:
