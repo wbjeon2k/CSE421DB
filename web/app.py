@@ -116,7 +116,7 @@ def initialize_data():
         for game_tag in game_tags:
             for tag_id in game_tag['tags']:
                 cur.execute('INSERT INTO Game_Tag (gameID, tagID) VALUES (%s, %s)', (game_tag['id'], tag_id))
-    except UniqueViolation:  # already inserted data -> Violate unique key constraint in PK
+    except Exception as u:  # already inserted data -> Violate unique key constraint in PK
         conn.rollback()  # rollback all queries; not reflected to real db
         return 'Faild; Already inserted data'
     conn.commit()
@@ -143,5 +143,5 @@ if __name__ == '__main__':
 
     import views.game_views as game_views
     app.register_blueprint(game_views.bp)
-
+    #time.sleep(4)
     app.run(host='0.0.0.0', port=8088)

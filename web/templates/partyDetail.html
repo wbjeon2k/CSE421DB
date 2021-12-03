@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container"> <!-- Design needed -->
+    <div class="row">
+        <div class="col">
+            PartyID
+        </div>
+        <div class="col">
+            {{party['partyID']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Name
+        </div>
+        <div class="col">
+            {{party['name']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Leader
+        </div>
+        <div class="col">
+            {{party['leader']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Game
+        </div>
+        <div class="col">
+            {{party['game']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Date
+        </div>
+        <div class="col">
+            {{party['playStartDateTime']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Users
+        </div>
+        <div class="col">
+            {{party['users']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+    {% if not is_my_party %}
+    <a href="join/" class="btn btn-primary">Join</a>
+    {% endif %}
+    {% if is_my_party %}
+    <a href="secession/" class="btn btn-primary">Secession</a>
+    {% endif %}
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">User ID</th>
+            <th scope="col">Nickname</th>
+            <th scope="col">Leader</th>
+            <th scope="col">Date</th>
+            <th scope="col">Popular</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for user in party['member'] %}
+            {% endfor %}
+        </tbody>
+      </table>
+</div>
+{% endblock content %}
