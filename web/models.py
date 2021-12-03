@@ -68,20 +68,14 @@ class GameModel:
             'gameID': self.gameID ,
             'name': self.name,
             'popularity': self.popularity
-        }
-        
-    def asGameModel(self, tup):
-        self.gameID = tup[0]
-        self.name = tup[1]
-        self.popularity = tup[2]
-        return self
+        }  
         
     #cursor.fetchall() 을 통해 받아온 리스트 전체를
     #JSON 형태로 serialize 하는 메서드 입니다.
     def serialize_game_list(list_of_games):
         ret = []
         for game in list_of_games:
-                ret.append(GameModel(game[0], game[1], game[2]))
+                ret.append(GameModel(game[0], game[1], game[2]).serialize())
         return ret
 
 
@@ -162,7 +156,7 @@ class PartyModel:
     def serialize_party_list(list_of_party):
         ret = []
         for party in list_of_party:
-                ret.append(party.serialize())
+                ret.append(PartyModel(party[0],party[1],party[2],party[3],party[4],party[5]).serialize())
         return ret
 
 
@@ -240,12 +234,10 @@ class ServiceUserModel:
     """Model for the ServiceUser table"""
     __tablename__ = 'ServiceUser'
 
-    # 자동으로 parameter 들을 넣어주는 방법은 찾지 못했습니다.
-    # PartyModel(x[0], x[1], ....) 형태로 넣는 수 밖에 없습니다.
-    def __init__(self,serviceUserID,email ,encryptedPassword, nickname, isAdmin , clanID):
+    # encrypted pw skip!
+    def __init__(self,serviceUserID,email , nickname, isAdmin , clanID):
         self.serviceUserID = serviceUserID
         self.email = email
-        self.encryptedPassword= encryptedPassword
         self.nickname =   nickname
         self.isAdmin =   isAdmin
         self.clanID  =  clanID
@@ -254,7 +246,7 @@ class ServiceUserModel:
         return {
             'serviceUserID' : self.serviceUserID ,
             'email':self.email,
-            'encryptedPassword':self.encryptedPassword,
+            #'encryptedPassword':self.encryptedPassword,
             'nickname':self.nickname,
             'isAdmin':self.isAdmin,
             'clanID':self.clanID

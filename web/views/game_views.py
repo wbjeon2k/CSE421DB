@@ -51,7 +51,7 @@ def game_main():
         all_game_list.append(GameModel(games[0], games[1], games[2]).serialize())
     
     #TODO: template html 파일 이름, parameter 확인
-    return render_template('game_list.html', game_list=all_game_list)
+    return render_template('games.html', game_list=all_game_list)
 
 # TODO: game 에서 표시 할 컨텐츠 정하기
 # 아래는 임시. 작동하는 코드 아님.
@@ -63,10 +63,29 @@ def party_details(gameid):
     """
     conn = Connection.get_connect()
     cur = conn.cursor()
-    cur.execute(game_review_sql_format, (gameid,))
-    #fetchall 은 list, fetchone 은 tuple 형태. 주의!
-    tup = cur.fetchall()
-    print(tup)
-    g = PartyModel(tup[0], tup[1]).serialize()
-    # game 이외 parameter 들 추가 하여 컨텐츠 추가 가능.
-    return render_template('game_detail.html', game = g)
+    
+    parties_in_game_sql = """
+        SELECT * FROM Party WHERE gameID = %s;
+    """
+    reviews_in_game_sql = """
+        SELECT * FROM Review WHERE Review.reviewID IN
+        (SELECT GameReview.reviewID FROM GameReview WHERE GameReview.gameID = %s);
+    """
+    tags_in_game_sql = """
+        SELECT * FROM Tag WHERE Tag.tagID IN
+        (SELECT Game_Tag.tagID FROM Game_Tag WHERE Game_Tag.gameID = %s);
+    """
+    
+    cur.execute(parties_in_game_sql,(gameid,))
+    parties_in_game_fetch = cur.fetchall()
+    parties_in_game = PartyModel.serialize_party_list(parties_in_game_fetch)
+    
+    cur.execute(reviews_in_game_sql,(gameid,))
+    reviews_in_game_fetch = cur.fetchall()
+    reviews_in_game = ReviewModel.serialize_review_list(reviews_in_game_fetch)
+    
+    cur.execute(tags_in_game_sql,(gameid,))
+    tags_in_game_fetch = cur.fetchall()
+    tags_in_game = TagModel.serialize_tag_list(tags_in_game_fetch)
+    
+    return render_template('gameDetail.html', parties = parties_in_game, reviews = reviews_in_game, tags = tags_in_game)

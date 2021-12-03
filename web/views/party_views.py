@@ -8,7 +8,8 @@ from psycopg2 import sql
 from psycopg2.sql import SQL
 from database import Connection
 from models import *
-from datetime import datetime, timezone
+from datetime import *
+from dateutil import *
 
 # /party/... url 들을 포워딩 해주는 blueprint
 bp = Blueprint('parties', __name__, url_prefix='/parties')
@@ -23,13 +24,10 @@ def party_main():
     """
     # ASC desc 합치기
     # sort key 있을때 ASC order sort
-    all_party_sql_sort_asc = """
-        SELECT * FROM party ORDER BY %s ASC;
+    all_party_sql_sort = """
+        SELECT * FROM party ORDER BY %s %s;
     """
-    # sort key 있을때 DESC order sort
-    all_party_sql_sort_desc = """
-        SELECT * FROM party ORDER BY %s DESC;
-    """
+    
     # ServiceUser_Party table 에서 serviceUserID 일치하는 모든 party.
     my_parties_sql = """
         SELECT * FROM Party WHERE Party.partyID IN
@@ -42,7 +40,7 @@ def party_main():
     #TODO: session['user_id'] 처리?
     #session 이 global 인지, local 인지 확인 필요.
     #TODO: user_id 로 조회 하는게 맞는건지 확인 필요.
-    service_user_id = session['user'].get('user_id')
+    service_user_id = session['user'].get('serviceUserID')
     
     my_parties_list = []
     #TODO: null 아니라 none
@@ -55,66 +53,69 @@ def party_main():
     my_parties = PartyModel.serialize_party_list(my_parties_list)
         
     sort_key_name = request.args.get('sort')
-    if(sort_key_name == NULL):
+    if(sort_key_name == None):
         cur.execute(all_party_sql_default)
     else:
         order_key_name = request.args.get('order')
-        if(order_key_name == 'asc'):
-            cur.execute(all_party_sql_sort_asc, (sort_key_name,))
-        elif(order_key_name == 'desc'):
-            cur.execute(all_party_sql_sort_desc,(sort_key_name,))
+        if(order_key_name != None):
+            cur.execute(all_party_sql_sort_desc,(sort_key_name,order_key_name))
         else:
             cur.execute(all_party_sql_default)
     
     all_parties_list = cur.fetchall()
     parties = PartyModel.serialize_party_list(all_parties_list)
     
-    return render_template('party_list.html', parties = parties, my_parties = my_parties)
+    return render_template('parties.html', parties = parties, my_parties = my_parties)
+
+@bp.route('/parties/<int:partyid>/', method = 'GET')
+def party_detail_method():
+    conn = Connection.get_connect()
+    cur = conn.cursor()
+    
+    return render_template('partyDetail.html')
 
 # 새로운 파티 생성 get method
 @bp.route('/parties/new/', method = 'GET')
 def new_party_get_method():
-    if 'user' in session:
-        all_game_sql = """
-            SELECT * FROM Game ORDER BY Game.name ASC;
-        """
-        
-        cur.execute(all_game_sql)
-        game_list = cur.fetchall()
-        all_game_list = GameModel.serialize_game_list(game_list)
-        return render_template('new_party_template.html', games = all_game_list)
-    else:
-        return redirect(url_for('/parties/'))
+    if session.method == 'GET':
+        if 'user' in session:
+            all_game_sql = """
+                SELECT * FROM Game ORDER BY Game.name ASC;
+            """
+            
+            cur.execute(all_game_sql)
+            game_list = cur.fetchall()
+            all_game_list = GameModel.serialize_game_list(game_list)
+            return render_template('newParty.html', games = all_game_list)
+        else:
+            return redirect(url_for('/parties/'))
     
-@bp.route('/parties/new/', method = 'POST')
-def new_party_post_method():
-    conn = Connection.get_connect()
-    cur = conn.cursor()
-    if 'user' in session:
-        gameid = session.get('gameid')
-        name = request.form.get('name')
-        datetime_from_front = request.form.get('playStartDatetime')
-        #TODO: format 
-        #https://dateutil.readthedocs.io/en/stable/
-        playStartDatetime = datetime.strftime(datetime_from_front)
-        joinLink = request.form.get('joinLink')
-        leaderID = session['user_id']
-        
-        try:
-            cur.execute(
-            sql.SQL("INSERT INTO {} VALUES ( DEFAULT , %s, %s, %s, %s, %s) RETURNING partyID").format(sql.identifier('Party'))
-                    ,[name, playStartDatetime,leaderID,joinLink,gameid]
-                    )
-        except Exception as error:
-            return error
-        
-        conn.commit()
-        
-        new_party_id = cur.fetchone()[0]
-        new_party_url = 'parties/%s' % new_party_id
-        return redirect(url_for(new_party_url))
-    else:
-        redirect(url_for('parties/'))
+    if session.method == 'POST':
+        if 'user' in session:
+            gameid = session.get('gameid')
+            name = request.form.get('name')
+            datetime_from_front_string = request.form.get('playStartDatetime')
+            #TODO: format 
+            #https://dateutil.readthedocs.io/en/stable/
+            playStartDatetime = dateutil.parse(datetime_from_front_string)
+            joinLink = request.form.get('joinLink')
+            leaderID = session['user_id']
+            
+            try:
+                cur.execute(
+                sql.SQL("INSERT INTO {} VALUES ( DEFAULT , %s, %s, %s, %s, %s) RETURNING partyID").format(sql.identifier('Party'))
+                        ,[name, playStartDatetime,leaderID,joinLink,gameid]
+                        )
+            except Exception as error:
+                return error
+            
+            conn.commit()
+            
+            new_party_id = cur.fetchone()[0]
+            new_party_url = 'parties/%s' % new_party_id
+            return redirect(url_for(new_party_url))
+        else:
+            redirect(url_for('parties/'))
         
 @bp.route('/parties/<int:partyid>/join/', method = 'GET')
 def party_detail_method(partyid):
