@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- method action -->
+<form method="POST" action="/parties/new/">
+    <div class="mb-3">
+        <label for="name" class="form-label">Party Name</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="mb-3">
+        <label for="playStartDateTime" class="form-label">Play Start Datetime</label>
+        <input type="datetime-local" class="form-control" id="playStartDateTime" name="playStartDateTime" required>
+    </div>
+    <div class="mb-3">
+        <label for="joinLink" class="form-label">Join Link</label>
+        <input type="text" class="form-control" id="joinLink" name="joinLink" required>
+    </div>
+    <div class="mb-3">
+        <label for="gameID" class="form-label">Game to Play</label>
+        <select class="form-select" id="gameID" name="gameID">
+            {% for game in games %}
+                <option value="{{ game.gameID }}">{{ game.name }}</option> <!--
+                    {{ game['gameID' }}{{ game['name'] }}
+                -->
+            {% endfor %}
+        </select>
+    <!-- datalist 에서 value를 gameID로 했더니 입력폼에서 사용자에게 gameID가 보여서 사용포기
+        <label for="gameID" class="form-label">Select Game</label> <!-- Game Select--
+        <input class="form-control" list="GameList" id="gameID" placeholder="Type to search">
+        <datalist id="GameList">
+            {% for game in games %}
+            <option value={{game['gameID']}} label={{game['name']}}> <!-- Dictionary for test-
+            {% endfor %}
+        </datalist>
+    -->
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% endblock content %}

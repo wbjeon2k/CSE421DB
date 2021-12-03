@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!--my_clan이 있다면 출력
+{% if my_clan %} 
+
+{% endif %}
+-->
+<table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">PartyID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Leader</th>
+        <th scope="col">Date</th>
+        <th scope="col">Popular</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for clan in clans %}
+      <tr onclick = "location.href = '{{clan['clanID']}}/'">
+        <td class="col-1"> {{clan['clanID']}}</th> <!-- Dictionary for test -->
+        <td class="col-5">{{clan['name']}}</td>
+        <td class="col-3">{{clan['leader']}}</td>
+        <td class="col-3">{{clan['users']}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock content %}
