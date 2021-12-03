@@ -41,7 +41,7 @@
 <!-- Review write -->
 <form method="POST" action="/games/{{gameID}}/reviews/">
     <div class="mb-3">
-        <label for="score" class="form-label">Game to Play</label>
+        <label for="score" class="form-label">Score of Game</label>
         <select class="form-select" id="score" name="score">
             {% for i in [5,4,3,2,1]%}
             <option value="i">{{i}}</option>
