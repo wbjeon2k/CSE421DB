@@ -7,7 +7,7 @@
             Title
         </div>
         <div class="col">
-            {{post['title']}} <!-- Dictionary for test -->
+            {{post['title']}}
         </div>
     </div>
     <div class="row">
@@ -15,7 +15,7 @@
         Writer
       </div>
       <div class="col">
-        {{post['nickname']}}
+        {{post['user']}} <!-- post['leader']에 리더의 닉네임을 넣는게 나을거 같아요 (아니면 key 값을 'nickname' 으로 바꾸던지)-->
       </div>
     </div>
     <div class="row">
@@ -38,14 +38,15 @@
 
 <a href="/boards/{{boardtype}}/{{postid}}/thumbsup" class="btn btn-primary"><i class="bi bi-hand-thumbs-up"></i> {{post['thumbsUp']}}</a>
 <a href="/boards/{{boardtype}}/{{postid}}/thumbsdown" class="btn btn-danger"><i class="bi bi-hand-thumbs-down"></i> {{post['thumbsDown']}}</a>
-
-<form method="POST" action="/boards/{{boardtype}}/{{postID}}/comments/">
+{% if session.get('user') %}
+<form method="POST" action="/boards/{{boardtype}}/{{postID}}/comments/"> 
     <div class="mb-3">
         <label for="content" class="form-label">Content</label>
         <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+{% endif %}
 {% if comments != None %}
 <table class="table caption-top">
     <caption>Comments ({{comments|length}})</caption>
@@ -58,7 +59,7 @@
     </thead>
     <tbody>
         {% for comment in comments %}
-        <td class="col-2">{{comment['nickname']}}</td> <!-- Dictionary for test -->
+        <td class="col-2">{{comment['nickname']}}</td>
         <td class="col-8">{{comment['content']}}</td>
         <td class="col-2">{{comment['createDatetime']}}</td>
         {% endfor %}
