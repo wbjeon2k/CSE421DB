@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if clan != None %}
+<table class="table table-hover caption-top">
+    <caption>Clan Board Preview</caption>
+    <thead>
+        <tr>
+        <th scope="col">PostID</th>
+        <th scope="col">Title</th>
+        <th scope="col">Writer</th>
+        <th scope="col">Date</th>
+        <th scope="col">Viewcount</th>
+        <th scope="col">Thumbs Up</th>
+        <th scope="col">Thumbs Down</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for post in clan %}
+        <tr onclick = "location.href = '{{post['postID']}}/'">
+        <td class="col-1"> {{post['postID']}}</td> 
+        <td class="col-4">{{post['title']}}</td>
+        <td class="col-2">{{post['user']}}</td>
+        <td class="col-2">{{post['createDatetime']}}</td>
+        <td class="col-1">{{post['viewCount']}}</td>
+        <td class="col-1">{{post['thumbsUp']}}</td>
+        <td class="col-1">{{post['thumbsDown']}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+<table class="table table-hover caption-top">
+    <caption>Free Board Preview</caption>
+    <thead>
+        <tr>
+        <th scope="col">PostID</th>
+        <th scope="col">Title</th>
+        <th scope="col">Writer</th>
+        <th scope="col">Date</th>
+        <th scope="col">Viewcount</th>
+        <th scope="col">Thumbs Up</th>
+        <th scope="col">Thumbs Down</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for post in free %}
+        <tr onclick = "location.href = '{{post['postID']}}/'">
+        <td class="col-1"> {{post['postID']}}</td> 
+        <td class="col-4">{{post['title']}}</td>
+        <td class="col-2">{{post['user']}}</td>
+        <td class="col-2">{{post['createDatetime']}}</td>
+        <td class="col-1">{{post['viewCount']}}</td>
+        <td class="col-1">{{post['thumbsUp']}}</td>
+        <td class="col-1">{{post['thumbsDown']}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock  %}
