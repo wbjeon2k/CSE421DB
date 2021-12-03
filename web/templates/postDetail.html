@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-2">
+            Title
+        </div>
+        <div class="col">
+            {{post['title']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+    <div class="row">
+      <div class="col-2">
+        Writer
+      </div>
+      <div class="col">
+        {{post['nickname']}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-2">
+        Date
+      </div>
+      <div class="col">
+        {{post['createDatetime']}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-2">
+        Content
+      </div>
+      <div class="col">
+        {{post['content']}}
+      </div>
+    </div>
+</div>
+
+<a href="/boards/{{boardtype}}/{{postid}}/thumbsup" class="btn btn-primary"><i class="bi bi-hand-thumbs-up"></i> {{post['thumbsUp']}}</a>
+<a href="/boards/{{boardtype}}/{{postid}}/thumbsdown" class="btn btn-danger"><i class="bi bi-hand-thumbs-down"></i> {{post['thumbsDown']}}</a>
+
+<form method="POST" action="/boards/{{boardtype}}/{{postID}}/comments/">
+    <div class="mb-3">
+        <label for="content" class="form-label">Content</label>
+        <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% if comments != None %}
+<table class="table caption-top">
+    <caption>Comments ({{comments|length}})</caption>
+    <thead>
+    <tr>
+        <th scope="col">Nickname</th>
+        <th scope="col">Comment</th>
+        <th scope="col">Date</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for comment in comments %}
+        <td class="col-2">{{comment['nickname']}}</td> <!-- Dictionary for test -->
+        <td class="col-8">{{comment['content']}}</td>
+        <td class="col-2">{{comment['createDatetime']}}</td>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock content %}
