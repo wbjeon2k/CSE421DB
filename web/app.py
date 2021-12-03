@@ -130,11 +130,9 @@ if __name__ == '__main__':
     #main_blueprint = Blueprint('main', __name__, url_prefix='/main')
     #app.register_blueprint(main_blueprint)
 
+    sql_file = open('../DB_SQL.sql','r').read()
     try:
-        sql_file = open('../DB_SQL.sql','r').read()
-        print(sql_file)
         cur.execute(sql_file)
-
         conn.commit()
         print("load successful")
     except DuplicateTable:
