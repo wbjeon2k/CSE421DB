@@ -18,7 +18,7 @@
     <tbody>
       {% for myparty in myparties %}
       <tr onclick = "location.href = '{{myparty['partyID']}}/'">
-        <td class="col-1"> {{myparty['partyID']}}</th> <!-- Dictionary for test -->
+        <td class="col-1"> {{myparty['partyID']}}</td> <!-- Dictionary for test -->
         <td class="col-5">{{myparty['name']}}</td>
         <td class="col-5">{{myparty['game']}}</td>
         <td class="col-2">{{myparty['leader']}}</td>
@@ -43,7 +43,7 @@
   <tbody>
     {% for party in parties %}
     <tr onclick = "location.href = '{{party['partyID']}}/'">
-      <td class="col-1"> {{party['partyID']}}</th> <!-- Dictionary for test -->
+      <td class="col-1"> {{party['partyID']}}</td> <!-- Dictionary for test -->
       <td class="col-5">{{party['name']}}</td>
       <td class="col-5">{{party['game']}}</td>
       <td class="col-2">{{party['leader']}}</td>
