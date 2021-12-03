@@ -23,7 +23,7 @@
         Leader
       </div>
       <div class="col">
-        {{clan['leader']}}
+        {{clan['leader']}} <!-- clan['leader']에 리더의 닉네임을 넣는게 나을거 같아요-->
       </div>
     </div>
     <div class="row">
@@ -37,7 +37,6 @@
 
     {% if session.get('user') and session['user'].get('clanID') == clan['clanID'] %}
     <a href="secession/" class="btn btn-primary">Secession</a>
-  
     {% elif session.get('user') and session['user'].get('clanID') == None %}
     <a href="join/" class="btn btn-primary">Join</a>
     {% endif %}
@@ -53,7 +52,7 @@
         <tbody>
             {% for member in members %}
             <tr onclick = "location.href = '/users/{{member['userID']}}/'">
-              <td class="col-3"> {{member['userID']}}</td> <!-- Dictionary for test -->
+              <td class="col-3"> {{member['userID']}}</td> 
               <td class="col-9">{{member['nickname']}}</td>
             {% endfor %}
         </tbody>

@@ -15,7 +15,7 @@
             Name
         </div>
         <div class="col">
-            {{user['Name']}}
+            {{user['name']}}
         </div>
     </div>
     <div class="row">
@@ -59,7 +59,7 @@
     </thead>
     <tbody>
         {% for review in reviews %}
-        <td class="col-2">{{review['nickname']}}</td> <!-- Dictionary for test -->
+        <td class="col-2">{{review['nickname']}}</td> <!-- 어떤 곳에서는 'user' 이고 여기서는 또 'nickname'인데, 죄송합니다... -->
         <td class="col-1">{{review['score']}}</td>
         <td class="col-7">{{review['content']}}</td>
         <td class="col-2">{{review['createDatetime']}}</td>
