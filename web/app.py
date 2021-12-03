@@ -135,7 +135,7 @@ if __name__ == '__main__':
         cur.execute(sql_file)
         conn.commit()
         print("load successful")
-    except DuplicateTable:
+    except pg2.errors.DuplicateTable as d:
         print("table already exist; pass table creating")
 
     import views.party_views as party_views

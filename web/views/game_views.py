@@ -9,7 +9,7 @@ from database import Connection
 from models import *
 
 # /game/... url 들을 포워딩 해주는 blueprint
-bp = Blueprint('games', __name__, url_prefix='/games')
+bp = Blueprint("games", __name__, url_prefix='/games')
 
 #URI requirements
 #https://superclass.notion.site/Service-URIs-6339514566164062998c57f690cbcc4c

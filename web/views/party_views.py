@@ -12,7 +12,7 @@ from datetime import *
 from dateutil import *
 
 # /party/... url 들을 포워딩 해주는 blueprint
-bp = Blueprint('parties', __name__, url_prefix='/parties')
+bp = Blueprint("parties", __name__, url_prefix='/parties')
 
 # /party 첫 페이지.
 # 모든 파티들을 1번 부터 n 번 순서대로 표시.
