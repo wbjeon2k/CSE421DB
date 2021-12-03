@@ -1,15 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<button type="button" class="btn btn-primary" onclick="location.href = '?sort=name&order=asc'">Name</button>  
-<button type="button" class="btn btn-primary" onclick="location.href = '?sort=popular&order=asc'">Popular</button> 
-
+<!-- Game Detail + Detail 에서 tag 추가-->
 <table class="table">
   <thead>
     <tr>
-      <th scope="col">GameID <!--화살표 두개 넣고 링크 걸기 --></th>
-      <th scope="col">Name</th>
-      <th scope="col">Users</th>
+      <th scope="col">GameID</th>
+      <th scope="col">Name<a href="?sort=name&order=asc">▲</a><a href="?sort=name&order=desc">▼</a></th>
+      <th scope="col">Users<a href="?sort=popular&order=asc">▲</a><a href="?sort=popular&order=desc">▼</a></th>
     </tr>
   </thead>
   <tbody>
