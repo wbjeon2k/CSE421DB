@@ -52,8 +52,7 @@
     </div>
     {% if not is_my_party %}
     <a href="join/" class="btn btn-primary">Join</a>
-    {% endif %}
-    {% if is_my_party %}
+    {% else %}
     <a href="secession/" class="btn btn-primary">Secession</a>
     {% endif %}
     <table class="table">

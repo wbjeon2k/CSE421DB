@@ -18,7 +18,6 @@
         {% for post in free %}
         {% if post['isNotice'] %}
         <tr class = 'table-info' onclick = "location.href = '{{post['postID']}}/'">
-        {% endif %}
         {% else %}
         <tr onclick = "location.href = '{{post['postID']}}/'">
         {% endif %}

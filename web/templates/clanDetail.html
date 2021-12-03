@@ -37,8 +37,7 @@
 
     {% if session.get('user') and session['user'].get('clanID') == clan['clanID'] %}
     <a href="secession/" class="btn btn-primary">Secession</a>
-    {% endif %}
-
+  
     {% elif session.get('user') and session['user'].get('clanID') == None %}
     <a href="join/" class="btn btn-primary">Join</a>
     {% endif %}
