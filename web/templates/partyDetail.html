@@ -67,6 +67,10 @@
         </thead>
         <tbody>
             {% for user in party['member'] %}
+            <tr onclick = "location.href = '/users/{{user['userID']}}/'">
+                <td class="col-3">{{user['userID']}}</td> <!-- Dictionary for test -->
+                <td class="col-9">{{user['nickname']}}</td>
+            </tr>
             {% endfor %}
         </tbody>
       </table>
