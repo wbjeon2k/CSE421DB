@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 
 import psycopg2 as pg2
-from psycopg2.errors import UniqueViolation
+from psycopg2.errors import DuplicateTable, UniqueViolation
 from flask import Blueprint, Flask, redirect, render_template, url_for
 
 from database import Connection
@@ -130,14 +130,15 @@ if __name__ == '__main__':
     #main_blueprint = Blueprint('main', __name__, url_prefix='/main')
     #app.register_blueprint(main_blueprint)
 
-    sql_file = open('./DB_SQL.sql','r').read()
-    print(sql_file)
-    cur.execute(sql_file)
+    try:
+        sql_file = open('../DB_SQL.sql','r').read()
+        print(sql_file)
+        cur.execute(sql_file)
 
-    conn.commit()
-    #cdir = os.path.dirname(os.path.abspath())
-    #TODO: link with loader
-    print("load successful")
+        conn.commit()
+        print("load successful")
+    except DuplicateTable:
+        print("table already exist; pass table creating")
 
     import views.party_views as party_views
     app.register_blueprint(party_views.bp)
