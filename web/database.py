@@ -7,7 +7,7 @@ from dotenv import dotenv_values
 from psycopg2 import OperationalError
 
 
-db_connection_info = dotenv_values()
+db_connection_info = dotenv_values('../.env')
 
 POSTGRES = {
     'user': 'postgres',
