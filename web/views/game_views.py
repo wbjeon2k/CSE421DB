@@ -36,22 +36,23 @@ def game_main():
     
     if(sort_key_name == None):
         # ?sort 가 없는 상황.
-        cur.execute(game_default_sql)
-    elif(order_key == 'asc' and sort_key_name != None):
-        cur.execute(game_order_by_sql, (sort_key_name,order_key))
+        cur.execute(game_default_sql, [])
+    elif(sort_key_name != None):
+        cur.execute(game_order_by_sql, [sort_key_name,order_key])
     else:
         # exception 을 던지지 않기 위한 예외처리.
-        cur.execute(game_default_sql)
+        cur.execute(game_default_sql, [])
         
     all_game = cur.fetchall()
     
     #game table JSON serialize
+    print(all_game)
     all_game_list = []
     for games in all_game:
         all_game_list.append(GameModel(games[0], games[1], games[2]).serialize())
     
     #TODO: template html 파일 이름, parameter 확인
-    return render_template('games.html', game_list=all_game_list)
+    return render_template('games.html', games = all_game_list)
 
 # TODO: game 에서 표시 할 컨텐츠 정하기
 # 아래는 임시. 작동하는 코드 아님.

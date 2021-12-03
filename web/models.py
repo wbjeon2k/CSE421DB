@@ -32,6 +32,9 @@ for f in fetchall():
 이런 방식으로 다른 테이블에 대한 인터페이스를 만들어도 되는지 의견 받고싶어요!
 '''
 
+def add_single_quote(string_input):
+    return "'"+string_input+"'"
+
 class TestModel:
     """Model for the test table"""
     __tablename__ = 'test'
@@ -64,11 +67,11 @@ class GameModel:
     """for JSON type"""
     def serialize(self):
         #attributes in a same sequence as sql file!
-        return {
-            'gameID': self.gameID ,
-            'name': self.name,
-            'popularity': self.popularity
-        }  
+        return dict(
+            gameID= self.gameID ,
+            name= self.name,
+            popularity= self.popularity
+        )  
         
     #cursor.fetchall() 을 통해 받아온 리스트 전체를
     #JSON 형태로 serialize 하는 메서드 입니다.

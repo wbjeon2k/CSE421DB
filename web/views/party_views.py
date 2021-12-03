@@ -44,6 +44,7 @@ def party_main():
     
     my_parties_list = []
     #TODO: null 아니라 none
+    #if session.get('user') and session['user'].get('clanID') != None
     if(service_user_id != None):
         cur.execute(my_parties_sql, (service_user_id,))
         my_parties_list = cur.fetchall()

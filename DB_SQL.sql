@@ -1,186 +1,198 @@
-
-CREATE TABLE Board
+DROP TABLE IF EXISTS board CASCADE;
+CREATE TABLE board
 (
-	boardID              SERIAL,
-	clanID               INTEGER NULL
+	board_id              SERIAL,
+	clan_id               INTEGER NULL
 );
 
-ALTER TABLE Board
-ADD PRIMARY KEY (boardID);
+ALTER TABLE board
+ADD PRIMARY KEY (board_id);
 
-CREATE TABLE Clan
+DROP TABLE IF EXISTS clan CASCADE;
+CREATE TABLE clan
 (
-	clanID               SERIAL,
+	clan_id               SERIAL,
 	name                 VARCHAR(64) NOT NULL,
-	leaderID            INTEGER NOT NULL
+	leader_id            INTEGER NOT NULL
 );
 
-ALTER TABLE Clan
-ADD PRIMARY KEY (clanID);
+ALTER TABLE clan
+ADD PRIMARY KEY (clan_id);
 
-CREATE TABLE Comment
+DROP TABLE IF EXISTS comment CASCADE;
+CREATE TABLE comment
 (
-	commentID            SERIAL,
+	comment_id            SERIAL,
 	content              VARCHAR(256) NOT NULL,
-	createDatetime      TIMESTAMP NOT NULL,
-	serviceUserID               INTEGER NOT NULL,
-	postID               INTEGER NOT NULL
+	create_datetime      TIMESTAMP NOT NULL,
+	service_user_id               INTEGER NOT NULL,
+	post_id               INTEGER NOT NULL
 );
 
-ALTER TABLE Comment
-ADD PRIMARY KEY (commentID);
+ALTER TABLE comment
+ADD PRIMARY KEY (comment_id);
 
-CREATE TABLE Game
+DROP TABLE IF EXISTS game CASCADE;
+CREATE TABLE game
 (
-	gameID               SERIAL,
+	game_id               SERIAL,
 	name                 VARCHAR(128) NOT NULL
 );
 
-ALTER TABLE Game
-ADD PRIMARY KEY (gameID);
+ALTER TABLE game
+ADD PRIMARY KEY (game_id);
 
-CREATE TABLE Game_Tag
+DROP TABLE IF EXISTS game_tag CASCADE;
+CREATE TABLE game_tag
 (
-	gameID               INTEGER NOT NULL,
-	tagID                INTEGER NOT NULL
+	game_id               INTEGER NOT NULL,
+	tag_id                INTEGER NOT NULL
 );
 
-ALTER TABLE Game_Tag
-ADD PRIMARY KEY (gameID,tagID);
+ALTER TABLE game_tag
+ADD PRIMARY KEY (game_id,tag_id);
 
-CREATE TABLE GameReview
+DROP TABLE IF EXISTS game_review CASCADE;
+CREATE TABLE game_review
 (
-	reviewID             INTEGER NOT NULL,
-	gameID               INTEGER NOT NULL
+	review_id             INTEGER NOT NULL,
+	game_id               INTEGER NOT NULL
 );
 
-ALTER TABLE GameReview
-ADD PRIMARY KEY (reviewID);
+ALTER TABLE game_review
+ADD PRIMARY KEY (review_id);
 
-CREATE TABLE Party
+DROP TABLE IF EXISTS party CASCADE;
+CREATE TABLE party
 (
-	partyID              SERIAL,
+	party_id              SERIAL,
 	name                 VARCHAR(64) NOT NULL,
-	playStartDatetime  TIMESTAMP NOT NULL,
-	leaderID            INTEGER NOT NULL,
+	playstart_datetime  TIMESTAMP NOT NULL,
+	leader_id            INTEGER NOT NULL,
 	joinLink            VARCHAR(512) NOT NULL,
-	gameID               INTEGER NOT NULL
+	game_id               INTEGER NOT NULL
 );
 
-ALTER TABLE Party
-ADD PRIMARY KEY (partyID);
+ALTER TABLE party
+ADD PRIMARY KEY (party_id);
 
-CREATE TABLE Post
+DROP TABLE IF EXISTS post CASCADE;
+CREATE TABLE post
 (
-	postID               SERIAL,
+	post_id               SERIAL,
 	title                VARCHAR(128) NOT NULL,
 	content              TEXT NOT NULL,
-	createDatetime      TIMESTAMP NOT NULL,
+	create_datetime      TIMESTAMP NOT NULL,
 	isNotice            BOOLEAN NOT NULL DEFAULT false,
 	thumbsUp            INTEGER NOT NULL DEFAULT 0,
 	thumbsDown          INTEGER NOT NULL DEFAULT 0,
 	viewCount           INTEGER NOT NULL DEFAULT 0,
-	serviceUserID               INTEGER NOT NULL,
-	boardID              INTEGER NULL
+	service_user_id               INTEGER NOT NULL,
+	board_id              INTEGER NULL
 );
 
-ALTER TABLE Post
-ADD PRIMARY KEY (postID);
+ALTER TABLE post
+ADD PRIMARY KEY (post_id);
 
-CREATE TABLE Review
+DROP TABLE IF EXISTS review CASCADE;
+CREATE TABLE review
 (
-	reviewID             SERIAL,
-	createDatetime      TIMESTAMP NOT NULL,
+	review_id             SERIAL,
+	create_datetime      TIMESTAMP NOT NULL,
 	content              VARCHAR(512) NULL,
 	score                INTEGER NOT NULL
 );
 
-ALTER TABLE Review
-ADD PRIMARY KEY (reviewID);
+ALTER TABLE review
+ADD PRIMARY KEY (review_id);
 
-CREATE TABLE Tag
+DROP TABLE IF EXISTS tag CASCADE;
+CREATE TABLE tag
 (
-	tagID                SERIAL,
+	tag_id                SERIAL,
 	name                 VARCHAR(64) NOT NULL
 );
 
-ALTER TABLE Tag
-ADD PRIMARY KEY (tagID);
+ALTER TABLE tag
+ADD PRIMARY KEY (tag_id);
 
-CREATE TABLE ServiceUser
+DROP TABLE IF EXISTS service_user CASCADE;
+CREATE TABLE service_user
 (
-	serviceUserID               SERIAL,
+	service_user_id               SERIAL,
 	email                VARCHAR(128) NOT NULL,
-	encryptedPassword   VARCHAR(256) NOT NULL,
+	encrypted_password   VARCHAR(256) NOT NULL,
 	nickname             VARCHAR(64) NOT NULL,
 	isAdmin             BOOLEAN NOT NULL DEFAULT false,
-	clanID               INTEGER NULL
+	clan_id               INTEGER NULL
 );
 
-ALTER TABLE ServiceUser
-ADD PRIMARY KEY (serviceUserID);
+ALTER TABLE service_user
+ADD PRIMARY KEY (service_user_id);
 
-CREATE TABLE ServiceUser_Party
+DROP TABLE IF EXISTS service_user_party CASCADE;
+CREATE TABLE service_user_party
 (
-	serviceUserID               INTEGER NOT NULL,
-	partyID              INTEGER NOT NULL
+	service_user_id               INTEGER NOT NULL,
+	party_id              INTEGER NOT NULL
 );
 
-ALTER TABLE ServiceUser_Party
-ADD PRIMARY KEY (serviceUserID,partyID);
+ALTER TABLE service_user_party
+ADD PRIMARY KEY (service_user_id,party_id);
 
-CREATE TABLE ServiceUserReview
+DROP TABLE IF EXISTS service_user_review CASCADE;
+CREATE TABLE service_user_review
 (
-	reviewID             INTEGER NOT NULL,
-	serviceUserID               INTEGER NOT NULL
+	review_id             INTEGER NOT NULL,
+	service_user_id               INTEGER NOT NULL
 );
 
-ALTER TABLE ServiceUserReview
-ADD PRIMARY KEY (reviewID);
+ALTER TABLE service_user_review
+ADD PRIMARY KEY (review_id);
 
-ALTER TABLE Board
-ADD CONSTRAINT Clan_Board FOREIGN KEY (clanID) REFERENCES Clan (clanID);
+ALTER TABLE board
+ADD CONSTRAINT clan_board FOREIGN KEY (clan_id) REFERENCES clan (clan_id);
 
-ALTER TABLE Comment
-ADD CONSTRAINT ServiceUser_Comment FOREIGN KEY (serviceUserID) REFERENCES ServiceUser (serviceUserID);
+ALTER TABLE comment
+ADD CONSTRAINT service_user_comment FOREIGN KEY (service_user_id) REFERENCES service_user (service_user_id);
 
-ALTER TABLE Comment
-ADD CONSTRAINT Post_Comment FOREIGN KEY (postID) REFERENCES Post (postID);
+ALTER TABLE comment
+ADD CONSTRAINT post_comment FOREIGN KEY (post_id) REFERENCES post (post_id);
 
-ALTER TABLE Game_Tag
-ADD CONSTRAINT R_19 FOREIGN KEY (gameID) REFERENCES Game (gameID);
+ALTER TABLE game_tag
+ADD CONSTRAINT R_19 FOREIGN KEY (game_id) REFERENCES game (game_id);
 
-ALTER TABLE Game_Tag
-ADD CONSTRAINT R_20 FOREIGN KEY (tagID) REFERENCES Tag (tagID);
+ALTER TABLE game_tag
+ADD CONSTRAINT R_20 FOREIGN KEY (tag_id) REFERENCES tag (tag_id);
 
-ALTER TABLE GameReview
-ADD CONSTRAINT Review_GameReview FOREIGN KEY (reviewID) REFERENCES Review (reviewID)
+ALTER TABLE game_review
+ADD CONSTRAINT review_game_review FOREIGN KEY (review_id) REFERENCES review (review_id)
 		ON DELETE CASCADE;
 
-ALTER TABLE GameReview
-ADD CONSTRAINT Game_GameReview FOREIGN KEY (gameID) REFERENCES Game (gameID);
+ALTER TABLE game_review
+ADD CONSTRAINT game_game_review FOREIGN KEY (game_id) REFERENCES game (game_id);
 
-ALTER TABLE Party
-ADD CONSTRAINT Game_Party FOREIGN KEY (gameID) REFERENCES Game (gameID);
+ALTER TABLE party
+ADD CONSTRAINT game_party FOREIGN KEY (game_id) REFERENCES game (game_id);
 
-ALTER TABLE Post
-ADD CONSTRAINT ServiceUser_Post FOREIGN KEY (serviceUserID) REFERENCES ServiceUser (serviceUserID);
+ALTER TABLE post
+ADD CONSTRAINT service_user_post FOREIGN KEY (service_user_id) REFERENCES service_user (service_user_id);
 
-ALTER TABLE Post
-ADD CONSTRAINT Board_Post FOREIGN KEY (boardID) REFERENCES Board (boardID);
+ALTER TABLE post
+ADD CONSTRAINT board_post FOREIGN KEY (board_id) REFERENCES board (board_id);
 
-ALTER TABLE ServiceUser
-ADD CONSTRAINT Clan_User FOREIGN KEY (clanID) REFERENCES Clan (clanID);
+ALTER TABLE service_user
+ADD CONSTRAINT clan_User FOREIGN KEY (clan_id) REFERENCES clan (clan_id);
 
-ALTER TABLE ServiceUser_Party
-ADD CONSTRAINT R_22 FOREIGN KEY (serviceUserID) REFERENCES ServiceUser (serviceUserID);
+ALTER TABLE service_user_party
+ADD CONSTRAINT R_22 FOREIGN KEY (service_user_id) REFERENCES service_user (service_user_id);
 
-ALTER TABLE ServiceUser_Party
-ADD CONSTRAINT R_23 FOREIGN KEY (partyID) REFERENCES Party (partyID);
+ALTER TABLE service_user_party
+ADD CONSTRAINT R_23 FOREIGN KEY (party_id) REFERENCES party (party_id);
 
-ALTER TABLE ServiceUserReview
-ADD CONSTRAINT Review_UserReview FOREIGN KEY (reviewID) REFERENCES Review (reviewID)
+ALTER TABLE service_user_review
+ADD CONSTRAINT review_User_review FOREIGN KEY (review_id) REFERENCES review (review_id)
 		ON DELETE CASCADE;
 
-ALTER TABLE ServiceUserReview
-ADD CONSTRAINT ServiceUser_UserReview FOREIGN KEY (serviceUserID) REFERENCES ServiceUser (serviceUserID);
+ALTER TABLE service_user_review
+ADD CONSTRAINT service_user_User_review FOREIGN KEY (service_user_id) REFERENCES service_user (service_user_id);

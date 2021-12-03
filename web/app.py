@@ -124,17 +124,28 @@ if __name__ == '__main__':
     #app.register_blueprint(main_blueprint)
 
     sql_file = open('../DB_SQL.sql','r').read()
+    print(sql_file)
     try:
         cur.execute(sql_file)
         conn.commit()
         print("load successful")
     except pg2.errors.DuplicateTable as d:
+        #conn.rollback()
+        conn.commit()
         print("table already exist; pass table creating")
 
+    conn.commit()
+    
     import views.party_views as party_views
     app.register_blueprint(party_views.bp)
 
     import views.game_views as game_views
     app.register_blueprint(game_views.bp)
+    
+    import views.register_view as register_views
+    app.register_blueprint(register_views.bp)
+    
+    import views.login_view as login_views
+    app.register_blueprint(login_views.bp)
     #time.sleep(4)
     app.run(host='0.0.0.0', port=8088)

@@ -30,33 +30,36 @@ def register_main_get():
         else:
             register_email = request.form.get('email')
             register_nickname = request.form.get('nickname')
-            find_duplicate_sql = """
-                SELECT COUNT(*) FROM SerivceUser
-                WHERE email = %s OR nickname = %s;
-            """
+            find_duplicate_sql = "SELECT COUNT(*) FROM {} WHERE (service_user.email = {} OR service_user.nickname = {});"
             conn = Connection.get_connect()
             cur = conn.cursor()
-            cur.execute(find_duplicate_sql,(register_email,register_nickname))
+            print(register_email, register_nickname)
+            register_email = add_single_quote(register_email)
+            register_nickname = add_single_quote(register_nickname)
+            #!!! @ 가 문자 그대로 들어가면 postgres 지정 연산자와 충돌 !!!
+            register_email = register_email.replace("@", "at")
+            cur.execute(find_duplicate_sql.format("service_user",register_email,register_nickname))
             duplicate_cnt = cur.fetchone()[0]
             if(duplicate_cnt != 0):
                 return render_template('register.html', error = "User with the email or the nickname exists")
             elif(duplicate_cnt == 0):
                 raw_pw = request.form['rawPassword']
                 #TODO: salt 값 user 별로 random
-                hash_pw = hashlib.pbkdf2_hmac('sha256', raw_pw, b'saltkeywordrandom', 150000)
+                hash_pw = hashlib.pbkdf2_hmac('sha256', raw_pw.encode(), b'saltkeywordrandom', 150000)
                 enc_pw = hash_pw.hex()
-                insert_user_sql = """
-                    INSERT INTO SerivceUser VALUES (%s,%s,%s,DEFAULT,NULL);
-                """
+                print("enc pw:" + str(enc_pw))
+                enc_pw = add_single_quote(enc_pw)
+                insert_user_sql = "INSERT INTO service_user VALUES (DEFAULT,{},{},{},DEFAULT,NULL);"
                 
                 #TODO: session 과 연결을 해야하는가? 자동 로그인 하는걸로 
                 try:
-                    cur.execute(insert_user_sql,(register_email, enc_pw, register_nickname))
+                    cur.execute(insert_user_sql.format(register_email, enc_pw, register_nickname))
                     conn.commit()
                 except Exception as e:
+                    conn.rollback()
                     return render_template('register.html', error = "User register failed. Try again.")
                 #session 을 하면 main page로 redirect
-                return redirect(url_for('/login'))
+                return redirect(url_for('/login/'))
             else:
                 return render_template('register.html', error = "Unknown register error. Try again.")
     
