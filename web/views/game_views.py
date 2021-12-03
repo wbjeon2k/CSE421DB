@@ -24,14 +24,9 @@ def game_main():
         SELECT gameID, name, (SELECT COUNT(*) FROM Party WHERE Party.gameID = Game.gameID) as population FROM Game;
     """
     # sort key 로 name/popular 들어왔을때 ASC order sort.
-    game_order_by_asc_sql = """
+    game_order_by_sql = """
         SELECT gameID, name, (SELECT COUNT(*) FROM Party WHERE Party.gameID = Game.gameID) as population FROM Game
-        ORDER BY %s ASC;
-    """
-    # sort key 로 name/popular 들어왔을때 DESC order sort.
-    game_order_by_desc_sql = """
-        SELECT gameID, name, (SELECT COUNT(*) FROM Party WHERE Party.gameID = Game.gameID) as population FROM Game
-        ORDER BY %s DESC;
+        ORDER BY %s %s;
     """
     conn = Connection.get_connect()
     cur = conn.cursor()
@@ -39,13 +34,11 @@ def game_main():
     sort_key_name = request.args.get('sort')
     order_key = request.args.get('order')
     
-    if(sort_key_name == NULL):
+    if(sort_key_name == None):
         # ?sort 가 없는 상황.
         cur.execute(game_default_sql)
-    elif(order_key == 'asc' and sort_key_name != NULL):
-        cur.execute(game_order_by_asc_sql, (sort_key_name,))
-    elif(order_key == 'desc' and sort_key_name != NULL):
-        cur.execute(game_order_by_desc_sql, (sort_key_name,))
+    elif(order_key == 'asc' and sort_key_name != None):
+        cur.execute(game_order_by_sql, (sort_key_name,order_key))
     else:
         # exception 을 던지지 않기 위한 예외처리.
         cur.execute(game_default_sql)
@@ -63,7 +56,7 @@ def game_main():
 # TODO: game 에서 표시 할 컨텐츠 정하기
 # 아래는 임시. 작동하는 코드 아님.
 # game 순위, game 파티, game review, game tag
-@bp.route('/game/detail/<int:gameid>/')
+@bp.route('/games/detail/<int:gameid>/')
 def party_details(gameid):
     game_review_sql_format = """
         SELECT * FROM Party WHERE gameID = %s
