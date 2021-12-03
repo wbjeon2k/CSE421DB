@@ -1,3 +1,5 @@
+--https://stackoverflow.com/questions/695289/cannot-simply-use-postgresql-table-name-relation-does-not-exist
+--https://stackoverflow.com/questions/41591386/postgresql-column-does-not-exist-but-it-actually-does?rq=1
 DROP TABLE IF EXISTS board CASCADE;
 CREATE TABLE board
 (

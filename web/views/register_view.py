@@ -1,5 +1,6 @@
 import json
-
+import sys
+from . import *
 import psycopg2 as pg2
 from flask import Blueprint, Flask, redirect, render_template, url_for
 from jinja2 import Template
@@ -20,13 +21,13 @@ bp = Blueprint('register', __name__, url_prefix='/register')
 def register_main_get():
     if request.method == 'GET':
         if 'user' in session:
-            return redirect(url_for('/'))
+            return redirect(url_for('main'))
         else:
             return render_template('register.html')
     
     elif request.method == 'POST':
         if 'user' in session:
-            return redirect(url_for('/'))
+            return redirect(url_for('/main'))
         else:
             register_email = request.form.get('email')
             register_nickname = request.form.get('nickname')
@@ -47,7 +48,6 @@ def register_main_get():
                 #TODO: salt 값 user 별로 random
                 hash_pw = hashlib.pbkdf2_hmac('sha256', raw_pw.encode(), b'saltkeywordrandom', 150000)
                 enc_pw = hash_pw.hex()
-                print("enc pw:" + str(enc_pw))
                 enc_pw = add_single_quote(enc_pw)
                 insert_user_sql = "INSERT INTO service_user VALUES (DEFAULT,{},{},{},DEFAULT,NULL);"
                 
@@ -55,11 +55,13 @@ def register_main_get():
                 try:
                     cur.execute(insert_user_sql.format(register_email, enc_pw, register_nickname))
                     conn.commit()
+                    sys.stdout.write(str(register_email)+str(enc_pw))
+                    sys.stdout.flush()
                 except Exception as e:
                     conn.rollback()
                     return render_template('register.html', error = "User register failed. Try again.")
                 #session 을 하면 main page로 redirect
-                return redirect(url_for('/login/'))
+                return redirect(url_for('login.login_main'))
             else:
                 return render_template('register.html', error = "Unknown register error. Try again.")
     

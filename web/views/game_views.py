@@ -20,14 +20,11 @@ bp = Blueprint("games", __name__, url_prefix='/games')
 @bp.route('/')
 def game_main():
     # 처음 /games 에 들어가면 보이는 table.
-    game_default_sql = """
-        SELECT gameID, name, (SELECT COUNT(*) FROM Party WHERE Party.gameID = Game.gameID) as population FROM Game;
-    """
+    game_default_sql = "SELECT game_id, name, (SELECT COUNT(*) FROM party WHERE party.game_id = game.game_id) as popular FROM game;"
     # sort key 로 name/popular 들어왔을때 ASC order sort.
-    game_order_by_sql = """
-        SELECT gameID, name, (SELECT COUNT(*) FROM Party WHERE Party.gameID = Game.gameID) as population FROM Game
-        ORDER BY %s %s;
-    """
+    game_order_by_sql = "SELECT game_id, name, (SELECT COUNT(*) FROM party WHERE party.game_id = game.game_id) as popular FROM game \
+        ORDER BY {} {}; \
+        "
     conn = Connection.get_connect()
     cur = conn.cursor()
 
@@ -38,7 +35,7 @@ def game_main():
         # ?sort 가 없는 상황.
         cur.execute(game_default_sql, [])
     elif(sort_key_name != None):
-        cur.execute(game_order_by_sql, [sort_key_name,order_key])
+        cur.execute(game_order_by_sql.format(sort_key_name,order_key))
     else:
         # exception 을 던지지 않기 위한 예외처리.
         cur.execute(game_default_sql, [])
@@ -46,40 +43,33 @@ def game_main():
     all_game = cur.fetchall()
     
     #game table JSON serialize
-    print(all_game)
+    #print(all_game)
     all_game_list = []
     for games in all_game:
-        all_game_list.append(GameModel(games[0], games[1], games[2]).serialize())
+        all_game_list.append(gameModel(games[0], games[1], games[2]).serialize())
     
     #TODO: template html 파일 이름, parameter 확인
     return render_template('games.html', games = all_game_list)
 
-# TODO: game 에서 표시 할 컨텐츠 정하기
-# 아래는 임시. 작동하는 코드 아님.
-# game 순위, game 파티, game review, game tag
+# TODO: game/detail 연결하는 링크 없음!
 @bp.route('/games/detail/<int:gameid>/')
 def party_details(gameid):
-    game_review_sql_format = """
-        SELECT * FROM Party WHERE gameID = %s
-    """
     conn = Connection.get_connect()
     cur = conn.cursor()
     
-    parties_in_game_sql = """
-        SELECT * FROM Party WHERE gameID = %s;
-    """
-    reviews_in_game_sql = """
-        SELECT * FROM Review WHERE Review.reviewID IN
-        (SELECT GameReview.reviewID FROM GameReview WHERE GameReview.gameID = %s);
-    """
-    tags_in_game_sql = """
-        SELECT * FROM Tag WHERE Tag.tagID IN
-        (SELECT Game_Tag.tagID FROM Game_Tag WHERE Game_Tag.gameID = %s);
-    """
+    parties_in_game_sql = "SELECT * FROM party WHERE (game_id = %s);"
+    
+    reviews_in_game_sql = "SELECT * FROM review WHERE review.review_id IN \
+        (SELECT game_review.review_id FROM game_review WHERE game_review.game_id = %s); \
+    "
+    
+    tags_in_game_sql = "SELECT * FROM tag WHERE tag.tag_id IN\
+        (SELECT game_tag.tag_id FROM game_tag WHERE game_tag.game_id = %s);\
+    "
     
     cur.execute(parties_in_game_sql,(gameid,))
     parties_in_game_fetch = cur.fetchall()
-    parties_in_game = PartyModel.serialize_party_list(parties_in_game_fetch)
+    parties_in_game = partyModel.serialize_party_list(parties_in_game_fetch)
     
     cur.execute(reviews_in_game_sql,(gameid,))
     reviews_in_game_fetch = cur.fetchall()

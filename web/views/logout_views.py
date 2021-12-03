@@ -21,4 +21,4 @@ def logout_main():
     if 'user' in session:
 	    del session['user']
         
-    return redirect(url_for('/'))
+    return redirect(url_for('main'))
