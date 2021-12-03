@@ -2,7 +2,7 @@
 
 {% block content %}
 <!-- Game Detail + Detail 에서 tag 추가-->
-<table class="table">
+<table class="table table-hover">
   <thead>
     <tr>
       <th scope="col">GameID</th>
@@ -12,7 +12,7 @@
   </thead>
   <tbody>
     {% for game in games %}
-    <tr>
+    <tr onclick = "location.href = '{{game['gameID']}}/'">
       <td class="col-1"> {{game['gameID']}}</th> <!-- Dictionary for test gameID-->
       <td class="col-7">{{game['name']}}</td>
       <td class="col-4">{{game['users']}}</td>
