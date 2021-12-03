@@ -5,7 +5,7 @@
 {% if session.get('user') and session['user'].get('clanID') != None %}
 <div class="container"> <!--이건 또 어떻게 해야할지 논의 필요-->
   <div class="row">
-    <div class="col">
+    <div class="col-2">
         Clan ID
     </div>
     <div class="col">
@@ -13,7 +13,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="col">
+    <div class="col-2">
       Name
     </div>
     <div class="col">
@@ -21,7 +21,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="col">
+    <div class="col-2">
       Leader
     </div>
     <div class="col">
@@ -29,11 +29,11 @@
     </div>
   </div>
   <div class="row">
-    <div class="col">
+    <div class="col-2">
       Users
     </div>
     <div class="col">
-      {{len(mymembers)}}
+      {{mymembers|length}}
     </div>
   </div>
 </div>
