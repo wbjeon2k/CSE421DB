@@ -18,17 +18,10 @@ app = Flask(__name__)
 #test main page for connection test
 @app.route("/")
 def main():
-    return 'This is main page'
-
-
-#test page for Jinja2 template html rendering test
-@app.route("/test/base")
-def page_jinja2_base():
     return render_template("base.html")
 
-
 #generate sample_db table for test/chk
-@app.route("/test/gen", methods=["GET", "POST"])
+@app.route("/gen", methods=["GET", "POST"])
 def test_table_gen():
     conn = Connection.get_connect()
     cur = conn.cursor()
@@ -65,7 +58,7 @@ def test_table_gen():
 
 
 ### list 전체 fetchall, serialize, template 에 rendering.
-@app.route("/test/chk")
+@app.route("/chk")
 def test_table_chk():
     conn = Connection.get_connect()
     cur = conn.cursor()
@@ -81,7 +74,7 @@ def test_table_chk():
 
 
 ### ID가 같은 객체 1개 fetchone, serialize 하여 template 에 rendering.
-@app.route('/test/detail/<int:id>/')
+@app.route('/detail/<int:id>/')
 def detail(id):
     conn = Connection.get_connect()
     cur = conn.cursor()

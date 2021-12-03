@@ -58,7 +58,7 @@ def party_main():
     else:
         order_key_name = request.args.get('order')
         if(order_key_name != None):
-            cur.execute(all_party_sql_sort_desc,(sort_key_name,order_key_name))
+            cur.execute(all_party_sql_sort,(sort_key_name,order_key_name))
         else:
             cur.execute(all_party_sql_default)
     
@@ -67,7 +67,7 @@ def party_main():
     
     return render_template('parties.html', parties = parties, my_parties = my_parties)
 
-@bp.route('/parties/<int:partyid>/', method = 'GET')
+@bp.route('/parties/detail/<int:partyid>/')
 def party_detail_method():
     conn = Connection.get_connect()
     cur = conn.cursor()
@@ -75,7 +75,7 @@ def party_detail_method():
     return render_template('partyDetail.html')
 
 # 새로운 파티 생성 get method
-@bp.route('/parties/new/', method = 'GET')
+@bp.route('/parties/new/', methods = ['GET', 'POST'])
 def new_party_get_method():
     if session.method == 'GET':
         if 'user' in session:
@@ -90,7 +90,7 @@ def new_party_get_method():
         else:
             return redirect(url_for('/parties/'))
     
-    if session.method == 'POST':
+    elif session.method == 'POST':
         if 'user' in session:
             gameid = session.get('gameid')
             name = request.form.get('name')
@@ -117,8 +117,8 @@ def new_party_get_method():
         else:
             redirect(url_for('parties/'))
         
-@bp.route('/parties/<int:partyid>/join/', method = 'GET')
-def party_detail_method(partyid):
+@bp.route('/parties/<int:partyid>/join/')
+def party_join_method(partyid):
     conn = Connection.get_connect()
     cur = conn.cursor()
     is_my_party = False
@@ -150,7 +150,7 @@ def party_detail_method(partyid):
     else:
         redirect(url_for('parties/%d/' % partyid))    
     
-@bp.route('/parties/<int:partyid>/join/', method = 'GET')
+@bp.route('/parties/<int:partyid>/secession/')
 def party_secession_method(partyid):
     conn = Connection.get_connect()
     cur = conn.cursor()

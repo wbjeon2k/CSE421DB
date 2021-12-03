@@ -31,7 +31,7 @@ def register_main_get():
         if 'user' in session:
             #만약 로그인 되어있다면 main page redirect
         #TODO: 이렇게 redirect 하는게 맞는것인가? main page 로 redirect 되는지 check 필요.
-        return redirect(url_for('/'))
+            return redirect(url_for('/'))
         '''
         session.get('user') and session['user'].get('user_id')
         '''
@@ -50,6 +50,7 @@ def register_main_get():
         if(user_count != 0):
             #해당 email 을 가진 user 있는 경우.
             request_pw = request.form.get('rawPassword')
+            #TODO: salt 값 user 별로 random
             hashed_pw = hashlib.pbkdf2_hmac('sha256', request_pw, b'saltkeywordrandom', 150000)
             fetch_user_pw_sql = """
                 SELECT encryptedPassword FROM SerivceUser WHERE email = %s;
