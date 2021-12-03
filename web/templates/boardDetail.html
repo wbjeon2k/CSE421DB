@@ -2,12 +2,16 @@
 
 {% block content %}
 <table class="table table-hover caption-top">
-    <caption>Free Board Preview</caption>
+    {% if {{boardtype}} == 'free' %} <!-- boardtype이 free 면 free board caption-->
+    <caption>Free Board</caption>
+    {% else %}
+    <caption>Clan Board</caption>
+    {% endif %}
     <thead>
         <tr>
             <th scope="col">PostID</th>
             <th scope="col">Title</th>
-            <th scope="col">Writer</th>
+            <th scope="col">Writer</th> <!-- Writer 에는 user 의 nickname 이 들어가야하는데, 밑에서는 post['user'] 로 했어요-->
             <th scope="col">Date</th>
             <th scope="col">Viewcount</th>
             <th scope="col">Thumbs Up</th>
@@ -15,7 +19,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for post in free %}
+        {% for post in posts %}
         {% if post['isNotice'] %}
         <tr class = 'table-info' onclick = "location.href = '{{post['postID']}}/'">
         {% else %}
