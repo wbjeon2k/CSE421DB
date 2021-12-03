@@ -9,21 +9,42 @@
         <div class="col">
             {{clan['clanID']}} <!-- Dictionary for test -->
         </div>
-        <!--{{len(members)}}-->
+    </div>
+    <div class="row">
+      <div class="col">
+        Name
+      </div>
+      <div class="col">
+        {{clan['name']}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        Leader
+      </div>
+      <div class="col">
+        {{clan['leader']}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        Users
+      </div>
+      <div class="col">
+        {{len(members)}}
+      </div>
     </div>
 
-    {% if not is_my_clan %} <!-- Session 유저가 clan 이 이미 들어있으면 버튼이 아예 안떠야함  session['user']['clanID']
-    유저 확인 먼저 하기    if session.get('user') and session['user'].get('clanID') == clan['clanID']
-
- -->
-    <a href="join/" class="btn btn-primary">Join</a>
-    {% endif %}
-
-    {% if is_my_clan %}
+    {% if session.get('user') and session['user'].get('clanID') == clan['clanID'] %}
     <a href="secession/" class="btn btn-primary">Secession</a>
     {% endif %}
 
-    <table class="table">
+    {% elif session.get('user') and session['user'].get('clanID') == None %}
+    <a href="join/" class="btn btn-primary">Join</a>
+    {% endif %}
+
+    <table class="table table-hover caption-top">
+      <caption>Clan Members</caption>
         <thead>
           <tr>
             <th scope="col">User ID</th>
@@ -32,7 +53,8 @@
         </thead>
         <tbody>
             {% for member in members %}
-            <!-- TODO : user 정보 출력하기-->
+              <td class="col-3"> {{member['userID']}}</td> <!-- Dictionary for test -->
+              <td class="col-9">{{member['nickname']}}</td>
             {% endfor %}
         </tbody>
       </table>
