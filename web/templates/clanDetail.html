@@ -31,7 +31,7 @@
         Users
       </div>
       <div class="col">
-        {{len(members)}}
+        {{members|length}}
       </div>
     </div>
 
@@ -52,6 +52,7 @@
         </thead>
         <tbody>
             {% for member in members %}
+            <tr onclick = "location.href = '/users/{{member['userID']}}/'">
               <td class="col-3"> {{member['userID']}}</td> <!-- Dictionary for test -->
               <td class="col-9">{{member['nickname']}}</td>
             {% endfor %}
