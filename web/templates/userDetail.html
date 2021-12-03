@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block contents %}
+<div class="container">
+    <div class="row">
+        <div class="col-2">
+            User ID
+        </div>
+        <div class="col">
+            {{user['userID']}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-2">
+            Name
+        </div>
+        <div class="col">
+            {{user['Name']}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-2">
+            Score
+        </div>
+        <div class="col">
+            {{user['score']}}
+        </div>
+    </div>
+</div>
+
+<!-- Review write -->
+<form method="POST" action="/users/{{userID}}/reviews/">
+    <div class="mb-3">
+        <label for="score" class="form-label">Score of User</label>
+        <select class="form-select" id="score" name="score">
+            {% for i in [5,4,3,2,1]%}
+            <option value="i">{{i}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="content" class="form-label">Review</label>
+        <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<!-- Review view-->
+{% if reviews != None %}
+<table class="table caption-top">
+    <caption>Reviews ({{reviews|length}})</caption>
+    <thead>
+    <tr>
+        <th scope="col">Nickname</th>
+        <th scope="col">Score</th>
+        <th scope="col">Review</th>
+        <th scope="col">Date</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for review in reviews %}
+        <td class="col-2">{{review['nickname']}}</td> <!-- Dictionary for test -->
+        <td class="col-1">{{review['score']}}</td>
+        <td class="col-7">{{review['content']}}</td>
+        <td class="col-2">{{review['createDatetime']}}</td>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock contents %}
