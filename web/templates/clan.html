@@ -56,7 +56,7 @@
       <td class="col-1"> {{clan['clanID']}}</th> <!-- Dictionary for test -->
       <td class="col-5">{{clan['name']}}</td>
       <td class="col-3">{{clan['leader']}}</td>
-      <td class="col-3">{{len(clan['users'])}}</td>
+      <td class="col-3">{{clan['users']|length}}</td>
     </tr>
     {% endfor %}
   </tbody>
