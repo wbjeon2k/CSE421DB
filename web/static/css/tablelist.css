@@ -12,3 +12,7 @@
 .table-link-item {
     cursor: pointer;
 }
+
+.empty-table {
+    text-align: center;
+}
