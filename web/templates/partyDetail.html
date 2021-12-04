@@ -23,13 +23,17 @@
         <strong>{{ party['playStartDatetime'].strftime('%Y-%m-%d %H:%M') }}</strong><br>
         <small>We have </small> <strong>{{ party['popular'] }}</strong> <small>member{% if party['popular'] > 1 %}s{% endif %}</small>
     </h1>
-    {% if session.get('user') %}
-        {% if not is_my_party %}
-        <a href="join/" class="btn btn-primary">Join</a>
-        {% else %}
-        <a href="secession/" class="btn btn-primary">Secession</a>
-        {% endif %}
+
+    {% if not session.get('user') %}
+        <a href="/login/" class="btn btn-outline-dark action-btn">Login to join</a>
+    {% elif session['user'] not in members %}
+        <a href="/join/" class="btn btn-dark action-btn">Join</a>
+    {% elif session['user']['service_user_id'] == party['leaderID'] %}
+        <a href="$" class="btn btn-outline-secondary action-btn disabled" disabled>You are the party leader; cannot secession</a>
+    {% else %}
+        <a href="/secession/" class="btn btn-outline-danger action-btn">Secession</a>
     {% endif %}
+
     <table id="member-list" class="table">
         <thead>
           <tr>
