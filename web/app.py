@@ -163,6 +163,6 @@ if __name__ == '__main__':
     app.register_blueprint(login_views.bp)
     app.register_blueprint(logout_views.bp)
 
-    app.secret_key = secret_key.generate()
+    app.secret_key = secret_key.from_env('secret_key')
     # time.sleep(4)
     app.run(host='0.0.0.0', port=8088)
