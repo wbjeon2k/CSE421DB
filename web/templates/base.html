@@ -53,7 +53,9 @@
     </nav>
     {% endblock %}
     <div class="container">
-        <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+        <div class="page-title-box">
+            <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+        </div>
         {% block content %}
         <button type="button" class="btn btn-primary" onclick="location.href = '/login/'">login test</button>
         <button type="button" class="btn btn-primary" onclick="location.href = '/register/'">register test</button>
