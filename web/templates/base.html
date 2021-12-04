@@ -14,6 +14,11 @@
 </head>
 
 <body>
+    {% if error %}
+    <div class="alert alert-warning error" role="alert">
+        {{ error }}
+      </div>
+    {% endif %}
     {% block navbar %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">

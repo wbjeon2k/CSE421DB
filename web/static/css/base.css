@@ -1,3 +1,7 @@
+.error {
+    margin: 0;
+}
+
 .page-title {
     border-bottom: 2px solid currentColor;
     display: inline-block;
