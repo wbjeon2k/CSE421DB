@@ -250,7 +250,7 @@ def party_join_method(partyid):
         return redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
 
 
-@bp.route('/parties/<int:partyid>/secession/')  # TODO: DELETE /parties/ prefix
+@bp.route('/<int:partyid>/secession/')
 def party_secession_method(partyid):
     conn = Connection.get_connect()
     cur = conn.cursor()
