@@ -57,12 +57,12 @@
       <tbody>
         {% for myparty in myparties %}
         <tr id="myparty-{{ myparty['partyID'] }}" class="table-link-item" onclick="onClickParty({{ myparty['partyID'] }})">
-          <td class="col-1"> {{myparty['partyID']}}</td>
-          <td class="col-5">{{myparty['name']}}</td>
-          <td class="col-5">{{myparty['game']}}</td>
-          <td class="col-2">{{myparty['leader']}}</td> <!-- myparty['leader']에 리더의 닉네임을 넣는게 나을거 같아요 (밑의 party['leader']도 동일)-->
-          <td class="col-2">{{myparty['date']}}</td>
-          <td class="col-2">{{myparty['users']}}</td>
+          <td class="col-1"> {{ myparty['partyID'] }}</td>
+          <td class="col-4">{{ myparty['name'] }}</td>
+          <td class="col-2">{{ myparty['game']['name'] }}</td>
+          <td class="col-1">{{ myparty['leader']['nickname'] }}</td>
+          <td class="col-2">{{ myparty['playStartDatetime'].strftime('%Y-%m-%d %H:%M') }}</td>
+          <td class="col-2">{{ myparty['popular'] }}</td>
         </tr>
         {% else %}
         <tr>
@@ -118,12 +118,12 @@
     <tbody>
       {% for party in parties %}
       <tr id="party-{{ party['partyID'] }}" class="table-link-item" onclick="onClickParty({{ party['partyID'] }})">
-        <td class="col-1"> {{party['partyID']}}</td>
-        <td class="col-5">{{party['name']}}</td>
-        <td class="col-5">{{party['game']}}</td>
-        <td class="col-2">{{party['leader']}}</td>
-        <td class="col-2">{{party['playStartDatetime'].strftime('%Y-%m-%d %H:%M')}}</td>
-        <td class="col-2">{{party['users']}}</td>
+        <td class="col-1"> {{ party['partyID'] }}</td>
+        <td class="col-4">{{ party['name'] }}</td>
+        <td class="col-2">{{ party['game']['name'] }}</td>
+        <td class="col-1">{{ party['leader']['nickname'] }}</td>
+        <td class="col-2">{{ party['playStartDatetime'].strftime('%Y-%m-%d %H:%M') }}</td>
+        <td class="col-2">{{ party['popular'] }}</td>
       </tr>
       {% else %}
       <tr>
