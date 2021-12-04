@@ -39,7 +39,7 @@ def party_main():
         '(SELECT COUNT(*) FROM service_user_party WHERE party_id=party.party_id) as popular '
         'FROM party WHERE party.party_id IN '
         '(SELECT service_user_party.party_id FROM service_user_party '
-        'WHERE service_user_party.service_user_id  = {});'
+        'WHERE service_user_party.service_user_id={});'
     )
     conn = Connection.get_connect()
     cur = conn.cursor()
@@ -47,6 +47,7 @@ def party_main():
     service_user_id = None
     if 'user' in session:
         service_user_id = session['user'].get('service_user_id')
+    print(session)
 
     my_parties_list = []
 
