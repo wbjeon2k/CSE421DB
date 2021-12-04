@@ -138,7 +138,7 @@ class PartyModel:
     __tablename__ = 'party'
 
     # gameName 필요하지 않은 경우.
-    def __init__(self, partyID, name, playStartDatetime, leaderID, joinLink, gameID, related_fetch=False):
+    def __init__(self, partyID, name, playStartDatetime, leaderID, joinLink, gameID, popular=None, related_fetch=False):
         self.partyID = partyID
         self.name = name
         self.playStartDatetime = playStartDatetime
@@ -148,6 +148,7 @@ class PartyModel:
 
         self.game = None
         self.leader = None
+        self.popular = popular
 
         if related_fetch:
             conn = Connection.get_connect()
@@ -180,6 +181,7 @@ class PartyModel:
             gameID=self.gameID,
             game=self.game,
             leader=self.leader,
+            popular=self.popular
         )
 
     def set_game_name(self, game_name):
