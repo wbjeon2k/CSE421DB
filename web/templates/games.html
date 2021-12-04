@@ -29,7 +29,7 @@
   </thead>
   <tbody>
     {% for game in games %}
-    <tr id="game-{{ game['gameID'] }}" onclick="onClickGame({{ game['gameID'] }})">
+    <tr id="game-{{ game['gameID'] }}" class="table-link-item" onclick="onClickGame({{ game['gameID'] }})">
       <td class="col-1"> {{game['gameID']}}</th>
       <td class="col-7">{{game['name']}}</td>
       <td class="col-4">{{game['popular']}}</td>

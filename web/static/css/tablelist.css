@@ -8,3 +8,7 @@
 .sort-btn-group a:hover {
     color: #333333;
 }
+
+.table-link-item {
+    cursor: pointer;
+}
