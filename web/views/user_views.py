@@ -51,3 +51,33 @@ def user_detail(userid):
     return render_template(
         'userDetail.html', user=user, reviews=reviews_in_user, review_avg_star=review_avg_star
     )
+
+
+@bp.route('/<int:userid>/reviews/', methods=['POST'])
+def user_review(userid):
+    if 'user' not in session:
+        return redirect(url_for('login.login_main'))
+    
+    if session['user']['service_user_id'] == userid:  # self rating is not available
+        return redirect(url_for('users.user_detail', userid=userid))
+
+    conn = Connection.get_connect()
+    cur = conn.cursor()
+
+    # SQL query for insert to review, each column is id, service_user_id, create_datetime, content, score. After insert we can get review_id by RETURNING
+    insert_review_query = 'INSERT INTO review VALUES (DEFAULT, %s, %s, %s, %s) RETURNING review_id'  # create datetime, content, score
+    # SQL query for insert to service_user_review, each column is review_id, service_user_id (service_user_review table is subclass of review table)
+    insert_user_link_with_review_query = 'INSERT INTO service_user_review VALUES (%s, %s)'
+
+    now = dt.now().strftime('%Y-%m-%d %H:%M:%S')
+    score = request.form.get('score')
+    content = request.form.get('content')
+    service_user_id = session['user']['service_user_id']
+
+    cur.execute(insert_review_query, (service_user_id, now, content, score))
+    review_id = cur.fetchone()[0]
+
+    cur.execute(insert_user_link_with_review_query, (review_id, userid))
+    conn.commit()
+
+    return redirect(url_for('users.user_detail', userid=userid))
