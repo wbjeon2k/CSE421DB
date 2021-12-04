@@ -95,7 +95,8 @@ def game_detail(gameid):
 
     cur.execute(reviews_in_game_sql, (gameid,))
     reviews_in_game_fetch = cur.fetchall()
-    reviews_in_game = ReviewModel.serialize_review_list(reviews_in_game_fetch)
+    review_in_game_objs = [ReviewModel(*each) for each in reviews_in_game_fetch]
+    reviews_in_game = ReviewModel.serialize_review_list(review_in_game_objs)
 
     cur.execute(review_avg_star_sql, (gameid,))
     review_avg_star = cur.fetchone()[0]
