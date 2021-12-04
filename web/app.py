@@ -5,8 +5,9 @@ import time
 from datetime import datetime
 
 import psycopg2 as pg2
+from flask import Blueprint, Flask, redirect, render_template, session, url_for
 from psycopg2.errors import DuplicateTable, UniqueViolation
-from flask import Blueprint, Flask, redirect, render_template, url_for, session
+from secret_key import secret_key
 
 from database import Connection
 from models import TestModel
@@ -150,17 +151,18 @@ if __name__ == '__main__':
     # app.register_blueprint(main_blueprint)
     conn.commit()
 
-    import views.party_views as party_views
     import views.game_views as game_views
-    import views.register_view as register_views
     import views.login_view as login_views
     import views.logout_views as logout_views
+    import views.party_views as party_views
+    import views.register_view as register_views
 
     app.register_blueprint(party_views.bp)
     app.register_blueprint(game_views.bp)
     app.register_blueprint(register_views.bp)
+    app.register_blueprint(login_views.bp)
     app.register_blueprint(logout_views.bp)
 
-    app.secret_key = 'SECRETKEY'
+    app.secret_key = secret_key.generate()
     # time.sleep(4)
     app.run(host='0.0.0.0', port=8088)
