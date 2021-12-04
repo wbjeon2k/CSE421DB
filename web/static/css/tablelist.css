@@ -1,0 +1,10 @@
+.sort-btn-group {
+    margin-left: 1em;
+}
+
+.sort-btn-group a {
+    color: #aaaaaa;
+}
+.sort-btn-group a:hover {
+    color: #333333;
+}
