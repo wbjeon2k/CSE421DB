@@ -24,7 +24,7 @@
 </div>
 <hr>
 
-{% if 'user' in session %}
+{% if 'user' in session and session['user']['service_user_id'] != user['service_user_id'] %}
 <h2>Please leave a review for this user</h2>
 <!-- Review write -->
 <form method="POST" action="/users/{{ user['service_user_id'] }}/reviews/">
