@@ -1,61 +1,55 @@
 {% extends 'base.html' %}
 
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tablelist.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/clans.css') }}">
+{% endblock %}
+
 {% block content %}
-<div class="container"> <!-- 컨텐츠 내부 채워넣어야함 -->
-    <div class="row">
-        <div class="col-2">
-            Clan ID
-        </div>
-        <div class="col">
-            {{clan['clanID']}} <!-- Dictionary for test -->
-        </div>
-    </div>
-    <div class="row">
-      <div class="col-2">
-        Name
-      </div>
-      <div class="col">
-        {{clan['name']}}
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-2">
-        Leader
-      </div>
-      <div class="col">
-        {{clan['leader']}} <!-- clan['leader']에 리더의 닉네임을 넣는게 나을거 같아요-->
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-2">
-        Users
-      </div>
-      <div class="col">
-        {{members|length}}
-      </div>
-    </div>
-
-    {% if session.get('user') and session['user'].get('clanID') == clan['clanID'] %}
-    <a href="secession/" class="btn btn-primary">Secession</a>
-    {% elif session.get('user') and session['user'].get('clanID') == None %}
-    <a href="join/" class="btn btn-primary">Join</a>
-    {% endif %}
-
-    <table class="table table-hover caption-top">
-      <caption>Clan Members</caption>
-        <thead>
-          <tr>
-            <th scope="col">User ID</th>
-            <th scope="col">Nickname</th>
-          </tr>
-        </thead>
-        <tbody>
-            {% for member in members %}
-            <tr onclick = "location.href = '/users/{{member['userID']}}/'">
-              <td class="col-3"> {{member['userID']}}</td> 
-              <td class="col-9">{{member['nickname']}}</td>
-            {% endfor %}
-        </tbody>
-      </table>
+<div class="page-title-group">
+    <h1 class="page-title">
+        Clan#{{ clan['clan_id']}}
+        <small>{{ clan['name'] }}</small>
+    </h1>
 </div>
+<h1>
+    <small>Clan Leader is</small>
+    <strong class="rainbow-text">{{ clan['leader']['nickname'] }}</strong><br>
+    <small>We have </small> <strong>{{ clan['popular'] }}</strong> <small>member{% if clan['popular'] > 1 %}s{% endif %}</small>
+</h1>
+{% if not session.get('user') %} {# need login to join #}
+  <a href="/login/" class="btn btn-outline-dark action-btn">Login to join</a>
+{% elif not session['user'].get('clanID') %} {# user has not clan -> can join, cannot secession #}
+  <a href="/clans/{{ clan['clan_id'] }}/join/" class="btn btn-dark action-btn">Join</a>
+{% elif session['user']['service_user_id'] == clan['leader_id'] %} {# logged in user is leader of this clan -> cannot join, cannot secession #}
+  <a href="#" class="btn btn-outline-secondary action-btn disabled" disabled>You are the party leader; cannot secession</a>
+{% elif session['user']['clanID'] == clan['clan_id'] %} {# already joined -> cannot join, can secession #}
+  <a href="/clans/{{ clan['clan_id'] }}/secession/" class="btn btn-outline-danger action-btn">Secession</a>
+{% endif %}
+
+<table class="table table-hover caption-top">
+  <caption>Clan Members</caption>
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Nickname</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for member in members %}
+        <tr class="table-link-item" onclick="onClickUser({{ member['service_user_id'] }});">
+          <td class="col-3"> {{member['service_user_id']}}</td> 
+          <td class="col-9">{{member['nickname']}}</td>
+        {% endfor %}
+    </tbody>
+  </table>
 {% endblock content %}
+
+{% block script %}
+<script>
+  const onClickUser = (userID) => {
+    location.href = '/users/' + userID + '/';
+  }
+</script>
+{% endblock %}
