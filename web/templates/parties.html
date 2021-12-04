@@ -56,7 +56,6 @@
       </thead>
       <tbody>
         {% for myparty in myparties %}
-        {# <tr onclick = "location.href = '{{myparty['partyID']}}/'"> #}
         <tr id="myparty-{{ myparty['partyID'] }}" class="table-link-item" onclick="onClickParty({{ myparty['partyID'] }})">
           <td class="col-1"> {{myparty['partyID']}}</td>
           <td class="col-5">{{myparty['name']}}</td>
@@ -118,7 +117,6 @@
     </thead>
     <tbody>
       {% for party in parties %}
-      {# <tr onclick = "location.href = '{{party['partyID']}}/'"> #}
       <tr id="party-{{ party['partyID'] }}" class="table-link-item" onclick="onClickParty({{ party['partyID'] }})">
         <td class="col-1"> {{party['partyID']}}</td>
         <td class="col-5">{{party['name']}}</td>
