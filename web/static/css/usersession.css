@@ -7,7 +7,15 @@
     margin-bottom: 1em;
 }
 
+.subaction-btn {
+    font-size: 0.8rem;
+    font-weight: normal;
+}
+
+.card-title .subaction-btn {
+    margin-top: 0.8em;
+}
+
 .action-btn-group .subaction-btn {
-    margin-left: 1em;
-    font-size: 0.8em;
+    margin-left: 0.8em;
 }
