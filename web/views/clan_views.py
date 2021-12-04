@@ -146,6 +146,7 @@ def new_clan_method():
 
         conn.commit()
 
+        # update session valuel; must using .update() method
         session_user = session.get('user')
         session_user['clanID'] = new_clan_id
         session.update(user=session_user)
@@ -155,78 +156,58 @@ def new_clan_method():
         )
 
 
-# @bp.route('/<int:partyid>/join/')
-# def party_join_method(partyid):
-#     conn = Connection.get_connect()
-#     cur = conn.cursor()
-#     is_my_party = False
-#     if 'user' in session:
-#         # service_user_id , party_id 모두 같은 service_user_party row count.
-#         search_party_sql = '\
-#             SELECT COUNT(*) FROM service_user_party \
-#             WHERE (service_user_id  = {} AND party_id = {});\
-#         '
-#         user_id = session['user'].get('service_user_id')
-#         cur.execute(search_party_sql.format(user_id, partyid))
-#         search_cnt = cur.fetchone()[0]
+@bp.route('/<int:clanid>/join/')
+def clan_join_method(clanid):
+    conn = Connection.get_connect()
+    cur = conn.cursor()
 
-#         if user_id == None:
-#             return 'error at user_id. frontend support needed.\n'
+    if 'user' not in session:
+        return redirect(url_for('login'), code=302)
+        
+    if session['user']['clanID'] is not None:  # already joined clan
+        return redirect(url_for('clans.clan_detail_method', clanid=clanid), code=302)
 
-#         if search_cnt != 0:
-#             sys.stdout.write('user already in party. frontend support needed')
-#             sys.stdout.flush()
-#             return redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
-#         elif search_cnt == 0:
-#             try:
-#                 service_user_id = user_id
-#                 party_id = partyid
+    # Update now logged in user's clan id
+    update_clan_id_query = 'UPDATE service_user SET clan_id=%s WHERE service_user_id=%s;'
+    user_id = session['user'].get('service_user_id')
+    cur.execute(update_clan_id_query, (clanid, user_id))
+    conn.commit()
 
-#                 insert_sql_base = 'INSERT INTO service_user_party VALUES ({}, {})'
-#                 insert_sql = insert_sql_base.format(service_user_id, party_id)
+    # update session valuel; must using .update() method
+    session_user = session.get('user')
+    session_user['clanID'] = clanid
+    session.update(user=session_user)
 
-#                 cur.execute(insert_sql)
-#                 conn.commit()
-#             except Exception as error:
-#                 conn.rollback()
-#                 return 'error at adding party. frontend support needed.\n' + str(error)
-
-#             conn.commit()
-
-#             return redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
-#         else:
-#             sys.stdout.write('search_cnt is None. frontend support needed')
-#             sys.stdout.flush()
-#             return redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
-#     else:
-#         sys.stdout.write('no session, return to previous page. frontend support needed')
-#         sys.stdout.flush()
-#         return redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
+    return redirect(url_for('clans.clan_detail_method', clanid=clanid), code=302)
 
 
-# @bp.route('/<int:partyid>/secession/')
-# def party_secession_method(partyid):
-#     conn = Connection.get_connect()
-#     cur = conn.cursor()
-#     if 'user' in session:
-#         search_party_sql = """
-#             SELECT COUNT(*) FROM service_user_party
-#             WHERE service_user_id=%s AND party_id=%s;
-#         """
-#         user_id = session['user']['service_user_id']
-#         cur.execute(search_party_sql, (user_id, partyid,))
-#         search_cnt = cur.fetchone()[0]
-#         if search_cnt == 0:
-#             return redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
-#         elif search_cnt != 0:
-#             party_exit_sql = (
-#                 'DELETE FROM service_user_party '
-#                 'WHERE service_user_id=%s AND party_id=%s;'
-#             )
-#             cur.execute(party_exit_sql, (user_id, partyid))
-#             conn.commit()
-#             return redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
-#         else:
-#             return redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
-#     else:
-#         return redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
+@bp.route('/<int:clanid>/secession/')
+def clan_secession_method(clanid):
+    conn = Connection.get_connect()
+    cur = conn.cursor()
+
+    if 'user' not in session:
+        return redirect(url_for('login'), code=302)
+        
+    if session['user']['clanID'] is None:  # already joined clan
+        return redirect(url_for('clans.clan_detail_method', clanid=clanid), code=302)
+    elif session['user']['clanID'] != clanid:  # not member of this clan
+        return redirect(url_for('clans.clan_detail_method', clanid=clanid), code=302)
+
+    user_id = session['user']['service_user_id']
+    # Check for logged in user is leader of clan -> if logged in user is leader of clan, user cannot leave this clan
+    retrieve_clan_leader_count_query = 'SELECT count(*) FROM clan WHERE leader_id=%s'
+    cur.execute(retrieve_clan_leader_count_query, (user_id,))
+    if cur.fetchone()[0] > 0:  # user is leader of this clan
+        return redirect(url_for('clans.clan_detail_method', clanid=clanid), code=302)
+
+    user_secession_query = 'UPDATE service_user SET clan_id=NULL where service_user_id=%s'
+    cur.execute(user_secession_query, (user_id,))
+    conn.commit()
+
+    # update session valuel; must using .update() method
+    session_user = session.get('user')
+    session_user['clanID'] = None
+    session.update(user=session_user)
+
+    return redirect(url_for('clans.clan_detail_method', clanid=clanid), code=302)
