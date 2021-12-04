@@ -1,4 +1,5 @@
 import json
+from base64 import b64encode
 
 import psycopg2 as pg2
 from flask import Blueprint, Flask, redirect, render_template, url_for
@@ -56,23 +57,24 @@ def login_main():
         sys.stdout.flush()
 
         if user_count != 0:
+            fetch_user_pw_sql = (
+                'SELECT salt, encrypted_password FROM service_user WHERE (email = %s);'
+            )
+            cur.execute(fetch_user_pw_sql, (login_email,))
+            fetched_salt, fetched_hash_pw = cur.fetchone()
+
             # 해당 email 을 가진 user 있는 경우.
             request_pw = request.form.get('rawPassword')
             # TODO: salt 값 user 별로 random
             h_pw = hashlib.pbkdf2_hmac(
-                'sha256', request_pw.encode(), b'saltkeywordrandom', 150000
+                'sha3-256', request_pw.encode(), fetched_salt.encode(), 150000
             )
-            hashed_pw = h_pw.hex()
-            fetch_user_pw_sql = (
-                'SELECT encrypted_password FROM service_user WHERE (email = %s);'
-            )
-            cur.execute(fetch_user_pw_sql, (login_email,))
-            fetched_hash_pw = cur.fetchone()[0]
+            enc_input_pw = b64encode(h_pw).decode()
 
-            sys.stdout.write(str(fetched_hash_pw) + ' ' + str(hashed_pw))
-            sys.stdout.flush()
+            # sys.stdout.write(str(fetched_hash_pw) + ' ' + str(hashed_pw))
+            # sys.stdout.flush()
 
-            if fetched_hash_pw == hashed_pw:
+            if fetched_hash_pw == enc_input_pw:
                 # https://blog.d0ngd0nge.xyz/python-flask-session/
                 # https://pythonise.com/series/learning-flask/flask-session-object
 
@@ -80,19 +82,20 @@ def login_main():
                 cur.execute(fetch_user_sql, (login_email,))
                 fetched_user = cur.fetchone()
 
-                user_dict = ServiceUserModel(
-                    fetched_user[0],
-                    fetched_user[1],
-                    fetched_user[3],
-                    fetched_user[4],
-                    fetched_user[5],
-                ).serialize()
+                # user_dict = ServiceUserModel(
+                #     fetched_user[0],
+                #     fetched_user[1],
+                #     fetched_user[3],
+                #     fetched_user[4],
+                #     fetched_user[5],
+                # ).serialize()
+                user_dict = ServiceUserModel(*fetched_user[:6]).serialize()
                 session['user'] = user_dict
                 return redirect(url_for('main'))
             else:
                 # TODO: login_template 이름, parameter 설정.
-                return render_template('login.html', error='Wrong email or password1')
+                return render_template('login.html', error='Wrong email or password')
         elif user_count == 0:
-            return render_template('login.html', error='Wrong email or password2')
+            return render_template('login.html', error='Wrong email or password')
         else:
-            return render_template('login.html', error='Wrong email or password3')
+            return render_template('login.html', error='Wrong email or password')

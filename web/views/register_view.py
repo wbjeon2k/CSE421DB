@@ -1,18 +1,20 @@
+import hashlib
 import json
+import secrets
 import sys
-from . import *
+from base64 import b64encode
+from datetime import datetime, timezone
+
 import psycopg2 as pg2
-from flask import Blueprint, Flask, redirect, render_template, url_for
+from database import Connection
+from flask import (Blueprint, Flask, redirect, render_template, request,
+                   session, url_for)
 from jinja2 import Template
-from flask import session, request
 from psycopg2 import sql
 from psycopg2.sql import SQL
-from database import Connection
+
 from models import *
-from datetime import datetime, timezone
-from database import Connection
-from models import *
-import hashlib
+from views import *
 
 # /game/... url 들을 포워딩 해주는 blueprint
 bp = Blueprint('register', __name__, url_prefix='/register')
@@ -51,19 +53,20 @@ def register_main_get():
             elif duplicate_cnt == 0:
                 raw_pw = request.form['rawPassword']
                 # TODO: salt 값 user 별로 random
+                salt = secrets.token_urlsafe(180)  # len = 240
                 hash_pw = hashlib.pbkdf2_hmac(
-                    'sha256', raw_pw.encode(), b'saltkeywordrandom', 150000
+                    'sha3-256', raw_pw.encode(), salt.encode(), 150000
                 )
-                enc_pw = hash_pw.hex()
+                enc_pw = b64encode(hash_pw).decode()  # bytes type change to base64 string
                 enc_pw = add_single_quote(enc_pw)
                 insert_user_sql = (
-                    'INSERT INTO service_user VALUES (DEFAULT,{},{},{},DEFAULT,NULL);'
+                    'INSERT INTO service_user VALUES (DEFAULT, {}, {}, {}, {}, DEFAULT, NULL);'
                 )
 
                 # TODO: session 과 연결을 해야하는가? 자동 로그인 하는걸로
                 try:
                     cur.execute(
-                        insert_user_sql.format(register_email, enc_pw, register_nickname)
+                        insert_user_sql.format(register_email, enc_pw, salt, register_nickname)
                     )
                     conn.commit()
                     sys.stdout.write(str(register_email) + str(enc_pw))
