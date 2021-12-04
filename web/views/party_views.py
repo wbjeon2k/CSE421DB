@@ -257,22 +257,22 @@ def party_secession_method(partyid):
     if 'user' in session:
         search_party_sql = """
             SELECT COUNT(*) FROM service_user_party
-            WHERE service_user_id  = {} AND party_id = {};
+            WHERE service_user_id=%s AND party_id=%s;
         """
-        user_id = session['user_id']
+        user_id = session['user']['service_user_id']
         cur.execute(search_party_sql, (user_id, partyid,))
         search_cnt = cur.fetchone()[0]
-        if search_cnt != 0:
+        if search_cnt == 0:
             return redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
-        elif search_cnt == 0:
-            party_exit_sql = '\
-                DELETE FROM service_user_party \
-                WHERE service_user_id  = {} AND party_id = {};\
-            '
+        elif search_cnt != 0:
+            party_exit_sql = (
+                'DELETE FROM service_user_party '
+                'WHERE service_user_id=%s AND party_id=%s;'
+            )
             cur.execute(party_exit_sql, (user_id, partyid))
             conn.commit()
-            redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
+            return redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
         else:
-            redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
+            return redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
     else:
-        redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
+        return redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)

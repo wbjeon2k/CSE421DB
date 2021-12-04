@@ -31,7 +31,7 @@
     {% elif session['user']['service_user_id'] == party['leaderID'] %}
         <a href="$" class="btn btn-outline-secondary action-btn disabled" disabled>You are the party leader; cannot secession</a>
     {% else %}
-        <a href="/secession/" class="btn btn-outline-danger action-btn">Secession</a>
+        <a href="/parties/{{ party['partyID'] }}/secession/" class="btn btn-outline-danger action-btn">Secession</a>
     {% endif %}
 
     <table id="member-list" class="table">
