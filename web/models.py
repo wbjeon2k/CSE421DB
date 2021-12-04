@@ -272,7 +272,7 @@ class ReviewModel:
             'reviewID': self.reviewID,
             'createDatetime': self.createDatetime,
             'content': self.content,
-            'score ': self.score,
+            'score': self.score,
         }
 
     # cursor.fetchall() 을 통해 받아온 리스트 전체를
