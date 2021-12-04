@@ -84,7 +84,11 @@
     <tbody>
         {% for review in reviews %}
         <tr>
-            <td class="col-2">{{review['service_user']['nickname']}}</td>
+            <td class="col-2">
+                <a href="/users/{{ review['service_user']['service_user_id'] }}/">
+                    {{review['service_user']['nickname']}}
+                </a>
+            </td>
             <td class="col-1">{{review['score']}}</td>
             <td class="col-7">{{review['content']}}</td>
             <td class="col-2">{{review['createDatetime']}}</td>
