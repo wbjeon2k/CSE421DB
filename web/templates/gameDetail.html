@@ -1,23 +1,25 @@
 {% extends 'base.html' %}
 
-{% block contents %}
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tablelist.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/gamedetail.css') }}">
+{% endblock %}
+
+{% block before_content %}
+<div
+    id="background-img"
+    alt="game image"
+    style="background-image:url('https://steamcdn-a.akamaihd.net/steam/apps/{{ game['gameID'] }}/library_hero.jpg')"
+>
+    <div class="container">
+        <h1 id="game-title">{{ game['name'] }}</h1>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
 <div class="container">
-    <div class="row">
-        <div class="col-2">
-            Game ID
-        </div>
-        <div class="col">
-            {{game['gameID']}}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-2">
-            Name
-        </div>
-        <div class="col">
-            {{game['Name']}}
-        </div>
-    </div>
     <div class="row">
         <div class="col-2">
             Score
@@ -77,4 +79,4 @@
     </tbody>
 </table>
 {% endif %}
-{% endblock contents %}
+{% endblock %}

@@ -57,10 +57,15 @@ def game_main():
 
 
 # TODO: game/detail 연결하는 링크 없음!
-@bp.route('/games/detail/<int:gameid>/')
+@bp.route('/<int:gameid>/')
 def party_details(gameid):
     conn = Connection.get_connect()
     cur = conn.cursor()
+    
+    game_sql = (
+        'SELECT game_id, name, (SELECT COUNT(*) FROM party WHERE party.game_id = game.game_id) as popular '
+        'FROM game WHERE game_id=%s;'
+    )
 
     parties_in_game_sql = 'SELECT * FROM party WHERE (game_id = %s);'
 
@@ -72,6 +77,10 @@ def party_details(gameid):
         (SELECT game_tag.tag_id FROM game_tag WHERE game_tag.game_id = %s);\
     '
 
+    cur.execute(game_sql, (gameid,))
+    game_fetch = cur.fetchone()
+    game = GameModel(*game_fetch).serialize()
+
     cur.execute(parties_in_game_sql, (gameid,))
     parties_in_game_fetch = cur.fetchall()
     parties_in_game = PartyModel.serialize_party_list(parties_in_game_fetch)
@@ -82,8 +91,9 @@ def party_details(gameid):
 
     cur.execute(tags_in_game_sql, (gameid,))
     tags_in_game_fetch = cur.fetchall()
-    tags_in_game = TagModel.serialize_tag_list(tags_in_game_fetch)
+    tag_objs = [TagModel(*each) for each in tags_in_game_fetch]
+    tags_in_game = TagModel.serialize_tag_list(tag_objs)
 
     return render_template(
-        'gameDetail.html', parties=parties_in_game, reviews=reviews_in_game, tags=tags_in_game
+        'gameDetail.html', game=game, parties=parties_in_game, reviews=reviews_in_game, tags=tags_in_game
     )
