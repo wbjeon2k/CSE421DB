@@ -1,40 +1,40 @@
 {% extends 'base.html' %}
 
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tablelist.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/userdetail.css') }}">
+{% endblock %}
+
 {% block content %}
-<div class="container">
+<h1 id="page-title">{{ user['nickname'] }}</h1>
+<div id="content-box">
     <div class="row">
         <div class="col-2">
-            User ID
+            <strong>Score</strong>
         </div>
         <div class="col">
-            {{user['userID']}}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-2">
-            Name
-        </div>
-        <div class="col">
-            {{user['name']}}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-2">
-            Score
-        </div>
-        <div class="col">
-            {{user['score']}}
+            {% if review_avg_star %}
+                {{ '%.2f'|format(review_avg_star) }}
+            {% else %}
+                <i>No scores exist yet </i>
+            {% endif %}
         </div>
     </div>
 </div>
+<hr>
 
+{% if 'user' in session %}
+<h2>Please leave a review for this user</h2>
 <!-- Review write -->
-<form method="POST" action="/users/{{userID}}/reviews/">
+<form method="POST" action="/users/{{ user['service_user_id'] }}/reviews/">
     <div class="mb-3">
-        <label for="score" class="form-label">Score of User</label>
+        <label for="score" class="form-label">Score of user</label>
         <select class="form-select" id="score" name="score">
             {% for i in [5,4,3,2,1]%}
-            <option value="i">{{i}}</option>
+            <option value="{{i}}">
+                {% for _ in range(i) %}★{% endfor %}
+            </option>
             {% endfor %}
         </select>
     </div>
@@ -42,11 +42,12 @@
         <label for="content" class="form-label">Review</label>
         <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-outline-dark">Write review</button>
 </form>
+{% endif %}
 
 <!-- Review view-->
-{% if reviews != None %}
+{% if reviews %}
 <table class="table caption-top">
     <caption>Reviews ({{reviews|length}})</caption>
     <thead>
@@ -59,10 +60,16 @@
     </thead>
     <tbody>
         {% for review in reviews %}
-        <td class="col-2">{{review['nickname']}}</td> <!-- 어떤 곳에서는 'user' 이고 여기서는 또 'nickname'인데, 죄송합니다... -->
-        <td class="col-1">{{review['score']}}</td>
-        <td class="col-7">{{review['content']}}</td>
-        <td class="col-2">{{review['createDatetime']}}</td>
+        <tr>
+            <td class="col-2">
+                <a href="/users/{{ review['service_user']['service_user_id'] }}/">
+                    {{review['service_user']['nickname']}}
+                </a>
+            </td>
+            <td class="col-1">{{review['score']}}</td>
+            <td class="col-7">{{review['content']}}</td>
+            <td class="col-2">{{review['createDatetime']}}</td>
+        </tr>
         {% endfor %}
     </tbody>
 </table>
