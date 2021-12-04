@@ -50,7 +50,7 @@ def game_main():
     # print(all_game)
     all_game_list = []
     for games in all_game:
-        all_game_list.append(gameModel(games[0], games[1], games[2]).serialize())
+        all_game_list.append(GameModel(games[0], games[1], games[2]).serialize())
 
     # TODO: template html 파일 이름, parameter 확인
     return render_template('games.html', games=all_game_list)
@@ -74,7 +74,7 @@ def party_details(gameid):
 
     cur.execute(parties_in_game_sql, (gameid,))
     parties_in_game_fetch = cur.fetchall()
-    parties_in_game = partyModel.serialize_party_list(parties_in_game_fetch)
+    parties_in_game = PartyModel.serialize_party_list(parties_in_game_fetch)
 
     cur.execute(reviews_in_game_sql, (gameid,))
     reviews_in_game_fetch = cur.fetchall()

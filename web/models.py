@@ -56,7 +56,7 @@ class TestModel:
         return {'id': self.id, 'msg': self.msg, 'content': self.content}
 
 
-class gameModel:
+class GameModel:
     """Model for the game table"""
 
     __tablename__ = 'test'
@@ -77,7 +77,7 @@ class gameModel:
     def serialize_game_list(list_of_games):
         ret = []
         for game in list_of_games:
-            ret.append(gameModel(game[0], game[1], game[2]).serialize())
+            ret.append(GameModel(game[0], game[1], game[2]).serialize())
         return ret
 
 
@@ -130,7 +130,7 @@ class TagModel:
         return ret
 
 
-class partyModel:
+class PartyModel:
     """Model for the party table"""
 
     __tablename__ = 'party'
@@ -165,7 +165,7 @@ class partyModel:
         ret = []
         for party in list_of_party:
             ret.append(
-                partyModel(
+                PartyModel(
                     party[0], party[1], party[2], party[3], party[4], party[5]
                 ).serialize()
             )
@@ -185,7 +185,7 @@ class PostModel:
     __tablename__ = 'post'
 
     # 자동으로 parameter 들을 넣어주는 방법은 찾지 못했습니다.
-    # partyModel(x[0], x[1], ....) 형태로 넣는 수 밖에 없습니다.
+    # PartyModel(x[0], x[1], ....) 형태로 넣는 수 밖에 없습니다.
     def __init__(
         self,
         postID,
@@ -239,7 +239,7 @@ class ReviewModel:
     __tablename__ = 'review'
 
     # 자동으로 parameter 들을 넣어주는 방법은 찾지 못했습니다.
-    # partyModel(x[0], x[1], ....) 형태로 넣는 수 밖에 없습니다.
+    # PartyModel(x[0], x[1], ....) 형태로 넣는 수 밖에 없습니다.
     def __init__(self, reviewID, createDatetime, content, score):
         self.reviewID = reviewID
         self.createDatetime = createDatetime

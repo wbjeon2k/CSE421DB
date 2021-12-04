@@ -46,7 +46,7 @@ def party_main():
     else:
         my_parties_list = []
     # JSON serialize
-    my_parties = partyModel.serialize_party_list(my_parties_list)
+    my_parties = PartyModel.serialize_party_list(my_parties_list)
 
     sort_key_name = request.args.get('sort')
     if sort_key_name == None:
@@ -59,7 +59,7 @@ def party_main():
             cur.execute(all_party_sql_default)
 
     all_parties_list = cur.fetchall()
-    parties = partyModel.serialize_party_list(all_parties_list)
+    parties = PartyModel.serialize_party_list(all_parties_list)
 
     return render_template('parties.html', parties=parties, my_parties=my_parties)
 
@@ -87,8 +87,8 @@ def party_detail_method(partyid):
     if game_name == None:
         return 'error: no such game. frontend error support needed'
 
-    # partyModel 객체에 게임 이름 추가.
-    fetched_party = partyModel(
+    # PartyModel 객체에 게임 이름 추가.
+    fetched_party = PartyModel(
         party_info[0],
         party_info[1],
         party_info[2],
@@ -113,7 +113,7 @@ def new_party_method():
 
             cur.execute(all_game_sql)
             game_list = cur.fetchall()
-            all_game_list = partyModel.serialize_game_list(game_list)
+            all_game_list = PartyModel.serialize_game_list(game_list)
             return render_template('newParty.html', games=all_game_list)
         else:
             return redirect(url_for('login.login_main'))
