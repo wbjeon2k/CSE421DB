@@ -116,7 +116,7 @@ def new_party_method():
             all_game_list = partyModel.serialize_game_list(game_list)
             return render_template('newParty.html', games=all_game_list)
         else:
-            return redirect(url_for('parties.party_main'))
+            return redirect(url_for('login.login_main'))
 
     elif request.method == 'POST':
         if 'user' in session:
