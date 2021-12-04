@@ -122,10 +122,10 @@ ADD PRIMARY KEY (tag_id);
 CREATE TABLE service_user
 (
 	service_user_id               SERIAL,
-	email                VARCHAR(128) NOT NULL,
+	email                VARCHAR(128) UNIQUE NOT NULL,
 	encrypted_password   VARCHAR(256) NOT NULL,
 	salt               VARCHAR(256) NOT NULL,
-	nickname             VARCHAR(64) NOT NULL,
+	nickname             VARCHAR(64) UNIQUE NOT NULL,
 	isAdmin             BOOLEAN NOT NULL DEFAULT false,
 	clan_id               INTEGER NULL
 );
