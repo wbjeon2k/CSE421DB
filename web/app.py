@@ -154,11 +154,12 @@ if __name__ == '__main__':
     import views.game_views as game_views
     import views.register_view as register_views
     import views.login_view as login_views
+    import views.logout_views as logout_views
 
     app.register_blueprint(party_views.bp)
     app.register_blueprint(game_views.bp)
     app.register_blueprint(register_views.bp)
-    app.register_blueprint(login_views.bp)
+    app.register_blueprint(logout_views.bp)
 
     app.secret_key = 'SECRETKEY'
     # time.sleep(4)
