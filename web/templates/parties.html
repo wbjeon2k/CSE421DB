@@ -124,7 +124,7 @@
         <td class="col-5">{{party['name']}}</td>
         <td class="col-5">{{party['game']}}</td>
         <td class="col-2">{{party['leader']}}</td>
-        <td class="col-2">{{party['date']}}</td>
+        <td class="col-2">{{party['playStartDatetime'].strftime('%Y-%m-%d %H:%M')}}</td>
         <td class="col-2">{{party['users']}}</td>
       </tr>
       {% else %}
