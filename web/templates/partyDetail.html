@@ -27,7 +27,7 @@
     {% if not session.get('user') %}
         <a href="/login/" class="btn btn-outline-dark action-btn">Login to join</a>
     {% elif session['user'] not in members %}
-        <a href="/join/" class="btn btn-dark action-btn">Join</a>
+        <a href="/parties/{{ party['partyID'] }}/join/" class="btn btn-dark action-btn">Join</a>
     {% elif session['user']['service_user_id'] == party['leaderID'] %}
         <a href="$" class="btn btn-outline-secondary action-btn disabled" disabled>You are the party leader; cannot secession</a>
     {% else %}
