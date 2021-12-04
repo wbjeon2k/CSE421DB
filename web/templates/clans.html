@@ -8,7 +8,7 @@
 
 {% block page_title %}Clans{% endblock %}
 {% block content %}
-{% if session.get('user') and session['user'].get('clanID') %}
+{% if session.get('user') and my_clan %}
 <h1 id="my-clan-info">
   <small>Hello,</small> <strong class="rainbow-text">{{ session['user']['nickname'] }}</strong><br>
   <small>Your clan is</small> <strong>{{ my_clan['name'] }}</strong>

@@ -50,7 +50,7 @@ def clan_main():
     if 'user' in session:
         service_user_id = session['user'].get('service_user_id')
 
-    my_clan = {}
+    my_clan = None
 
     if service_user_id != None:
         cur.execute(my_clan_sql, (service_user_id,))
@@ -59,7 +59,7 @@ def clan_main():
             # JSON serialize
             my_clan = ClanModel(*my_clan_item, related_fetch=True).serialize()
     else:
-        my_clan = {}
+        my_clan = None
 
     sort_key_name = request.args.get('sort')
     if sort_key_name == None:
