@@ -6,7 +6,7 @@ from datetime import datetime
 
 import psycopg2 as pg2
 from psycopg2.errors import DuplicateTable, UniqueViolation
-from flask import Blueprint, Flask, redirect, render_template, url_for
+from flask import Blueprint, Flask, redirect, render_template, url_for, session
 
 from database import Connection
 from models import TestModel
@@ -18,17 +18,10 @@ app = Flask(__name__)
 #test main page for connection test
 @app.route("/")
 def main():
-    return 'This is main page'
-
-
-#test page for Jinja2 template html rendering test
-@app.route("/test/base")
-def page_jinja2_base():
     return render_template("base.html")
 
-
 #generate sample_db table for test/chk
-@app.route("/test/gen", methods=["GET", "POST"])
+@app.route("/gen", methods=["GET", "POST"])
 def test_table_gen():
     conn = Connection.get_connect()
     cur = conn.cursor()
@@ -65,7 +58,7 @@ def test_table_gen():
 
 
 ### list 전체 fetchall, serialize, template 에 rendering.
-@app.route("/test/chk")
+@app.route("/chk")
 def test_table_chk():
     conn = Connection.get_connect()
     cur = conn.cursor()
@@ -81,7 +74,7 @@ def test_table_chk():
 
 
 ### ID가 같은 객체 1개 fetchone, serialize 하여 template 에 rendering.
-@app.route('/test/detail/<int:id>/')
+@app.route('/detail/<int:id>/')
 def detail(id):
     conn = Connection.get_connect()
     cur = conn.cursor()
@@ -94,31 +87,46 @@ def detail(id):
 
 ### Load initial data
 @app.route('/initialize/data/')
+@app.before_first_request
 def initialize_data():
     conn = Connection.get_connect()
     cur = conn.cursor()
+    
+    session.clear()
+    
+    sql_file = open('../DB_SQL.sql','r').read()
+    print(sql_file)
+    try:
+        cur.execute(sql_file)
+        conn.commit()
+        #print("load successful")
+    except pg2.errors.DuplicateTable as d:
+        conn.rollback()
+        conn.commit()
+        #return "table already exist; pass table creating"
 
     try:
         with open('../data/datasets/tags.json') as f:
             tags = json.load(f)
         for tag in tags:
-            cur.execute('INSERT INTO Tag (tagID, name) VALUES (%s, %s)', (tag['id'], tag['name']))
+            cur.execute('INSERT INTO tag (tag_id, name) VALUES (%s, %s)', (tag['id'], tag['name']))
         conn.commit()
 
         with open('../data/datasets/game_rank_list.json', encoding='utf-8') as f:
             games = json.load(f)
         for game in games:
-            cur.execute('INSERT INTO Game (gameID, name) VALUES (%s, %s)', (game['id'], game['name']))
+            cur.execute('INSERT INTO game (game_id, name) VALUES (%s, %s)', (game['id'], game['name']))
         conn.commit()
 
         with open('../data/datasets/game_tag_list.json') as f:
             game_tags = json.load(f)
         for game_tag in game_tags:
             for tag_id in game_tag['tags']:
-                cur.execute('INSERT INTO Game_Tag (gameID, tagID) VALUES (%s, %s)', (game_tag['id'], tag_id))
-    except UniqueViolation:  # already inserted data -> Violate unique key constraint in PK
+                cur.execute('INSERT INTO game_tag (game_id, tag_id) VALUES (%s, %s)', (game_tag['id'], tag_id))
+    except Exception as u:  # already inserted data -> Violate unique key constraint in PK
         conn.rollback()  # rollback all queries; not reflected to real db
-        return 'Faild; Already inserted data'
+        #return 'Faild; Already inserted data'
+    
     conn.commit()
     return 'Success; Insert initial data'
 
@@ -129,19 +137,19 @@ if __name__ == '__main__':
 
     #main_blueprint = Blueprint('main', __name__, url_prefix='/main')
     #app.register_blueprint(main_blueprint)
-
-    sql_file = open('../DB_SQL.sql','r').read()
-    try:
-        cur.execute(sql_file)
-        conn.commit()
-        print("load successful")
-    except DuplicateTable:
-        print("table already exist; pass table creating")
-
+    conn.commit()
+    
     import views.party_views as party_views
     app.register_blueprint(party_views.bp)
 
     import views.game_views as game_views
     app.register_blueprint(game_views.bp)
-
+    
+    import views.register_view as register_views
+    app.register_blueprint(register_views.bp)
+    
+    import views.login_view as login_views
+    app.register_blueprint(login_views.bp)
+    app.secret_key = "SECRETKEY"
+    #time.sleep(4) 
     app.run(host='0.0.0.0', port=8088)

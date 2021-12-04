@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<button type="button" class="btn btn-primary" onclick="location.href = '?sort=name&order=asc'">Name</button>  
+<button type="button" class="btn btn-primary" onclick="location.href = '?sort=popular&order=asc'">Popular</button> 
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">GameID <!--화살표 두개 넣고 링크 걸기 --></th>
+      <th scope="col">Name</th>
+      <th scope="col">Users</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for game in games %}
+    <tr>
+      <td class="col-1"> {{game['gameID']}}</th> <!-- Dictionary for test gameID-->
+      <td class="col-7">{{game['name']}}</td>
+      <td class="col-4">{{game['users']}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}

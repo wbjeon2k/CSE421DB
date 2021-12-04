@@ -1,9 +1,0 @@
-{% if test_list %}
-    <ul>
-        {% for tc in test_list %}
-            <li><a href="/test/detail/{{ tc.id }}/">{{ tc.msg }}</a></li>
-        {% endfor %}
-    </ul>
-{% else %}
-<p>**No sample_db found**</p>
-{% endif %}

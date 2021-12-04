@@ -32,6 +32,9 @@ for f in fetchall():
 이런 방식으로 다른 테이블에 대한 인터페이스를 만들어도 되는지 의견 받고싶어요!
 '''
 
+def add_single_quote(string_input):
+    return "'"+string_input+"'"
+
 class TestModel:
     """Model for the test table"""
     __tablename__ = 'test'
@@ -52,33 +55,30 @@ class TestModel:
             'content': self.content
         }
 
-class GameModel:
+class gameModel:
     """Model for the game table"""
     __tablename__ = 'test'
 
-    def __init__(self,gameID,name):
+    def __init__(self,gameID,name,popular):
         self.gameID = gameID
         self.name = name
+        self.popular = popular
 
     """for JSON type"""
     def serialize(self):
         #attributes in a same sequence as sql file!
-        return {
-            'gameID': self.gameID ,
-            'name': self.name,
-        }
-        
-    def asGameModel(self, tup):
-        self.gameID = tup[0]
-        self.name = tup[1]
-        return self
+        return dict(
+            gameID= self.gameID ,
+            name= self.name,
+            popular= self.popular
+        )  
         
     #cursor.fetchall() 을 통해 받아온 리스트 전체를
     #JSON 형태로 serialize 하는 메서드 입니다.
     def serialize_game_list(list_of_games):
         ret = []
         for game in list_of_games:
-                ret.append(GameModel(game[0], game[1]))
+                ret.append(gameModel(game[0], game[1], game[2]).serialize())
         return ret
 
 
@@ -115,14 +115,14 @@ class TagModel:
 
     """for JSON type"""
     def serialize(self):
-        return {
-            'tagID': self.tagID,
-            'name': self.name
-        }
+        return dict(
+            tagID = self.tagID,
+            name = self.name
+        )
 
     #cursor.fetchall() 을 통해 받아온 리스트 전체를
     #JSON 형태로 serialize 하는 메서드 입니다.
-    def serialize_game_list(list_of_tags):
+    def serialize_tag_list(list_of_tags):
         ret = []
         for tag in list_of_tags:
                 ret.append(tag.serialize())
@@ -130,12 +130,11 @@ class TagModel:
 
 
 
-class PartyModel:
+class partyModel:
     """Model for the party table"""
     __tablename__ = 'party'
 
-    # 자동으로 parameter 들을 넣어주는 방법은 찾지 못했습니다.
-    # PartyModel(x[0], x[1], ....) 형태로 넣는 수 밖에 없습니다.
+    #gameName 필요하지 않은 경우.
     def __init__(self,partyID,name,playStartDatetime,leaderID, joinLink, gameID):
         self.partyID = partyID
         self.name = name
@@ -143,23 +142,35 @@ class PartyModel:
         self.leaderID = leaderID
         self.joinLink = joinLink
         self.gameID = gameID
+        self.gameName = "Default Name"   
 
     def serialize(self):
-        return {
-            'partyID' : self.partyID,
-            'name' : self.name,
-            'playStartDatetime' : self.playStartDatetime,
-            'leaderID' : self.leaderID,
-            'joinLink' : self.joinLink,
-            'gameID' : self.gameID
-        }
+        return dict(
+            partyID = self.partyID,
+            name = self.name,
+            playStartDatetime = self.playStartDatetime,
+            leaderID = self.leaderID,
+            joinLink = self.joinLink,
+            gameID = self.gameID,
+            game = self.gameName
+        )
+        
+    def set_game_name(self,game_name):
+        self.gameName = str(game_name)
 
     #cursor.fetchall() 을 통해 받아온 리스트 전체를
     #JSON 형태로 serialize 하는 메서드 입니다.
     def serialize_party_list(list_of_party):
         ret = []
         for party in list_of_party:
-                ret.append(party.serialize())
+                ret.append(partyModel(party[0],party[1],party[2],party[3],party[4],party[5]).serialize())
+        return ret
+    
+    #parties 안에서 필요한 game list api.
+    def serialize_game_list(list_of_games):
+        ret = []
+        for game in list_of_games:
+            ret.append(dict(gameID= game[0] ,name= game[1]))
         return ret
 
 
@@ -168,8 +179,8 @@ class PostModel:
     __tablename__ = 'post'
 
     # 자동으로 parameter 들을 넣어주는 방법은 찾지 못했습니다.
-    # PartyModel(x[0], x[1], ....) 형태로 넣는 수 밖에 없습니다.
-    def __init__(self,postID,title,content,createDatetime ,isNotice, thumbsUp, thumbsDown,viewCount,serviceUserID,boardID ):
+    # partyModel(x[0], x[1], ....) 형태로 넣는 수 밖에 없습니다.
+    def __init__(self,postID,title,content,createDatetime ,isNotice, thumbsUp, thumbsDown,viewCount,service_user_id ,boardID ):
         self.postID = postID
         self.title = title
         self.content  = content
@@ -178,7 +189,7 @@ class PostModel:
         self.thumbsUp = thumbsUp
         self.thumbsDown = thumbsDown
         self.viewCount = viewCount
-        self.serviceUserID = serviceUserID
+        self.service_user_id  = service_user_id 
         self.boardID = boardID
 
     def serialize(self):
@@ -191,7 +202,7 @@ class PostModel:
             'thumbsUp' : self.thumbsUp  ,
             'thumbsDown' : self.thumbsDown ,
             'viewCount' : self.viewCount ,
-            'serviceUserID' : self.serviceUserID ,
+            'service_user_id ' : self.service_user_id  ,
             'boardID' : self.boardID
         }
 
@@ -209,7 +220,7 @@ class ReviewModel:
     __tablename__ = 'review'
 
     # 자동으로 parameter 들을 넣어주는 방법은 찾지 못했습니다.
-    # PartyModel(x[0], x[1], ....) 형태로 넣는 수 밖에 없습니다.
+    # partyModel(x[0], x[1], ....) 형태로 넣는 수 밖에 없습니다.
     def __init__(self,reviewID,createDatetime ,content, score ):
         self.reviewID = reviewID
         self.createDatetime =  createDatetime
@@ -237,25 +248,23 @@ class ServiceUserModel:
     """Model for the ServiceUser table"""
     __tablename__ = 'ServiceUser'
 
-    # 자동으로 parameter 들을 넣어주는 방법은 찾지 못했습니다.
-    # PartyModel(x[0], x[1], ....) 형태로 넣는 수 밖에 없습니다.
-    def __init__(self,serviceUserID,email ,encryptedPassword, nickname, isAdmin , clanID):
-        self.serviceUserID = serviceUserID
+    # encrypted pw skip!
+    def __init__(self,service_user_id ,email , nickname, isAdmin , clanID):
+        self.service_user_id  = service_user_id 
         self.email = email
-        self.encryptedPassword= encryptedPassword
         self.nickname =   nickname
         self.isAdmin =   isAdmin
         self.clanID  =  clanID
 
     def serialize(self):
-        return {
-            'serviceUserID' : self.serviceUserID ,
-            'email':self.email,
-            'encryptedPassword':self.encryptedPassword,
-            'nickname':self.nickname,
-            'isAdmin':self.isAdmin,
-            'clanID':self.clanID
-        }
+        return dict(
+            service_user_id  = self.service_user_id  ,
+            email=self.email,
+            #encryptedPassword=self.encryptedPassword,
+            nickname=self.nickname,
+            isAdmin=self.isAdmin,
+            clanID=self.clanID
+        )
 
     #cursor.fetchall() 을 통해 받아온 리스트 전체를
     #JSON 형태로 serialize 하는 메서드 입니다.
