@@ -69,13 +69,15 @@ def party_details(gameid):
 
     parties_in_game_sql = 'SELECT * FROM party WHERE (game_id = %s);'
 
-    reviews_in_game_sql = 'SELECT * FROM review WHERE review.review_id IN \
-        (SELECT game_review.review_id FROM game_review WHERE game_review.game_id = %s); \
-    '
+    reviews_in_game_sql = (
+        'SELECT * FROM review WHERE review.review_id IN '
+        '(SELECT game_review.review_id FROM game_review WHERE game_review.game_id = %s);'
+    )
 
-    tags_in_game_sql = 'SELECT * FROM tag WHERE tag.tag_id IN\
-        (SELECT game_tag.tag_id FROM game_tag WHERE game_tag.game_id = %s);\
-    '
+    tags_in_game_sql = (
+        'SELECT * FROM tag WHERE tag.tag_id IN '
+        '(SELECT game_tag.tag_id FROM game_tag WHERE game_tag.game_id = %s);'
+    )
 
     cur.execute(game_sql, (gameid,))
     game_fetch = cur.fetchone()
