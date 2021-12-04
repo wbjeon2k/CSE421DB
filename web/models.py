@@ -337,7 +337,6 @@ class ClanModel:
 
     __tablename__ = 'Clan'
 
-    # encrypted pw skip!
     def __init__(self, clan_id, name, leader_id, popular=None, related_fetch=False):
         self.clan_id = clan_id
         self.name = name
@@ -366,6 +365,117 @@ class ClanModel:
             leader_id=self.leader_id,
             leader=self.leader,
             popular=self.popular
+        )
+
+    # cursor.fetchall() 을 통해 받아온 리스트 전체를
+    # JSON 형태로 serialize 하는 메서드 입니다.
+    def serialize_clan_list(clans):
+        ret = []
+        for clan in clans:
+            ret.append(clan.serialize())
+        return ret
+
+
+class BoardModel:
+    """Model for the Clan table"""
+
+    __tablename__ = 'Board'
+
+    def __init__(self, board_id, clan_id, related_fetch=False):
+        self.board_id = board_id
+        self.clan_id = clan_id
+
+        self.clan = None
+        
+        if related_fetch:
+            conn = Connection.get_connect()
+            cur = conn.cursor()
+            
+            # Load clan and assign to instance variable
+            clan_retrieve_query = 'SELECT * FROM clan WHERE clan_id=%s;'
+            cur.execute(clan_retrieve_query, (clan_id,))
+            fetched_clan = cur.fetchone()
+            self.clan = ClanModel(*fetched_clan).serialize()
+
+    def serialize(self):
+        return dict(
+            board_id=self.board_id,
+            clan_id=self.clan_id,
+            clan=self.clan,
+        )
+
+    # cursor.fetchall() 을 통해 받아온 리스트 전체를
+    # JSON 형태로 serialize 하는 메서드 입니다.
+    def serialize_clan_list(clans):
+        ret = []
+        for clan in clans:
+            ret.append(clan.serialize())
+        return ret
+
+
+class PostModel:
+    """Model for the Clan table"""
+
+    __tablename__ = 'Post'
+
+    """
+	post_id               SERIAL,
+	title                VARCHAR(128) NOT NULL,
+	content              TEXT NOT NULL,
+	create_datetime      TIMESTAMP NOT NULL,
+	isNotice            BOOLEAN NOT NULL DEFAULT false,
+	thumbsUp            INTEGER NOT NULL DEFAULT 0,
+	thumbsDown          INTEGER NOT NULL DEFAULT 0,
+	viewCount           INTEGER NOT NULL DEFAULT 0,
+	service_user_id               INTEGER NOT NULL,
+	board_id              INTEGER NULL
+    """
+
+    def __init__(
+        self, post_id, title, content, create_datetime, isNotice, thumbsUp, thumbsDown,
+        viewCount, service_user_id, board_id, related_fetch=False):
+        self.post_id = post_id
+        self.title = title
+        self.create_datetime = create_datetime
+        self.isNotice = isNotice
+        self.thumbsUp = thumbsUp
+        self.thumbsDown = thumbsDown
+        self.viewCount = viewCount
+        self.service_user_id = service_user_id
+        self.board_id = board_id
+
+        self.service_user = None
+        self.board = None
+        
+        if related_fetch:
+            conn = Connection.get_connect()
+            cur = conn.cursor()
+            
+            # Load writer(service_user) and assign to instance variable
+            service_user_retrieve_query = 'SELECT * FROM service_user WHERE service_user_id=%s;'
+            cur.execute(service_user_retrieve_query, (service_user_id,))
+            fetched_user = cur.fetchone()
+            self.service_user = ServiceUserModel(*fetched_user).serialize()
+            
+            # Load writer(service_user) and assign to instance variable
+            board_retrieve_query = 'SELECT * FROM board WHERE board_id=%s;'
+            cur.execute(board_retrieve_query, (board_id,))
+            fetched_board = cur.fetchone()
+            self.board = ServiceUserModel(*fetched_board).serialize()
+
+    def serialize(self):
+        return dict(
+            post_id=self.post_id,
+            title=self.title,
+            create_datetime=self.create_datetime,
+            isNotice=self.isNotice,
+            thumbsUp=self.thumbsUp,
+            thumbsDown=self.thumbsDown,
+            viewCount=self.viewCount,
+            service_user_id=self.service_user_id,
+            board_id=self.board_id,
+            service_user=self.service_user,
+            board=self.board,
         )
 
     # cursor.fetchall() 을 통해 받아온 리스트 전체를
