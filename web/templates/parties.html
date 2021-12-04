@@ -55,7 +55,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for myparty in myparties %}
+        {% for myparty in my_parties %}
         <tr id="myparty-{{ myparty['partyID'] }}" class="table-link-item" onclick="onClickParty({{ myparty['partyID'] }})">
           <td class="col-1"> {{ myparty['partyID'] }}</td>
           <td class="col-4">{{ myparty['name'] }}</td>

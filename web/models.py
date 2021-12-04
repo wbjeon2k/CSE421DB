@@ -189,8 +189,8 @@ class PartyModel:
 
     # cursor.fetchall() 을 통해 받아온 리스트 전체를
     # JSON 형태로 serialize 하는 메서드 입니다.
-    def serialize_party_list(parties):
-        return [PartyModel(*party, related_fetch=True).serialize() for party in parties]
+    def serialize_party_list(parties, related_fetch=True):
+        return [PartyModel(*party, related_fetch=related_fetch).serialize() for party in parties]
 
     # parties 안에서 필요한 game list api.
     def serialize_game_list(list_of_games):

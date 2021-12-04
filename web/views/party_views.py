@@ -37,7 +37,8 @@ def party_main():
     my_parties_sql = (
         'SELECT party_id, name, playstart_datetime, leader_id, joinLink, game_id, '
         '(SELECT COUNT(*) FROM service_user_party WHERE party_id=party.party_id) as popular '
-        'FROM party WHERE party.party_id IN '
+        'FROM party '
+        'WHERE party.party_id IN '
         '(SELECT service_user_party.party_id FROM service_user_party '
         'WHERE service_user_party.service_user_id={});'
     )
@@ -178,6 +179,10 @@ def new_party_method():
                 return 'error'
 
             new_party_id = cur.fetchone()[0]
+
+            link_party_and_user_query = 'INSERT INTO service_user_party VALUES (%s, %s)'
+            cur.execute(link_party_and_user_query, (leaderID, new_party_id))
+
             conn.commit()
 
             return redirect(
@@ -236,7 +241,7 @@ def party_join_method(partyid):
         return redirect(url_for('parties.party_detail_method', partyid=partyid), code=302)
 
 
-@bp.route('/parties/<int:partyid>/secession/')
+@bp.route('/parties/<int:partyid>/secession/')  # TODO: DELETE /parties/ prefix
 def party_secession_method(partyid):
     conn = Connection.get_connect()
     cur = conn.cursor()
