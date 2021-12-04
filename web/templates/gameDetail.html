@@ -53,7 +53,9 @@
         <label for="score" class="form-label">Score of Game</label>
         <select class="form-select" id="score" name="score">
             {% for i in [5,4,3,2,1]%}
-            <option value="i">{{i}}</option>
+            <option value="{{i}}">
+                {% for _ in range(i) %}★{% endfor %}
+            </option>
             {% endfor %}
         </select>
     </div>

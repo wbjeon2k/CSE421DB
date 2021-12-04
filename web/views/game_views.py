@@ -1,4 +1,5 @@
 import json
+from datetime import datetime as dt  # datetime conflict? 
 
 import psycopg2 as pg2
 from psycopg2.sql import Identifier, SQL
@@ -58,7 +59,7 @@ def game_main():
 
 # TODO: game/detail 연결하는 링크 없음!
 @bp.route('/<int:gameid>/')
-def party_details(gameid):
+def game_detail(gameid):
     conn = Connection.get_connect()
     cur = conn.cursor()
     
@@ -107,3 +108,26 @@ def party_details(gameid):
     return render_template(
         'gameDetail.html', game=game, parties=parties_in_game, reviews=reviews_in_game, review_avg_star=review_avg_star, tags=tags_in_game
     )
+
+
+@bp.route('/<int:gameid>/reviews/', methods=['POST'])
+def game_review(gameid):
+    conn = Connection.get_connect()
+    cur = conn.cursor()
+
+    # SQL query for insert to review, each column is id, create_datetime, content, score. After insert we can get review_id by RETURNING
+    insert_review_query = 'INSERT INTO review VALUES (DEFAULT, %s, %s, %s) RETURNING review_id'  # create datetime, content, score
+    # SQL query for insert to game_review, each column is review_id, game_id (game_review table is subclass of review table)
+    insert_game_link_with_review_query = 'INSERT INTO game_review VALUES (%s, %s)'
+
+    now = dt.now().strftime('%Y-%m-%d %H:%M:%S')
+    score = request.form.get('score')
+    content = request.form.get('content')
+
+    cur.execute(insert_review_query, (now, content, score))
+    review_id = cur.fetchone()[0]
+
+    cur.execute(insert_game_link_with_review_query, (review_id, gameid))
+    conn.commit()
+
+    return redirect(url_for('games.game_detail', gameid=gameid))
