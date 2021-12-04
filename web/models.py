@@ -162,7 +162,7 @@ class PartyModel:
             self.game = GameModel(*fetched_game).serialize()
 
             # Load leader(service_user) and assign to instance variable
-            user_retrieve_query = 'SELECT * FROM service_user WHERE service_user.id=%s;'
+            user_retrieve_query = 'SELECT * FROM service_user WHERE service_user_id=%s;'
             cur.execute(user_retrieve_query, (leaderID,))
             fetched_user = cur.fetchone()
             fetched_user = list(fetched_user)  # Convert to list type to delete item
@@ -178,7 +178,8 @@ class PartyModel:
             leaderID=self.leaderID,
             joinLink=self.joinLink,
             gameID=self.gameID,
-            game=self.gameName,
+            game=self.game,
+            leader=self.leader,
         )
 
     def set_game_name(self, game_name):
@@ -186,15 +187,8 @@ class PartyModel:
 
     # cursor.fetchall() 을 통해 받아온 리스트 전체를
     # JSON 형태로 serialize 하는 메서드 입니다.
-    def serialize_party_list(list_of_party):
-        ret = []
-        for party in list_of_party:
-            ret.append(
-                PartyModel(
-                    party[0], party[1], party[2], party[3], party[4], party[5]
-                ).serialize()
-            )
-        return ret
+    def serialize_party_list(parties):
+        return [PartyModel(*party, related_fetch=True).serialize() for party in parties]
 
     # parties 안에서 필요한 game list api.
     def serialize_game_list(list_of_games):
