@@ -100,6 +100,7 @@ ADD PRIMARY KEY (post_id);
 CREATE TABLE review
 (
 	review_id             SERIAL,
+	service_user_id		INTEGER,
 	create_datetime      TIMESTAMP NOT NULL,
 	content              VARCHAR(512) NULL,
 	score                INTEGER NOT NULL
@@ -183,6 +184,9 @@ ADD CONSTRAINT service_user_post FOREIGN KEY (service_user_id) REFERENCES servic
 
 ALTER TABLE post
 ADD CONSTRAINT board_post FOREIGN KEY (board_id) REFERENCES board (board_id);
+
+ALTER TABLE review
+ADD CONSTRAINT review_service_user FOREIGN KEY (service_user_id) REFERENCES service_user (service_user_id);
 
 ALTER TABLE service_user
 ADD CONSTRAINT clan_User FOREIGN KEY (clan_id) REFERENCES clan (clan_id);

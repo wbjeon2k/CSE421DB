@@ -261,18 +261,34 @@ class ReviewModel:
 
     # 자동으로 parameter 들을 넣어주는 방법은 찾지 못했습니다.
     # PartyModel(x[0], x[1], ....) 형태로 넣는 수 밖에 없습니다.
-    def __init__(self, reviewID, createDatetime, content, score):
+    def __init__(self, reviewID, service_user_id, createDatetime, content, score, related_fetch=False):
+        self.service_user_id = service_user_id
         self.reviewID = reviewID
         self.createDatetime = createDatetime
         self.content = content
         self.score = score
 
+        if related_fetch:
+            conn = Connection.get_connect()
+            cur = conn.cursor()
+            
+            # Load leader(service_user) and assign to instance variable
+            user_retrieve_query = 'SELECT * FROM service_user WHERE service_user_id=%s;'
+            cur.execute(user_retrieve_query, (service_user_id,))
+            fetched_user = cur.fetchone()
+            fetched_user = list(fetched_user)  # Convert to list type to delete item
+            del fetched_user[3]
+            del fetched_user[2]
+            self.service_user = ServiceUserModel(*fetched_user).serialize()
+
     def serialize(self):
         return {
             'reviewID': self.reviewID,
+            'service_user_id': self.service_user_id,
             'createDatetime': self.createDatetime,
             'content': self.content,
             'score': self.score,
+            'service_user': self.service_user,
         }
 
     # cursor.fetchall() 을 통해 받아온 리스트 전체를
