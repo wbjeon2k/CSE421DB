@@ -21,13 +21,23 @@ bp = Blueprint('parties', __name__, url_prefix='/parties')
 @bp.route('/')
 def party_main():
     # parties 처음 들어왔을때 보여지는 table
-    all_party_sql_default = 'SELECT * FROM party ORDER BY playstart_datetime ASC'
+    all_party_sql_default = (
+        'SELECT party_id, name, playstart_datetime, leader_id, joinLink, game_id, '
+        '(SELECT COUNT(*) FROM service_user_party WHERE party_id=party.party_id) as popular '
+        'FROM party ORDER BY playstart_datetime ASC'
+    )
     # sort_key, asc\desc
-    all_party_sql_sort = 'SELECT * FROM party ORDER BY {} {};'
+    all_party_sql_sort = (
+        'SELECT party_id, name, playstart_datetime, leader_id, joinLink, game_id, '
+        '(SELECT COUNT(*) FROM service_user_party WHERE party_id=party.party_id) as popular '
+        'FROM party ORDER BY {} {};'
+    )
 
     # service_user_party table 에서 service_user_id  일치하는 모든 party.
     my_parties_sql = (
-        'SELECT * FROM party WHERE party.party_id IN '
+        'SELECT party_id, name, playstart_datetime, leader_id, joinLink, game_id, '
+        '(SELECT COUNT(*) FROM service_user_party WHERE party_id=party.party_id) as popular '
+        'FROM party WHERE party.party_id IN '
         '(SELECT service_user_party.party_id FROM service_user_party '
         'WHERE service_user_party.service_user_id  = {});'
     )
@@ -54,6 +64,12 @@ def party_main():
     else:
         order_key_name = request.args.get('order')
         if order_key_name != None:
+            if sort_key_name == 'game':
+                sort_key_name = 'game_id'
+            elif sort_key_name == 'leader':
+                sort_key_name = 'leader_id'
+            elif sort_key_name == 'date':
+                sort_key_name = 'playstart_datetime'
             cur.execute(all_party_sql_sort.format(sort_key_name, order_key_name))
         else:
             cur.execute(all_party_sql_default)
