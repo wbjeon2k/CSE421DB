@@ -37,12 +37,12 @@ def login_main():
         session.get('user') and session['user'].get('user_id')
         """
         # email 을 통해 service_user table 에서 찾는 sql form.
-        find_user_sql = 'SELECT COUNT(*) FROM service_user WHERE (service_user.email = %s); '
+        find_user_sql = 'SELECT COUNT(*) FROM service_user WHERE (service_user.email = %s);'
         conn = Connection.get_connect()
         cur = conn.cursor()
 
         login_email = request.form.get('email')
-        login_email = login_email.replace('@', 'at')
+        # login_email = login_email.replace('@', 'at')
 
         cur.execute(find_user_sql, (login_email,))
 
@@ -88,7 +88,22 @@ def login_main():
                 #     fetched_user[4],
                 #     fetched_user[5],
                 # ).serialize()
-                user_dict = ServiceUserModel(*fetched_user[:6]).serialize()
+
+                """fetched user result
+                	0: service_user_id
+                    1: email
+                    2: encrypted_password
+                    3: salt
+                    4: nickname
+                    5: isAdmin
+                    6: clan_id
+                    We need delete encrypted_password and salt from result
+                    MUST DELETE FROM BACKWARD; if delete from foreward, index changed
+                """
+                fetched_user = list(fetched_user)  # Convert to list type to delete item
+                del fetched_user[3]
+                del fetched_user[2]
+                user_dict = ServiceUserModel(*fetched_user).serialize()
                 session['user'] = user_dict
                 return redirect(url_for('main'))
             else:
