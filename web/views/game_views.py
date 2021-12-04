@@ -20,11 +20,15 @@ bp = Blueprint('games', __name__, url_prefix='/games')
 @bp.route('/')
 def game_main():
     # 처음 /games 에 들어가면 보이는 table.
-    game_default_sql = 'SELECT game_id, name, (SELECT COUNT(*) FROM party WHERE party.game_id = game.game_id) as popular FROM game;'
+    game_default_sql = (
+        'SELECT game_id, name, (SELECT COUNT(*) FROM party WHERE party.game_id = game.game_id) as popular '
+        'FROM game ORDER BY name;'
+    )
     # sort key 로 name/popular 들어왔을때 ASC order sort.
-    game_order_by_sql = 'SELECT game_id, name, (SELECT COUNT(*) FROM party WHERE party.game_id = game.game_id) as popular FROM game \
-        ORDER BY {} {}; \
-        '
+    game_order_by_sql = (
+        'SELECT game_id, name, (SELECT COUNT(*) FROM party WHERE party.game_id = game.game_id) as popular '
+        'FROM game ORDER BY {} {};'
+    )
     conn = Connection.get_connect()
     cur = conn.cursor()
 
