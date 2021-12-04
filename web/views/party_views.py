@@ -26,11 +26,11 @@ def party_main():
     all_party_sql_sort = 'SELECT * FROM party ORDER BY {} {};'
 
     # service_user_party table 에서 service_user_id  일치하는 모든 party.
-    my_parties_sql = '\
-        SELECT * FROM party WHERE party.party_id IN \
-        (SELECT service_user_party.party_id FROM service_user_party \
-            WHERE service_user_party.service_user_id  = {});\
-    '
+    my_parties_sql = (
+        'SELECT * FROM party WHERE party.party_id IN '
+        '(SELECT service_user_party.party_id FROM service_user_party '
+        'WHERE service_user_party.service_user_id  = {});'
+    )
     conn = Connection.get_connect()
     cur = conn.cursor()
 
