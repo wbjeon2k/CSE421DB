@@ -117,7 +117,7 @@
     </thead>
     <tbody>
       {% for party in parties %}
-      <tr id="party-{{ party['partyID'] }}" class="table-link-item" onclick="onClickParty({{ party['partyID'] }})">
+      <tr id="party-{{ party['partyID'] }}" class="table-link-item{% if party['leaderID'] == (session.get('user') and session['user']['service_user_id'])%} bg-success text-white{% elif party in my_parties %} bg-info{% endif %}" onclick="onClickParty({{ party['partyID'] }})">
         <td class="col-1"> {{ party['partyID'] }}</td>
         <td class="col-4">{{ party['name'] }}</td>
         <td class="col-2">{{ party['game']['name'] }}</td>
