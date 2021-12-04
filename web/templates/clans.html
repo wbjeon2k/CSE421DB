@@ -10,40 +10,17 @@
 
 {% block content %}
 {% if session.get('user') and session['user'].get('clanID') %}
-<div class="container">
-  <div class="row">
-    <div class="col-2">
-        Clan ID
-    </div>
-    <div class="col">
-        {{my_clan['clan_id']}}
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-2">
-      Name
-    </div>
-    <div class="col">
-      {{my_clan['name']}}
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-2">
-      Leader
-    </div>
-    <div class="col">
-      {{my_clan['leader']}} <!-- my_clan['leader']에 리더의 닉네임을 넣는게 나을거 같아요 (밑의 clan['leader']도 동일)-->
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-2"> 
-      Users
-    </div>
-    <div class="col">
-      {{my_clan['popular']}}
-    </div>
-  </div>
-</div>
+<h1 id="my-clan-info">
+  <small>Hello,</small> <strong class="rainbow-text">{{ session['user']['nickname'] }}</strong><br>
+  <small>Your clan is</small> <strong>{{ my_clan['name'] }}</strong>
+  <small>with</small> <strong>{{ my_clan['popular'] }}</strong> <small>members</small><br>
+  <small>and clan leader is</small>
+  {% if my_clan['leader_id'] == session['user']['service_user_id'] %} {# login user is clan leader #}
+    <strong>YOU</strong>!
+  {% else %}
+    <strong class="rainbow-text">{{ my_clan['leader']['nickname'] }}</strong>
+  {% endif %}
+</h1>
 {% elif session.get('user') %} {# user logged in but, has not clan #}
 <div class="d-flex flex-row-reverse action-btn-group">
   <a href="/clans/new/" class="btn btn-outline-dark">Create New Clan</a>
