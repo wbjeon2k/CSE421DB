@@ -4,7 +4,7 @@ import sys
 import dateutil
 
 import psycopg2 as pg2
-from flask import Blueprint, Flask, redirect, render_template, url_for
+from flask import Blueprint, Flask, redirect, render_template, url_for, session
 from jinja2 import Template
 from flask import session, request, Response
 from psycopg2 import sql
@@ -145,6 +145,10 @@ def new_clan_method():
         cur.execute(user_clan_id_update_query, (new_clan_id, leader_id))
 
         conn.commit()
+
+        session_user = session.get('user')
+        session_user['clanID'] = new_clan_id
+        session.update(user=session_user)
 
         return redirect(
             url_for('clans.clan_detail_method', clanid=new_clan_id), code=302
