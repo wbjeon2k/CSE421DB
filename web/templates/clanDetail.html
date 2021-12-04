@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container"> <!-- 컨텐츠 내부 채워넣어야함 -->
+    <div class="row">
+        <div class="col-2">
+            Clan ID
+        </div>
+        <div class="col">
+            {{clan['clanID']}} <!-- Dictionary for test -->
+        </div>
+    </div>
+    <div class="row">
+      <div class="col-2">
+        Name
+      </div>
+      <div class="col">
+        {{clan['name']}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-2">
+        Leader
+      </div>
+      <div class="col">
+        {{clan['leader']}} <!-- clan['leader']에 리더의 닉네임을 넣는게 나을거 같아요-->
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-2">
+        Users
+      </div>
+      <div class="col">
+        {{members|length}}
+      </div>
+    </div>
+
+    {% if session.get('user') and session['user'].get('clanID') == clan['clanID'] %}
+    <a href="secession/" class="btn btn-primary">Secession</a>
+    {% elif session.get('user') and session['user'].get('clanID') == None %}
+    <a href="join/" class="btn btn-primary">Join</a>
+    {% endif %}
+
+    <table class="table table-hover caption-top">
+      <caption>Clan Members</caption>
+        <thead>
+          <tr>
+            <th scope="col">User ID</th>
+            <th scope="col">Nickname</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for member in members %}
+            <tr onclick = "location.href = '/users/{{member['userID']}}/'">
+              <td class="col-3"> {{member['userID']}}</td> 
+              <td class="col-9">{{member['nickname']}}</td>
+            {% endfor %}
+        </tbody>
+      </table>
+</div>
+{% endblock content %}

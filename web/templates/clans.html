@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if session.get('user') and session['user'].get('clanID') != None %}
+<div class="container">
+  <div class="row">
+    <div class="col-2">
+        Clan ID
+    </div>
+    <div class="col">
+        {{myclan['clanID']}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-2">
+      Name
+    </div>
+    <div class="col">
+      {{myclan['name']}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-2">
+      Leader
+    </div>
+    <div class="col">
+      {{myclan['leader']}} <!-- myclan['leader']에 리더의 닉네임을 넣는게 나을거 같아요 (밑의 clan['leader']도 동일)-->
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-2"> 
+      Users
+    </div>
+    <div class="col">
+      {{myclan['users']|length}} <!-- myclan['users'] 를 count를 한 int 값으로 할지, list로 해서 |length를 할지는 백엔드 쪽에서-->
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<table class="table table-hover caption-top">
+  <caption>Clan List</caption>
+  <thead>
+    <tr>
+      <th scope="col">Clan ID</th>
+      <th scope="col">Name</th>
+      <th scope="col">Leader</th>
+      <th scope="col">Date</th>
+      <th scope="col">Popular</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for clan in clans %}
+    <tr onclick = "location.href = '{{clan['clanID']}}/'">
+      <td class="col-1"> {{clan['clanID']}}</th>
+      <td class="col-5">{{clan['name']}}</td>
+      <td class="col-3">{{clan['leader']}}</td>
+      <td class="col-3">{{clan['users']|length}}</td> <!--myclan['users']와 동일-->
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}

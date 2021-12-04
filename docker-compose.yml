@@ -20,5 +20,10 @@ services:
       dockerfile: ./web.dockerfile
     container_name: party_finder_web
     # restart: always
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
     ports:
       - 8088:8088
+    volumes:
+      - ./web:/root/web
