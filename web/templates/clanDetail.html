@@ -26,6 +26,8 @@
   <a href="#" class="btn btn-outline-secondary action-btn disabled" disabled>You are the party leader; cannot secession</a>
 {% elif session['user']['clanID'] == clan['clan_id'] %} {# already joined -> cannot join, can secession #}
   <a href="/clans/{{ clan['clan_id'] }}/secession/" class="btn btn-outline-danger action-btn">Secession</a>
+{% elif session['user']['clanID'] != clan['clan_id'] %} {# already joined other clan -> other clan secession needed #}
+  <a href="#" class="btn btn-outline-secondary action-btn disabled" disabled>To join this clan, you must leave the clan you are in</a>
 {% endif %}
 
 <table class="table table-hover caption-top">
