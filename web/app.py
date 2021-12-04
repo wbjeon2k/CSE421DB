@@ -151,20 +151,15 @@ if __name__ == '__main__':
     conn.commit()
 
     import views.party_views as party_views
-
-    app.register_blueprint(party_views.bp)
-
     import views.game_views as game_views
-
-    app.register_blueprint(game_views.bp)
-
     import views.register_view as register_views
-
-    app.register_blueprint(register_views.bp)
-
     import views.login_view as login_views
 
+    app.register_blueprint(party_views.bp)
+    app.register_blueprint(game_views.bp)
+    app.register_blueprint(register_views.bp)
     app.register_blueprint(login_views.bp)
+
     app.secret_key = 'SECRETKEY'
     # time.sleep(4)
     app.run(host='0.0.0.0', port=8088)
