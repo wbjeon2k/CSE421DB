@@ -1,21 +1,38 @@
 {% extends 'base.html' %}
 
-{% block content %} 
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/usersession.css') }}">
+{% endblock %}
 
-<form method="POST" action="/login/">
-    <div class="mb-3">
-        <label for="email" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="email" name="email" required>
-    </div>
-    <div class="mb-3">
-        <label for="rawPassword" class="form-label">Password</label>
-        <input type="password" class="form-control" id="rawPassword" name="rawPassword" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+{% block content %}
 {% if error %}
 <div class="alert alert-warning" role="alert">
     {{ error }}
 </div>
 {% endif %}
+
+<div id="form-group" class="card mx-auto col-xg-4 col-lg-5 col-md-8 col-sm-12">
+    <div class="card-body">
+        <h4 class="card-title">
+            Login
+        </h4>
+        <form method="POST" action="/login/">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="rawPassword" class="form-label">Password</label>
+                <input type="password" class="form-control" id="rawPassword" name="rawPassword" required>
+            </div>
+            <div class="action-btn-group">
+                <button type="submit" class="btn btn-primary">Login</button>
+                <span class="subaction-btn">
+                    Or, <a href="/register/">Don't have an account?</a>
+                </span>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock content %}
