@@ -34,7 +34,9 @@ def register_main_get():
         else:
             register_email = request.form.get('email')
             register_nickname = request.form.get('nickname')
-            find_duplicate_sql = "SELECT COUNT(*) FROM {} WHERE (service_user.email = '{}' OR service_user.nickname = '{}');"
+            # find_duplicate_sql = "SELECT COUNT(*) FROM {} WHERE (service_user.email = '{}' OR service_user.nickname = '{}');"
+            find_email_duplicate_sql = "SELECT COUNT(*) FROM {} WHERE service_user.email = '{}';"
+            find_nickname_duplicate_sql = "SELECT COUNT(*) FROM {} WHERE service_user.nickname = '{}';"
             conn = Connection.get_connect()
             cur = conn.cursor()
             print(register_email, register_nickname)
@@ -43,42 +45,45 @@ def register_main_get():
             #!!! @ 가 문자 그대로 들어가면 postgres 지정 연산자와 충돌 !!!
             # register_email = register_email.replace('@', 'at')
             cur.execute(
-                find_duplicate_sql.format('service_user', register_email, register_nickname)
+                find_email_duplicate_sql.format('service_user', register_email)
             )
-            duplicate_cnt = cur.fetchone()[0]
-            if duplicate_cnt != 0:
+            email_duplicate_cnt = cur.fetchone()[0]
+            if email_duplicate_cnt != 0:
                 return render_template(
-                    'register.html', error='User with the email or the nickname exists'
+                    'register.html', error='Email already exist'
                 )
-            elif duplicate_cnt == 0:
-                raw_pw = request.form['rawPassword']
-                # TODO: salt 값 user 별로 random
-                salt = secrets.token_urlsafe(180)  # len = 240
-                hash_pw = hashlib.pbkdf2_hmac(
-                    'sha3-256', raw_pw.encode(), salt.encode(), 150000
+            cur.execute(
+                find_nickname_duplicate_sql.format('service_user', register_nickname)
+            )
+            nickname_duplicate_cnt = cur.fetchone()[0]
+            if nickname_duplicate_cnt != 0:
+                return render_template(
+                    'register.html', error='Nickname already exist'
                 )
-                enc_pw = b64encode(hash_pw).decode()  # bytes type change to base64 string
-                # enc_pw = add_single_quote(enc_pw)
-                insert_user_sql = (
-                    "INSERT INTO service_user VALUES (DEFAULT, '{}', '{}', '{}', '{}', DEFAULT, NULL);"
-                )
+            raw_pw = request.form['rawPassword']
+            # TODO: salt 값 user 별로 random
+            salt = secrets.token_urlsafe(180)  # len = 240
+            hash_pw = hashlib.pbkdf2_hmac(
+                'sha3-256', raw_pw.encode(), salt.encode(), 150000
+            )
+            enc_pw = b64encode(hash_pw).decode()  # bytes type change to base64 string
+            # enc_pw = add_single_quote(enc_pw)
+            insert_user_sql = (
+                "INSERT INTO service_user VALUES (DEFAULT, '{}', '{}', '{}', '{}', DEFAULT, NULL);"
+            )
 
-                # TODO: session 과 연결을 해야하는가? 자동 로그인 하는걸로
-                try:
-                    cur.execute(
-                        insert_user_sql.format(register_email, enc_pw, salt, register_nickname)
-                    )
-                    conn.commit()
-                    sys.stdout.write(str(register_email) + str(enc_pw))
-                    sys.stdout.flush()
-                except Exception as e:
-                    conn.rollback()
-                    return render_template(
-                        'register.html', error='User register failed. Try again.'
-                    )
-                # session 을 하면 main page로 redirect
-                return redirect(url_for('login.login_main'))
-            else:
-                return render_template(
-                    'register.html', error='Unknown register error. Try again.'
+            # TODO: session 과 연결을 해야하는가? 자동 로그인 하는걸로
+            try:
+                cur.execute(
+                    insert_user_sql.format(register_email, enc_pw, salt, register_nickname)
                 )
+                conn.commit()
+                sys.stdout.write(str(register_email) + str(enc_pw))
+                sys.stdout.flush()
+            except Exception as e:
+                conn.rollback()
+                return render_template(
+                    'register.html', error='User register failed. Try again.'
+                )
+            # session 을 하면 main page로 redirect
+            return redirect(url_for('login.login_main'))
