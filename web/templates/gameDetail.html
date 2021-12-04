@@ -20,28 +20,35 @@
 
 {% block content %}
 <div class="container">
-    <div class="row">
-        <div class="col-2">
-            Score
+    <div id="content-box">
+        <div class="row">
+            <div class="col-2">
+                <strong>Score</strong>
+            </div>
+            <div class="col">
+                {% if review_avg_star %}
+                    {{review_avg_star}}
+                {% else %}
+                    <i>No scores exist yet </i>
+                {% endif %}
+            </div>
         </div>
-        <div class="col">
-            {{game['score']}}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-2">
-            Tags
-        </div>
-        <div class="col">
-            {% for tag in tags %}
-            <span class="badge rounded-pill bg-secondary">{{tag['name']}}</span>
-            {% endfor %}
+        <div class="row">
+            <div class="col-2">
+                <strong>Tags</strong>
+            </div>
+            <div class="col">
+                {% for tag in tags %}
+                <span class="badge rounded-pill bg-secondary">{{tag['name']}}</span>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
-
+<hr>
+<h2>Please leave a review for the game </h2>
 <!-- Review write -->
-<form method="POST" action="/games/{{gameID}}/reviews/">
+<form method="POST" action="/games/{{ game['gameID'] }}/reviews/">
     <div class="mb-3">
         <label for="score" class="form-label">Score of Game</label>
         <select class="form-select" id="score" name="score">
@@ -54,11 +61,11 @@
         <label for="content" class="form-label">Review</label>
         <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-outline-dark">Write review</button>
 </form>
 
 <!-- Review view-->
-{% if reviews != None %}
+{% if reviews %}
 <table class="table caption-top">
     <caption>Reviews ({{reviews|length}})</caption>
     <thead>

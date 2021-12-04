@@ -67,16 +67,21 @@ def party_details(gameid):
         'FROM game WHERE game_id=%s;'
     )
 
-    parties_in_game_sql = 'SELECT * FROM party WHERE (game_id = %s);'
+    parties_in_game_sql = 'SELECT * FROM party WHERE game_id=%s;'
 
     reviews_in_game_sql = (
         'SELECT * FROM review WHERE review.review_id IN '
-        '(SELECT game_review.review_id FROM game_review WHERE game_review.game_id = %s);'
+        '(SELECT game_review.review_id FROM game_review WHERE game_review.game_id=%s);'
+    )
+
+    review_avg_star_sql = (
+        'SELECT AVG(score) FROM review WHERE review.review_id IN '
+        '(SELECT game_review.review_id FROM game_review WHERE game_review.game_id=%s);'
     )
 
     tags_in_game_sql = (
         'SELECT * FROM tag WHERE tag.tag_id IN '
-        '(SELECT game_tag.tag_id FROM game_tag WHERE game_tag.game_id = %s);'
+        '(SELECT game_tag.tag_id FROM game_tag WHERE game_tag.game_id=%s);'
     )
 
     cur.execute(game_sql, (gameid,))
@@ -91,11 +96,14 @@ def party_details(gameid):
     reviews_in_game_fetch = cur.fetchall()
     reviews_in_game = ReviewModel.serialize_review_list(reviews_in_game_fetch)
 
+    cur.execute(review_avg_star_sql, (gameid,))
+    review_avg_star = cur.fetchone()[0]
+
     cur.execute(tags_in_game_sql, (gameid,))
     tags_in_game_fetch = cur.fetchall()
     tag_objs = [TagModel(*each) for each in tags_in_game_fetch]
     tags_in_game = TagModel.serialize_tag_list(tag_objs)
 
     return render_template(
-        'gameDetail.html', game=game, parties=parties_in_game, reviews=reviews_in_game, tags=tags_in_game
+        'gameDetail.html', game=game, parties=parties_in_game, reviews=reviews_in_game, review_avg_star=review_avg_star, tags=tags_in_game
     )

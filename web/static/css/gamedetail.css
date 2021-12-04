@@ -24,3 +24,11 @@
         -2px -2px rgba(0, 0, 0, 0.2);
     margin: 0.5em 0 1em 0;
 }
+
+.row {
+    margin-bottom: 0.5em;
+}
+
+#content-box {
+    margin-bottom: 3em;
+}
