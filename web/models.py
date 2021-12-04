@@ -134,8 +134,7 @@ class partyModel:
     """Model for the party table"""
     __tablename__ = 'party'
 
-    # 자동으로 parameter 들을 넣어주는 방법은 찾지 못했습니다.
-    # partyModel(x[0], x[1], ....) 형태로 넣는 수 밖에 없습니다.
+    #gameName 필요하지 않은 경우.
     def __init__(self,partyID,name,playStartDatetime,leaderID, joinLink, gameID):
         self.partyID = partyID
         self.name = name
@@ -143,6 +142,7 @@ class partyModel:
         self.leaderID = leaderID
         self.joinLink = joinLink
         self.gameID = gameID
+        self.gameName = "Default Name"   
 
     def serialize(self):
         return dict(
@@ -151,8 +151,12 @@ class partyModel:
             playStartDatetime = self.playStartDatetime,
             leaderID = self.leaderID,
             joinLink = self.joinLink,
-            gameID = self.gameID
+            gameID = self.gameID,
+            game = self.gameName
         )
+        
+    def set_game_name(self,game_name):
+        self.gameName = str(game_name)
 
     #cursor.fetchall() 을 통해 받아온 리스트 전체를
     #JSON 형태로 serialize 하는 메서드 입니다.

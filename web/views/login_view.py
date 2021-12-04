@@ -43,8 +43,7 @@ def login_main():
         
         login_email = request.form.get('email')
         login_email = login_email.replace("@", "at")
-        #login_email = add_single_quote(login_email)
-        #print("login_email", login_email)
+
         cur.execute(find_user_sql, (login_email,))
         
         tmp = cur.fetchone()
@@ -72,10 +71,6 @@ def login_main():
             if(fetched_hash_pw == hashed_pw):
                 #https://blog.d0ngd0nge.xyz/python-flask-session/
                 #https://pythonise.com/series/learning-flask/flask-session-object
-                #TODO: 각 session 별로 session 생기는건지: NO. global session.
-                #각 session 에 session['user'].get('user_id') 형식으로 access.
-                #session이 global 이고, 'user' 별로 따로 user_dict 를 생성 하는지?
-                #user dict 는 serialize 가능한 거면 뭐든지 가능.
                 
                 fetch_user_sql = "SELECT * FROM service_user WHERE (email = %s);"
                 cur.execute(fetch_user_sql,(login_email,))

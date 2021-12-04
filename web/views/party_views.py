@@ -40,8 +40,7 @@ def party_main():
         service_user_id = session['user'].get('service_user_id')
     
     my_parties_list = []
-    #TODO: null 아니라 none
-    #if session.get('user') and session['user'].get('clanID') != None
+
     if(service_user_id != None):
         cur.execute(my_parties_sql.format(service_user_id))
         my_parties_list = cur.fetchall()
@@ -70,19 +69,29 @@ def party_detail_method(partyid):
     conn = Connection.get_connect()
     cur = conn.cursor()
     
+    #주어진 partyid 로 파티 찾기.
     get_party_sql_base = "SELECT * FROM party WHERE (party_id = {})"
     get_party_sql = get_party_sql_base.format(partyid)
     
     cur.execute(get_party_sql)
-    tmp = cur.fetchone()
-    print(str(tmp))
-    if(tmp == None):
+    party_info = cur.fetchone()
+    print(str(party_info))
+    if(party_info == None):
         return "error: no such party. frontend error support needed"
     
-    fetched_party = partyModel(tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5]).serialize()
+    #불러온 파티의 game_id 로 게임 이름 찾기.
+    get_game_name_base = "SELECT name FROM game WHERE (game_id = {})"
+    get_name_sql = get_game_name_base.format(party_info[5])
+    cur.execute(get_name_sql)
+    game_name = cur.fetchone()[0]
+    if(game_name == None):
+        return "error: no such game. frontend error support needed"
+    
+    #partyModel 객체에 게임 이름 추가.
+    fetched_party = partyModel(party_info[0],party_info[1],party_info[2],party_info[3],party_info[4],party_info[5])
+    fetched_party.set_game_name(game_name)
     
     return render_template('partyDetail.html', party = fetched_party)
-    #return "have to return partiies/partyid"
 
 # 새로운 파티 생성 get method
 @bp.route('/new/', methods = ['GET', 'POST'])
@@ -125,6 +134,9 @@ def new_party_method():
             if(gameid == None or name == None or datetime_from_front_string == None or joinLink == None):
                 return "Missing information from front end!"
             
+            if(leaderID == None):
+                return "session['user'].get('service_user_id') is None"
+            
             try:
                 #RETURNING party_id 통해 insert 후 party_id 가져오기.
                 insert_new_party_sql_base = "INSERT INTO party VALUES ( DEFAULT , {}, TIMESTAMP {}, {}, {}, {}) RETURNING party_id"
@@ -138,9 +150,8 @@ def new_party_method():
             conn.commit()
 
             return redirect(url_for('parties.party_detail_method', partyid = new_party_id ), code = 302)
-            #return "OK"
         else:
-            redirect(url_for('parties.party_main'))
+            return redirect(url_for('parties.party_main'))
         
 @bp.route('/<int:partyid>/join/')
 def party_join_method(partyid):
@@ -149,31 +160,46 @@ def party_join_method(partyid):
     is_my_party = False
     if 'user' in session:
         # service_user_id , party_id 모두 같은 service_user_party row count.
-        search_party_sql = """
-            SELECT COUNT(*) FROM service_user_party
-            WHERE service_user_id  = {} AND party_id = {};
-        """
-        user_id = session['user_id']
-        cur.execute(search_party_sql, (user_id, partyid,))
+        search_party_sql = "\
+            SELECT COUNT(*) FROM service_user_party \
+            WHERE (service_user_id  = {} AND party_id = {});\
+        "
+        user_id = session['user'].get('service_user_id')
+        cur.execute(search_party_sql.format(user_id, partyid))
         search_cnt = cur.fetchone()[0]
         
+        if(user_id == None):
+            return "error at user_id. frontend support needed.\n"
+        
         if(search_cnt != 0):
-            redirect(url_for('parties/%d/' % partyid))
+            sys.stdout.write("user already in party. frontend support needed")
+            sys.stdout.flush()
+            return redirect(url_for('parties.party_detail_method', partyid = partyid ), code = 302)
         elif(search_cnt == 0):
             try:
                 service_user_id = user_id
                 party_id = partyid
-                cur.execute(
-                sql.SQL("INSERT INTO {} service_user_party ({}, {})").format(sql.identifier('party'))
-                        ,[service_user_id, party_id]
-                        )
+                
+                insert_sql_base = "INSERT INTO service_user_party VALUES ({}, {})"
+                insert_sql = insert_sql_base.format(service_user_id, party_id)
+                
+                cur.execute(insert_sql)
+                conn.commit()
             except Exception as error:
-                return error
-            redirect(url_for('parties/%d/' % partyid))    
+                conn.rollback()
+                return "error at adding party. frontend support needed.\n" + str(error)
+            
+            conn.commit()
+            
+            return redirect(url_for('parties.party_detail_method', partyid = partyid ), code = 302)    
         else:
-            redirect(url_for('parties/%d/' % partyid))       
+            sys.stdout.write("search_cnt is None. frontend support needed")
+            sys.stdout.flush()
+            return redirect(url_for('parties.party_detail_method', partyid = partyid ), code = 302)       
     else:
-        redirect(url_for('parties/%d/' % partyid))    
+        sys.stdout.write("no session, return to previous page. frontend support needed")
+        sys.stdout.flush()
+        return redirect(url_for('parties.party_detail_method', partyid = partyid ), code = 302)    
     
 @bp.route('/parties/<int:partyid>/secession/')
 def party_secession_method(partyid):
@@ -188,16 +214,16 @@ def party_secession_method(partyid):
         cur.execute(search_party_sql, (user_id, partyid,))
         search_cnt = cur.fetchone()[0]
         if(search_cnt != 0):
-            redirect(url_for('parties/%d/' % partyid))
+            return redirect(url_for('parties.party_detail_method', partyid = partyid ), code = 302)    
         elif(search_cnt == 0):
-            party_exit_sql = """
-                DELETE FROM service_user_party
-                WHERE service_user_id  = {} AND party_id = {};
-            """
+            party_exit_sql = "\
+                DELETE FROM service_user_party \
+                WHERE service_user_id  = {} AND party_id = {};\
+            "
             cur.execute(party_exit_sql, (user_id, partyid))
             conn.commit()
-            redirect(url_for('parties/%d/' % partyid))    
+            redirect(url_for('parties.party_detail_method', partyid = partyid ), code = 302)    
         else:
-            redirect(url_for('parties/%d/' % partyid))       
+            redirect(url_for('parties.party_detail_method', partyid = partyid ), code = 302)       
     else:
-        redirect(url_for('parties/%d/' % partyid)) 
+        redirect(url_for('parties.party_detail_method', partyid = partyid ), code = 302) 
