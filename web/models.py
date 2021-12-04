@@ -406,7 +406,7 @@ class BoardModel:
 
     # cursor.fetchall() 을 통해 받아온 리스트 전체를
     # JSON 형태로 serialize 하는 메서드 입니다.
-    def serialize_clan_list(clans):
+    def serialize_board_list(clans):
         ret = []
         for clan in clans:
             ret.append(clan.serialize())
@@ -480,7 +480,7 @@ class PostModel:
 
     # cursor.fetchall() 을 통해 받아온 리스트 전체를
     # JSON 형태로 serialize 하는 메서드 입니다.
-    def serialize_clan_list(clans):
+    def serialize_post_list(clans):
         ret = []
         for clan in clans:
             ret.append(clan.serialize())
