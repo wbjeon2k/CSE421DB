@@ -46,7 +46,7 @@
   </thead>
   <tbody>
     {% for clan in clans %}
-    <tr onclick = "location.href = '{{clan['clanID']}}/'">
+    <tr onclick="onClickClan({{ clan['clan_id'] }})">
       <td class="col-1"> {{clan['clan_id']}}</th>
       <td class="col-5">{{clan['name']}}</td>
       <td class="col-3">{{clan['leader']['nickname']}}</td>
@@ -56,3 +56,11 @@
   </tbody>
 </table>
 {% endblock content %}
+
+{% block script %}
+<script>
+  const onClickClan = (clanID) => {
+    location.href = '/clans/' + clanID + '/';
+  }
+</script>
+{% endblock %}
