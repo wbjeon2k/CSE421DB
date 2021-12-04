@@ -2,6 +2,8 @@ import datetime
 
 import flask
 
+from database import Connection
+
 # sql query 의 fetchall() 통해 불러온 list 를
 # 각 모델의 serialize() method 를 통해 json 형식으로 변환 가능.
 """
@@ -136,14 +138,37 @@ class PartyModel:
     __tablename__ = 'party'
 
     # gameName 필요하지 않은 경우.
-    def __init__(self, partyID, name, playStartDatetime, leaderID, joinLink, gameID):
+    def __init__(self, partyID, name, playStartDatetime, leaderID, joinLink, gameID, related_fetch=False):
         self.partyID = partyID
         self.name = name
         self.playStartDatetime = playStartDatetime
         self.leaderID = leaderID
         self.joinLink = joinLink
         self.gameID = gameID
-        self.gameName = 'Default Name'
+
+        self.game = None
+        self.leader = None
+
+        if related_fetch:
+            conn = Connection.get_connect()
+            cur = conn.cursor()
+
+            game_retrieve_query = (
+                'SELECT game_id, name, (SELECT COUNT(*) FROM party WHERE party.game_id = game.game_id) '
+                'FROM game WHERE game_id=%s;'
+            )
+            cur.execute(game_retrieve_query, (gameID,))
+            fetched_game = cur.fetchone()
+            self.game = GameModel(*fetched_game).serialize()
+
+            # Load leader(service_user) and assign to instance variable
+            user_retrieve_query = 'SELECT * FROM service_user WHERE service_user.id=%s;'
+            cur.execute(user_retrieve_query, (leaderID,))
+            fetched_user = cur.fetchone()
+            fetched_user = list(fetched_user)  # Convert to list type to delete item
+            del fetched_user[3]
+            del fetched_user[2]
+            self.leader = ServiceUserModel(*fetched_user).serialize()
 
     def serialize(self):
         return dict(
