@@ -7,7 +7,7 @@
             PartyID
         </div>
         <div class="col">
-            {{party['partyID']}} <!-- Dictionary for test -->
+            {{party['partyID']}}
         </div>
     </div>
     <div class="row">
@@ -15,7 +15,7 @@
             Name
         </div>
         <div class="col">
-            {{party['name']}} <!-- Dictionary for test -->
+            {{party['name']}}
         </div>
     </div>
     <div class="row">
@@ -23,7 +23,7 @@
             Leader
         </div>
         <div class="col">
-            {{party['leader']}} <!-- Dictionary for test -->
+            {{party['leader']}} <!-- party['leader']에 리더의 닉네임을 넣는게 나을거 같아요-->
         </div>
     </div>
     <div class="row">
@@ -31,7 +31,7 @@
             Game
         </div>
         <div class="col">
-            {{party['game']}} <!-- Dictionary for test -->
+            {{party['game']}} <!-- 게임의 이름을 넣어야할거 같아요-->
         </div>
     </div>
     <div class="row">
@@ -39,7 +39,7 @@
             Date
         </div>
         <div class="col">
-            {{party['playStartDateTime']}} <!-- Dictionary for test -->
+            {{party['playStartDateTime']}}
         </div>
     </div>
     <div class="row">
@@ -47,14 +47,15 @@
             Users
         </div>
         <div class="col">
-            {{party['users']}} <!-- Dictionary for test -->
+            {{party['users']}} <!-- myclan['users'] 를 count를 한 int 값으로 할지, list로 해서 |length를 할지는 백엔드 쪽에서 (일단은 int값 인 것으로 가정)-->
         </div>
     </div>
-    {% if not is_my_party %}
-    <a href="join/" class="btn btn-primary">Join</a>
-    {% endif %}
-    {% if is_my_party %}
-    <a href="secession/" class="btn btn-primary">Secession</a>
+    {% if session.get('user') %}
+        {% if not is_my_party %}
+        <a href="join/" class="btn btn-primary">Join</a>
+        {% else %}
+        <a href="secession/" class="btn btn-primary">Secession</a>
+        {% endif %}
     {% endif %}
     <table class="table">
         <thead>
@@ -68,6 +69,10 @@
         </thead>
         <tbody>
             {% for user in party['member'] %}
+            <tr onclick = "location.href = '/users/{{user['userID']}}/'">
+                <td class="col-3">{{user['userID']}}</td>
+                <td class="col-9">{{user['nickname']}}</td>
+            </tr>
             {% endfor %}
         </tbody>
       </table>

@@ -4,6 +4,7 @@
 
 <a href="new/" class="btn btn-primary">Create</a>
 
+ {% if session.get('user') %}
 <table class="table table-hover">
     <thead>
       <tr>
@@ -18,16 +19,17 @@
     <tbody>
       {% for myparty in myparties %}
       <tr onclick = "location.href = '{{myparty['partyID']}}/'">
-        <td class="col-1"> {{myparty['partyID']}}</th> <!-- Dictionary for test -->
+        <td class="col-1"> {{myparty['partyID']}}</td>
         <td class="col-5">{{myparty['name']}}</td>
         <td class="col-5">{{myparty['game']}}</td>
-        <td class="col-2">{{myparty['leader']}}</td>
+        <td class="col-2">{{myparty['leader']}}</td> <!-- myparty['leader']에 리더의 닉네임을 넣는게 나을거 같아요 (밑의 party['leader']도 동일)-->
         <td class="col-2">{{myparty['date']}}</td>
         <td class="col-2">{{myparty['users']}}</td>
       </tr>
       {% endfor %}
     </tbody>
-  </table>
+</table>
+{% endif %}
 
 <table class="table table-hover">
   <thead>
@@ -43,7 +45,7 @@
   <tbody>
     {% for party in parties %}
     <tr onclick = "location.href = '{{party['partyID']}}/'">
-      <td class="col-1"> {{party['partyID']}}</th> <!-- Dictionary for test -->
+      <td class="col-1"> {{party['partyID']}}</td>
       <td class="col-5">{{party['name']}}</td>
       <td class="col-5">{{party['game']}}</td>
       <td class="col-2">{{party['leader']}}</td>
