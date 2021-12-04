@@ -34,14 +34,14 @@ def register_main_get():
         else:
             register_email = request.form.get('email')
             register_nickname = request.form.get('nickname')
-            find_duplicate_sql = 'SELECT COUNT(*) FROM {} WHERE (service_user.email = {} OR service_user.nickname = {});'
+            find_duplicate_sql = "SELECT COUNT(*) FROM {} WHERE (service_user.email = '{}' OR service_user.nickname = '{}');"
             conn = Connection.get_connect()
             cur = conn.cursor()
             print(register_email, register_nickname)
-            register_email = add_single_quote(register_email)
-            register_nickname = add_single_quote(register_nickname)
+            # register_email = add_single_quote(register_email)
+            # register_nickname = add_single_quote(register_nickname)
             #!!! @ 가 문자 그대로 들어가면 postgres 지정 연산자와 충돌 !!!
-            register_email = register_email.replace('@', 'at')
+            # register_email = register_email.replace('@', 'at')
             cur.execute(
                 find_duplicate_sql.format('service_user', register_email, register_nickname)
             )
@@ -58,9 +58,9 @@ def register_main_get():
                     'sha3-256', raw_pw.encode(), salt.encode(), 150000
                 )
                 enc_pw = b64encode(hash_pw).decode()  # bytes type change to base64 string
-                enc_pw = add_single_quote(enc_pw)
+                # enc_pw = add_single_quote(enc_pw)
                 insert_user_sql = (
-                    'INSERT INTO service_user VALUES (DEFAULT, {}, {}, {}, {}, DEFAULT, NULL);'
+                    "INSERT INTO service_user VALUES (DEFAULT, '{}', '{}', '{}', '{}', DEFAULT, NULL);"
                 )
 
                 # TODO: session 과 연결을 해야하는가? 자동 로그인 하는걸로
