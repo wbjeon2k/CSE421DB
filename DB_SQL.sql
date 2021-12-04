@@ -1,6 +1,6 @@
 --https://stackoverflow.com/questions/695289/cannot-simply-use-postgresql-table-name-relation-does-not-exist
 --https://stackoverflow.com/questions/41591386/postgresql-column-does-not-exist-but-it-actually-does?rq=1
-DROP TABLE IF EXISTS board CASCADE;
+-- DROP TABLE IF EXISTS board CASCADE;
 CREATE TABLE board
 (
 	board_id              SERIAL,
@@ -10,7 +10,7 @@ CREATE TABLE board
 ALTER TABLE board
 ADD PRIMARY KEY (board_id);
 
-DROP TABLE IF EXISTS clan CASCADE;
+-- DROP TABLE IF EXISTS clan CASCADE;
 CREATE TABLE clan
 (
 	clan_id               SERIAL,
@@ -21,7 +21,7 @@ CREATE TABLE clan
 ALTER TABLE clan
 ADD PRIMARY KEY (clan_id);
 
-DROP TABLE IF EXISTS comment CASCADE;
+-- DROP TABLE IF EXISTS comment CASCADE;
 CREATE TABLE comment
 (
 	comment_id            SERIAL,
@@ -34,7 +34,7 @@ CREATE TABLE comment
 ALTER TABLE comment
 ADD PRIMARY KEY (comment_id);
 
-DROP TABLE IF EXISTS game CASCADE;
+-- DROP TABLE IF EXISTS game CASCADE;
 CREATE TABLE game
 (
 	game_id               SERIAL,
@@ -44,7 +44,7 @@ CREATE TABLE game
 ALTER TABLE game
 ADD PRIMARY KEY (game_id);
 
-DROP TABLE IF EXISTS game_tag CASCADE;
+-- DROP TABLE IF EXISTS game_tag CASCADE;
 CREATE TABLE game_tag
 (
 	game_id               INTEGER NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE game_tag
 ALTER TABLE game_tag
 ADD PRIMARY KEY (game_id,tag_id);
 
-DROP TABLE IF EXISTS game_review CASCADE;
+-- DROP TABLE IF EXISTS game_review CASCADE;
 CREATE TABLE game_review
 (
 	review_id             INTEGER NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE game_review
 ALTER TABLE game_review
 ADD PRIMARY KEY (review_id);
 
-DROP TABLE IF EXISTS party CASCADE;
+-- DROP TABLE IF EXISTS party CASCADE;
 CREATE TABLE party
 (
 	party_id              SERIAL,
@@ -78,7 +78,7 @@ CREATE TABLE party
 ALTER TABLE party
 ADD PRIMARY KEY (party_id);
 
-DROP TABLE IF EXISTS post CASCADE;
+-- DROP TABLE IF EXISTS post CASCADE;
 CREATE TABLE post
 (
 	post_id               SERIAL,
@@ -96,7 +96,7 @@ CREATE TABLE post
 ALTER TABLE post
 ADD PRIMARY KEY (post_id);
 
-DROP TABLE IF EXISTS review CASCADE;
+-- DROP TABLE IF EXISTS review CASCADE;
 CREATE TABLE review
 (
 	review_id             SERIAL,
@@ -108,7 +108,7 @@ CREATE TABLE review
 ALTER TABLE review
 ADD PRIMARY KEY (review_id);
 
-DROP TABLE IF EXISTS tag CASCADE;
+-- DROP TABLE IF EXISTS tag CASCADE;
 CREATE TABLE tag
 (
 	tag_id                SERIAL,
@@ -118,7 +118,7 @@ CREATE TABLE tag
 ALTER TABLE tag
 ADD PRIMARY KEY (tag_id);
 
-DROP TABLE IF EXISTS service_user CASCADE;
+-- DROP TABLE IF EXISTS service_user CASCADE;
 CREATE TABLE service_user
 (
 	service_user_id               SERIAL,
@@ -133,7 +133,7 @@ CREATE TABLE service_user
 ALTER TABLE service_user
 ADD PRIMARY KEY (service_user_id);
 
-DROP TABLE IF EXISTS service_user_party CASCADE;
+-- DROP TABLE IF EXISTS service_user_party CASCADE;
 CREATE TABLE service_user_party
 (
 	service_user_id               INTEGER NOT NULL,
@@ -143,7 +143,7 @@ CREATE TABLE service_user_party
 ALTER TABLE service_user_party
 ADD PRIMARY KEY (service_user_id,party_id);
 
-DROP TABLE IF EXISTS service_user_review CASCADE;
+-- DROP TABLE IF EXISTS service_user_review CASCADE;
 CREATE TABLE service_user_review
 (
 	review_id             INTEGER NOT NULL,
