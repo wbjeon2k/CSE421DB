@@ -17,7 +17,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for post in clan %}
+        {% for post in my_clan_post_recent %}
         <tr onclick = "location.href = '{{post['postID']}}/'">
         <td class="col-1"> {{post['postID']}}</td> 
         <td class="col-4">{{post['title']}}</td>
@@ -46,7 +46,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for post in free %}
+        {% for post in free_post_recent %}
         <tr onclick = "location.href = '{{post['postID']}}/'">
         <td class="col-1"> {{post['postID']}}</td> 
         <td class="col-4">{{post['title']}}</td>
