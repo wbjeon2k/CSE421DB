@@ -135,6 +135,8 @@ def initialize_data():
                     'INSERT INTO game_tag (game_id, tag_id) VALUES (%s, %s)',
                     (game_tag['id'], tag_id),
                 )
+        # Make free board (자유게시판)
+        cur.execute('INSERT INTO board (board_id, clan_id) VALUES (DEFAULT, NULL)')
     except Exception as u:  # already inserted data -> Violate unique key constraint in PK
         conn.rollback()  # rollback all queries; not reflected to real db
         # return 'Faild; Already inserted data'
@@ -158,6 +160,7 @@ if __name__ == '__main__':
     import views.register_view as register_views
     import views.clan_views as clan_views
     import views.user_views as user_views
+    import views.board_views as board_views
 
     app.register_blueprint(party_views.bp)
     app.register_blueprint(game_views.bp)
@@ -166,6 +169,7 @@ if __name__ == '__main__':
     app.register_blueprint(logout_views.bp)
     app.register_blueprint(clan_views.bp)
     app.register_blueprint(user_views.bp)
+    app.register_blueprint(board_views.bp)
 
     app.secret_key = secret_key.from_file('/tmp/secret_key')
     app.run(host='0.0.0.0', port=8088)

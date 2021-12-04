@@ -387,7 +387,7 @@ class BoardModel:
 
         self.clan = None
         
-        if related_fetch:
+        if related_fetch and clan_id is not None:
             conn = Connection.get_connect()
             cur = conn.cursor()
             
