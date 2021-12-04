@@ -46,7 +46,7 @@
   </thead>
   <tbody>
     {% for clan in clans %}
-    <tr onclick="onClickClan({{ clan['clan_id'] }})">
+    <tr class="table-link-item" onclick="onClickClan({{ clan['clan_id'] }})">
       <td class="col-1"> {{clan['clan_id']}}</th>
       <td class="col-5">{{clan['name']}}</td>
       <td class="col-3">{{clan['leader']['nickname']}}</td>
