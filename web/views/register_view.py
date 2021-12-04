@@ -26,7 +26,7 @@ def register_main_get():
         if 'user' in session:
             return redirect(url_for('main'))
         else:
-            return render_template('register.html')
+            return render_template('register.html', form={})
 
     elif request.method == 'POST':
         if 'user' in session:
@@ -50,7 +50,7 @@ def register_main_get():
             email_duplicate_cnt = cur.fetchone()[0]
             if email_duplicate_cnt != 0:
                 return render_template(
-                    'register.html', error='Email already exist'
+                    'register.html', error='Email already exist', form=request.form
                 )
             cur.execute(
                 find_nickname_duplicate_sql.format('service_user', register_nickname)
@@ -58,7 +58,7 @@ def register_main_get():
             nickname_duplicate_cnt = cur.fetchone()[0]
             if nickname_duplicate_cnt != 0:
                 return render_template(
-                    'register.html', error='Nickname already exist'
+                    'register.html', error='Nickname already exist', form=request.form
                 )
             raw_pw = request.form['rawPassword']
             # TODO: salt 값 user 별로 random
@@ -83,7 +83,7 @@ def register_main_get():
             except Exception as e:
                 conn.rollback()
                 return render_template(
-                    'register.html', error='User register failed. Try again.'
+                    'register.html', error='User register failed. Try again.', form=request.form
                 )
             # session 을 하면 main page로 redirect
             return redirect(url_for('login.login_main'))
