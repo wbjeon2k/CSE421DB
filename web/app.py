@@ -156,12 +156,14 @@ if __name__ == '__main__':
     import views.logout_views as logout_views
     import views.party_views as party_views
     import views.register_view as register_views
+    import views.clan_views as clan_views
 
     app.register_blueprint(party_views.bp)
     app.register_blueprint(game_views.bp)
     app.register_blueprint(register_views.bp)
     app.register_blueprint(login_views.bp)
     app.register_blueprint(logout_views.bp)
+    app.register_blueprint(clan_views.bp)
 
     app.secret_key = secret_key.from_file('/tmp/secret_key')
     app.run(host='0.0.0.0', port=8088)

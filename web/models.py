@@ -330,3 +330,48 @@ class ServiceUserModel:
         for usr in list_of_service_user:
             ret.append(usr.serialize())
         return ret
+
+
+class ClanModel:
+    """Model for the Clan table"""
+
+    __tablename__ = 'Clan'
+
+    # encrypted pw skip!
+    def __init__(self, clan_id, name, leader_id, popular=None, related_fetch=False):
+        self.clan_id = clan_id
+        self.name = name
+        self.leader_id = leader_id
+        self.popular = popular
+
+        self.leader = None
+        
+        if related_fetch:
+            conn = Connection.get_connect()
+            cur = conn.cursor()
+            
+            # Load leader(service_user) and assign to instance variable
+            user_retrieve_query = 'SELECT * FROM service_user WHERE service_user_id=%s;'
+            cur.execute(user_retrieve_query, (leader_id,))
+            fetched_user = cur.fetchone()
+            fetched_user = list(fetched_user)  # Convert to list type to delete item
+            del fetched_user[3]
+            del fetched_user[2]
+            self.leader = ServiceUserModel(*fetched_user).serialize()
+
+    def serialize(self):
+        return dict(
+            clan_id=self.clan_id,
+            name=self.name,
+            leader_id=self.leader_id,
+            leader=self.leader,
+            popular=self.popular
+        )
+
+    # cursor.fetchall() 을 통해 받아온 리스트 전체를
+    # JSON 형태로 serialize 하는 메서드 입니다.
+    def serialize_clan_list(clans):
+        ret = []
+        for clan in clans:
+            ret.append(clan.serialize())
+        return ret

@@ -1,15 +1,22 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tablelist.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/clans.css') }}">
+{% endblock %}
 
-{% if session.get('user') and session['user'].get('clanID') != None %}
+{% block page_title %}Clans{% endblock %}
+
+{% block content %}
+{% if session.get('user') and session['user'].get('clanID') %}
 <div class="container">
   <div class="row">
     <div class="col-2">
         Clan ID
     </div>
     <div class="col">
-        {{myclan['clanID']}}
+        {{my_clan['clan_id']}}
     </div>
   </div>
   <div class="row">
@@ -17,7 +24,7 @@
       Name
     </div>
     <div class="col">
-      {{myclan['name']}}
+      {{my_clan['name']}}
     </div>
   </div>
   <div class="row">
@@ -25,7 +32,7 @@
       Leader
     </div>
     <div class="col">
-      {{myclan['leader']}} <!-- myclan['leader']에 리더의 닉네임을 넣는게 나을거 같아요 (밑의 clan['leader']도 동일)-->
+      {{my_clan['leader']}} <!-- my_clan['leader']에 리더의 닉네임을 넣는게 나을거 같아요 (밑의 clan['leader']도 동일)-->
     </div>
   </div>
   <div class="row">
@@ -33,9 +40,20 @@
       Users
     </div>
     <div class="col">
-      {{myclan['users']|length}} <!-- myclan['users'] 를 count를 한 int 값으로 할지, list로 해서 |length를 할지는 백엔드 쪽에서-->
+      {{my_clan['popular']}}
     </div>
   </div>
+</div>
+{% elif session.get('user') %} {# user logged in but, has not clan #}
+<div class="d-flex flex-row-reverse action-btn-group">
+  <a href="/clans/new/" class="btn btn-outline-dark">Create New Clan</a>
+</div>
+<div class="alert alert-dark">
+  You have not a clan. Create new clan or join below list :)
+</div>
+{% else %}
+<div class="d-flex flex-row-reverse action-btn-group">
+  <a href="/login/" class="btn btn-outline-dark">Login to create new clan</a>
 </div>
 {% endif %}
 
@@ -46,17 +64,16 @@
       <th scope="col">Clan ID</th>
       <th scope="col">Name</th>
       <th scope="col">Leader</th>
-      <th scope="col">Date</th>
       <th scope="col">Popular</th>
     </tr>
   </thead>
   <tbody>
     {% for clan in clans %}
     <tr onclick = "location.href = '{{clan['clanID']}}/'">
-      <td class="col-1"> {{clan['clanID']}}</th>
+      <td class="col-1"> {{clan['clan_id']}}</th>
       <td class="col-5">{{clan['name']}}</td>
-      <td class="col-3">{{clan['leader']}}</td>
-      <td class="col-3">{{clan['users']|length}}</td> <!--myclan['users']와 동일-->
+      <td class="col-3">{{clan['leader']['nickname']}}</td>
+      <td class="col-3">{{clan['popular']}}</td>
     </tr>
     {% endfor %}
   </tbody>
