@@ -1,19 +1,18 @@
+import hashlib
 import json
+import sys
 from base64 import b64encode
+from datetime import datetime, timezone
 
 import psycopg2 as pg2
-from flask import Blueprint, Flask, redirect, render_template, url_for
+from database import Connection
+from flask import (Blueprint, Flask, redirect, render_template, request,
+                   session, url_for)
 from jinja2 import Template
-from flask import session, request
 from psycopg2 import sql
 from psycopg2.sql import SQL
-from database import Connection
+
 from models import *
-from datetime import datetime, timezone
-from database import Connection
-from models import *
-import hashlib
-import sys
 
 # /login blueprint
 bp = Blueprint('login', __name__, url_prefix='/login')
