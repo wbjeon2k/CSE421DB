@@ -47,7 +47,6 @@ def party_main():
     service_user_id = None
     if 'user' in session:
         service_user_id = session['user'].get('service_user_id')
-    print(session)
 
     my_parties_list = []
 
