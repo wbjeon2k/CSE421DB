@@ -26,7 +26,7 @@ def login_main():
         if 'user' in session:
             return redirect(url_for('main'))
         else:
-            return render_template('login.html')
+            return render_template('login.html', form={})
 
     elif request.method == 'POST':
         if 'user' in session:
@@ -108,8 +108,8 @@ def login_main():
                 return redirect(url_for('main'))
             else:
                 # TODO: login_template 이름, parameter 설정.
-                return render_template('login.html', error='Wrong email or password')
+                return render_template('login.html', error='Wrong email or password', form=request.form)
         elif user_count == 0:
-            return render_template('login.html', error='Wrong email or password')
+            return render_template('login.html', error='Wrong email or password', form=request.form)
         else:
-            return render_template('login.html', error='Wrong email or password')
+            return render_template('login.html', error='Wrong email or password', form=request.form)
