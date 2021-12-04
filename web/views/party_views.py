@@ -87,7 +87,13 @@ def party_detail_method(partyid):
     cur = conn.cursor()
 
     # 주어진 partyid 로 파티 찾기.
-    get_party_sql_base = 'SELECT * FROM party WHERE (party_id = {})'
+    # get_party_sql_base = 'SELECT * FROM party WHERE (party_id = {})'
+    get_party_sql_base = (
+        'SELECT party_id, name, playstart_datetime, leader_id, joinLink, game_id, '
+        '(SELECT COUNT(*) FROM service_user_party WHERE party_id=party.party_id) as popular '
+        'FROM party '
+        'WHERE (party_id = {})'
+    )
     get_party_sql = get_party_sql_base.format(partyid)
 
     cur.execute(get_party_sql)
@@ -105,17 +111,20 @@ def party_detail_method(partyid):
         return 'error: no such game. frontend error support needed'
 
     # PartyModel 객체에 게임 이름 추가.
-    fetched_party = PartyModel(
-        party_info[0],
-        party_info[1],
-        party_info[2],
-        party_info[3],
-        party_info[4],
-        party_info[5],
-    )
+    fetched_party = PartyModel(*party_info, related_fetch=True)
     fetched_party.set_game_name(game_name)
 
-    return render_template('partyDetail.html', party=fetched_party)
+    retrieve_members_query = (
+        'SELECT service_user_id, email, nickname, isAdmin, clan_id '
+        'FROM service_user WHERE service_user_id IN'
+        '(SELECT service_user_id FROM service_user_party WHERE party_id=%s)'
+    )
+    cur.execute(retrieve_members_query, (partyid,))
+    members_tuple = cur.fetchall()
+    members_objs = [ServiceUserModel(*each) for each in members_tuple]
+    members = ServiceUserModel.serialize_service_user_list(members_objs)
+
+    return render_template('partyDetail.html', party=fetched_party, members=members)
 
 
 # 새로운 파티 생성 get method

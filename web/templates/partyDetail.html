@@ -1,55 +1,28 @@
 {% extends 'base.html' %}
 
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tablelist.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/partydetail.css') }}">
+{% endblock %}
+
 {% block content %}
-<div class="container"> <!-- Design needed -->
-    <div class="row">
-        <div class="col">
-            PartyID
-        </div>
-        <div class="col">
-            {{party['partyID']}}
-        </div>
+<div class="container">
+    <div class="page-title-group">
+        <h1 class="page-title">
+            Party#{{ party['partyID']}}
+            <small>{{ party['name'] }}</small>
+        </h1>
     </div>
-    <div class="row">
-        <div class="col">
-            Name
-        </div>
-        <div class="col">
-            {{party['name']}}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            Leader
-        </div>
-        <div class="col">
-            {{party['leader']}} <!-- party['leader']에 리더의 닉네임을 넣는게 나을거 같아요-->
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            Game
-        </div>
-        <div class="col">
-            {{party['game']}} <!-- 게임의 이름을 넣어야할거 같아요-->
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            Date
-        </div>
-        <div class="col">
-            {{party['playStartDateTime']}}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            Users
-        </div>
-        <div class="col">
-            {{party['users']}} <!-- myclan['users'] 를 count를 한 int 값으로 할지, list로 해서 |length를 할지는 백엔드 쪽에서 (일단은 int값 인 것으로 가정)-->
-        </div>
-    </div>
+    <h1>
+        <small>Party Leader is</small>
+        <strong class="rainbow-text">{{ party['leader']['nickname'] }}</strong>
+        <small>and we will play </small>
+        <strong>{{ party['game']['name'] }}</strong><br>
+        <small>at </small>
+        <strong>{{ party['playStartDatetime'].strftime('%Y-%m-%d %H:%M') }}</strong><br>
+        <small>We have </small> <strong>{{ party['popular'] }}</strong> <small>member{% if party['popular'] > 1 %}s{% endif %}</small>
+    </h1>
     {% if session.get('user') %}
         {% if not is_my_party %}
         <a href="join/" class="btn btn-primary">Join</a>
@@ -57,24 +30,27 @@
         <a href="secession/" class="btn btn-primary">Secession</a>
         {% endif %}
     {% endif %}
-    <table class="table">
+    <table id="member-list" class="table">
         <thead>
           <tr>
-            <th scope="col">User ID</th>
-            <th scope="col">Nickname</th>
-            <th scope="col">Leader</th>
-            <th scope="col">Date</th>
-            <th scope="col">Popular</th>
+            <th class="col-9" scope="col">Nickname</th>
           </tr>
         </thead>
         <tbody>
-            {% for user in party['member'] %}
-            <tr onclick = "location.href = '/users/{{user['userID']}}/'">
-                <td class="col-3">{{user['userID']}}</td>
-                <td class="col-9">{{user['nickname']}}</td>
+            {% for user in members %}
+            <tr class="table-link-item" onclick="onClickUser({{ user['service_user_id'] }});">
+                <td>{{user['nickname']}}</td>
             </tr>
             {% endfor %}
         </tbody>
       </table>
 </div>
 {% endblock content %}
+
+{% block script %}
+<script>
+  const onClickUser = (userID) => {
+    location.href = '/users/' + userID + '/';
+  }
+</script>
+{% endblock %}
