@@ -124,6 +124,7 @@ CREATE TABLE service_user
 	service_user_id               SERIAL,
 	email                VARCHAR(128) NOT NULL,
 	encrypted_password   VARCHAR(256) NOT NULL,
+	salt               VARCHAR(256) NOT NULL,
 	nickname             VARCHAR(64) NOT NULL,
 	isAdmin             BOOLEAN NOT NULL DEFAULT false,
 	clan_id               INTEGER NULL
