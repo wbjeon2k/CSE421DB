@@ -96,3 +96,34 @@ def board_detail(boardtype):
     return render_template(
         'boardDetail.html', boardtype=boardtype, notice_posts=notice_posts, post=post
     )
+
+
+@bp.route('/<boardtype>/new/', methods=['GET', 'POST'])
+def post_new(boardtype):
+    conn = Connection.get_connect()
+    cur = conn.cursor()
+
+    # If user exist, set user and if that user has clan, set clan_id variable
+    user = None
+    clan_id = None
+    if 'user' in session:
+        user = session['user']
+        if 'clanID' in user:
+            clan_id = user['clanID']
+        elif boardtype == 'clan':  # User has not clan but try to access clan board -> redirect
+            return redirect(url_for('boards.board_main'))
+    elif boardtype == 'clan':  # Not logged in but try to access clan boadrd -> redirect to login
+            return redirect(url_for('login.login_main'))
+
+    # Query for get clan
+    retrieve_clan_query = 'SELECT * FROM clan WHERE clan_id=%s'
+    cur.execute(retrieve_clan_query, (clan_id,))
+    clan_fetch = cur.fetchone()
+    clan = ClanModel(*clan_fetch, related_fetch=True).serialize()
+
+    if request.method == 'GET':
+        return render_template(
+            'newPost.html', boardtype=boardtype, clan=clan
+        )
+    elif request.method == 'POST':
+        return ''
