@@ -212,7 +212,7 @@ def post_comment(boardtype, postid):
     cur = conn.cursor()
     
     if 'user' not in session:
-        return redirect(url_for('login.loginmain'))
+        return redirect(url_for('login.login_main'))
 
     user = session['user']
     user_clan_id = user.get('clanID')
@@ -247,5 +247,56 @@ def post_comment(boardtype, postid):
         # Insert to comment, parameter of each posotion is comment_id, *content, *create_datetime, *service_user_id, *post_id
         leave_comment_query = 'INSERT INTO comment VALUES (DEFAULT, %s, %s, %s, %s)'
         cur.execute(leave_comment_query, (content, now, user['service_user_id'], postid))
+        conn.commit()
+    return redirect(url_for('boards.post_detail', boardtype=boardtype, postid=postid))
+
+
+@bp.route('/<boardtype>/<int:postid>/<thumbs_action>/')
+def post_thumbsup(boardtype, postid, thumbs_action):
+    conn = Connection.get_connect()
+    cur = conn.cursor()
+    
+    if 'user' not in session:
+        return redirect(url_for('login.login_main'))
+
+    user = session['user']
+    user_clan_id = user.get('clanID')
+
+    retrieve_post_query = 'SELECT * FROM post WHERE post_id=%s'
+    cur.execute(retrieve_post_query, (postid,))
+    post_fetch = cur.fetchone()
+    post = PostModel(*post_fetch, related_fetch=True).serialize()
+
+    # boardtype cannot restrict clan board
+    # So, we have permission check using post id (post -> board -> clan)
+    retrieve_board_query = 'SELECT * FROM board WHERE board_id=%s'
+    cur.execute(retrieve_board_query, (post['board_id'],))
+    board_fetch = cur.fetchone()
+    board = BoardModel(*board_fetch, related_fetch=True).serialize()
+
+    board_clan_id = board['clan_id']
+
+    user_has_permission = False
+    if board_clan_id is None:  # free board
+        user_has_permission = True
+    elif user_clan_id is None:  # If user not logged in or has not clan -> cannot use clan board
+        user_has_permission = False
+    elif user_clan_id != board_clan_id:  # User is not this clan member
+        user_has_permission = False
+    else:  # User has permission
+        user_has_permission = True
+
+    column_name = ''
+    if thumbs_action == 'thumbsup':
+        column_name = 'thumbsUp'
+    elif thumbs_action == 'thumbsdown':
+        column_name = 'thumbsDown'
+    else:  # Wrong format -> do nothing, only redirect to detail page
+        user_has_permission = False
+
+    if user_has_permission:
+        # Update current post thumbs up / down count
+        tumbsup_query = f'UPDATE post SET {column_name} = {column_name} + 1 WHERE post_id=%s'
+        cur.execute(tumbsup_query, (postid,))
         conn.commit()
     return redirect(url_for('boards.post_detail', boardtype=boardtype, postid=postid))
