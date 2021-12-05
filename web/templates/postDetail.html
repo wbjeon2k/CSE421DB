@@ -6,8 +6,16 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/board.css') }}">
 {% endblock %}
 
+{% block top_content %}
+<a href="/boards/{{ boardtype }}/">&lt; Back to Post List</a>
+{% endblock %}
+
 {% block page_title %}
-{{ boardtype }} board detail
+{% if boardtype == 'free' %}
+This is free board
+{% else %}
+This is clan board
+{% endif %}
 {% endblock %}
 
 {% block content %}
