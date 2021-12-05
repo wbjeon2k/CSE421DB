@@ -1,3 +1,4 @@
+import sys
 import json
 from datetime import datetime as dt  # datetime conflict? 
 
@@ -115,6 +116,17 @@ def post_new(boardtype):
     elif boardtype == 'clan':  # Not logged in but try to access clan boadrd -> redirect to login
             return redirect(url_for('login.login_main'))
 
+    retrieve_notice_post = 'SELECT * FROM post WHERE board_id=%s'
+    
+    if boardtype == 'free':  # Set variable for free board
+        retrieve_board_query = 'SELECT board_id FROM board WHERE clan_id is NULL'
+        cur.execute(retrieve_board_query)
+        board_id = cur.fetchone()[0]
+    elif boardtype == 'clan':  # Ser variable for clan board
+        retrieve_board_query = 'SELECT board_id FROM board WHERE clan_id=%s'
+        cur.execute(retrieve_board_query, (clan_id,))
+        board_id = cur.fetchone()[0]
+
     # Query for get clan
     retrieve_clan_query = 'SELECT * FROM clan WHERE clan_id=%s'
     cur.execute(retrieve_clan_query, (clan_id,))
@@ -126,4 +138,26 @@ def post_new(boardtype):
             'newPost.html', boardtype=boardtype, clan=clan
         )
     elif request.method == 'POST':
-        return ''
+        isNotice = request.form.get('isNotice', 'false')
+        if isNotice == 'on':  # If checkbox checked -> value set 'on'
+            isNotice = 'true'
+        if session['user']['service_user_id'] != clan['leader_id']:  # logged in user is not leader of clan -> cannot write notice
+            isNotice = 'false'
+            
+        title = request.form.get('title')
+        content = request.form.get('content')
+
+        # Create post; parameter of each position is;
+        # post_id, *title, *content, *create_datetime, *isNotice, thumbsUp, thumsDown, viewCount, *service_user_id, *board_id
+        # After insert, get post_id to using RETURNING
+        create_post_query = 'INSERT INTO post VALUES (DEFAULT, %s, %s, %s, %s, DEFAULT, DEFAULT, DEFAULT, %s, %s) RETURNING post_id'
+
+        now = dt.now().strftime("%Y-%m-%d %H:%M:%S")
+        cur.execute(create_post_query, (title, content, now, isNotice, user['service_user_id'], board_id))
+        post_id = cur.fetchone()[0]
+        return redirect(url_for('boards.post_detail', postid=post_id))
+
+
+@bp.route('/<boardtype>/<int:postid>/')
+def post_detail(boardtype, postid):
+    return
