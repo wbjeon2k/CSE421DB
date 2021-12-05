@@ -155,9 +155,51 @@ def post_new(boardtype):
         now = dt.now().strftime("%Y-%m-%d %H:%M:%S")
         cur.execute(create_post_query, (title, content, now, isNotice, user['service_user_id'], board_id))
         post_id = cur.fetchone()[0]
-        return redirect(url_for('boards.post_detail', postid=post_id))
+        return redirect(url_for('boards.post_detail', boardtype=boardtype, postid=post_id))
 
 
 @bp.route('/<boardtype>/<int:postid>/')
 def post_detail(boardtype, postid):
-    return
+    conn = Connection.get_connect()
+    cur = conn.cursor()
+
+    user_clan_id = None
+    if 'user' in session:
+        user_clan_id = session['user'].get('clanID')
+
+    retrieve_post_query = 'SELECT * FROM post WHERE post_id=%s'
+    cur.execute(retrieve_post_query, (postid,))
+    post_fetch = cur.fetchone()
+    post = PostModel(*post_fetch, related_fetch=True).serialize()
+
+    retrieve_comment_query = 'SELECT * FROM comment WHERE post_id=%s'
+    cur.execute(retrieve_comment_query, (post['post_id'],))
+    comment_fetch = cur.fetchall()
+    comment_objs = [CommentModel(*each, related_fetch=True) for each in comment_fetch]
+    comments = CommentModel.serialize_comment_list(comment_objs)
+
+    # boardtype cannot restrict clan board
+    # So, we have permission check using post id (post -> board -> clan)
+    retrieve_board_query = 'SELECT * FROM board WHERE board_id=%s'
+    cur.execute(retrieve_board_query, (post['board_id'],))
+    board_fetch = cur.fetchone()
+    board = BoardModel(*board_fetch, related_fetch=True).serialize()
+
+    board_clan_id = board['clan_id']
+
+    user_has_permission = False
+    if board_clan_id is None:  # free board
+        user_has_permission = True
+    elif user_clan_id is None:  # If user not logged in or has not clan -> cannot use clan board
+        user_has_permission = False
+    elif user_clan_id != board_clan_id:  # User is not this clan member
+        user_has_permission = False
+    else:  # User has permission
+        user_has_permission = True
+
+    if user_has_permission:
+        return render_template(
+            'postDetail.html', post=post, comments=comments
+        )
+    else:
+        return redirect(url_for('boards.board_detail', boardtype=boardtype))
