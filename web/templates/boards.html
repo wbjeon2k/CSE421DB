@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-{% if clan != None %}
+{% if 'user' in session and session['user']['clanID'] %}
 <h1 class="page-title">Recent Clanboard Posts</h1>
 <a class="more-posts-link" href="/boards/clan/">More posts...</a>
 <table class="table table-hover caption-top">
