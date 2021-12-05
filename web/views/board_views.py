@@ -102,6 +102,9 @@ def post_new(boardtype):
     conn = Connection.get_connect()
     cur = conn.cursor()
 
+    if 'user' not in session:  # If not logged in, redirect to log in page
+        return redirect(url_for('login.login_main'))
+
     # If user exist, set user and if that user has clan, set clan_id variable
     user = None
     clan_id = None
