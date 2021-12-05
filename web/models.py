@@ -436,6 +436,7 @@ class PostModel:
         viewCount, service_user_id, board_id, related_fetch=False):
         self.post_id = post_id
         self.title = title
+        self.content = content
         self.create_datetime = create_datetime
         self.isNotice = isNotice
         self.thumbsUp = thumbsUp
@@ -470,6 +471,7 @@ class PostModel:
         return dict(
             post_id=self.post_id,
             title=self.title,
+            content=self.content,
             create_datetime=self.create_datetime,
             isNotice=self.isNotice,
             thumbsUp=self.thumbsUp,
