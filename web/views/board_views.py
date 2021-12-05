@@ -144,7 +144,7 @@ def post_new(boardtype):
         isNotice = request.form.get('isNotice', 'false')
         if isNotice == 'on':  # If checkbox checked -> value set 'on'
             isNotice = 'true'
-        if session['user']['service_user_id'] != clan['leader_id']:  # logged in user is not leader of clan -> cannot write notice
+        if session['user']['service_user_id'] != clan.get('leader_id'):  # logged in user is not leader of clan -> cannot write notice
             isNotice = 'false'
             
         title = request.form.get('title')
