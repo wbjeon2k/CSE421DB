@@ -10,7 +10,7 @@ from psycopg2.errors import DuplicateTable, UniqueViolation
 from secret_key import secret_key
 
 from database import Connection
-from models import TestModel
+from models import *
 
 app = Flask(__name__)
 # db = SQLAlchemy()
@@ -19,7 +19,30 @@ app = Flask(__name__)
 # test main page for connection test
 @app.route('/')
 def main():
-    return render_template('base.html')
+    conn = Connection.get_connect()
+    cur = conn.cursor()
+    # Get top 20 popular parties, popular means how may user were joined
+    popular_parties_query = (
+        'SELECT party_id, name, playstart_datetime, leader_id, joinLink, game_id, '
+        '(SELECT COUNT(*) FROM service_user_party WHERE party_id=party.party_id) as popular '
+        'FROM party ORDER BY popular DESC LIMIT 20'
+    )
+    # Get top 20 popular clans, popular means how may user were joined
+    popular_clans_query = (
+        'SELECT clan_id, name, leader_id, '
+        '(SELECT COUNT(*) FROM service_user WHERE clan_id=clan.clan_id) as popular '
+        'FROM clan ORDER BY popular DESC LIMIT 20'
+    )
+    cur.execute(popular_parties_query)
+    popular_parties_fetch = cur.fetchall()
+    popular_parties = PartyModel.serialize_party_list(popular_parties_fetch)
+    
+    cur.execute(popular_clans_query)
+    popular_fetch = cur.fetchall()
+    popular_clan_objs = [ClanModel(*each, related_fetch=True) for each in popular_fetch]
+    popular_clans = ClanModel.serialize_clan_list(popular_clan_objs)
+
+    return render_template('base.html', popular_parties=popular_parties, popular_clans=popular_clans)
 
 
 # generate sample_db table for test/chk
