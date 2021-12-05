@@ -24,7 +24,7 @@
         {% for post in my_clan_post_recent %}
             <tr class="table-link-item" onclick="onClickParty({{ party['partyID'] }})">
                 <td class="col"> {{post['post_id']}}</td> 
-                <td class="col">{{post['title']}}</td>
+                <td class="col">{{post['title']|truncatechars:30}}</td>
                 <td class="col">{{post['service_user']['nickname']}}</td>
                 <td class="col">{{post['create_datetime'].strftime('%Y-%m-%d %H:%M')}}</td>
                 <td class="col">{{post['viewCount']}}</td>
@@ -57,7 +57,7 @@
         {% for post in free_post_recent %}
         <tr class="table-link-item" onclick="onClickParty({{ party['partyID'] }})">
             <td class="col"> {{post['post_id']}}</td> 
-            <td class="col">{{post['title']}}</td>
+            <td class="col">{{post['title']|truncatechars:30}}</td>
             <td class="col">{{post['service_user']['nickname']}}</td>
             <td class="col">{{post['create_datetime'].strftime('%Y-%m-%d %H:%M')}}</td>
             <td class="col">{{post['viewCount']}}</td>
