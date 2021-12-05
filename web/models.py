@@ -512,18 +512,18 @@ class CommentModel:
             
             # Load leader(service_user) and assign to instance variable
             user_retrieve_query = 'SELECT * FROM service_user WHERE service_user_id=%s;'
-            cur.execute(user_retrieve_query, (leader_id,))
+            cur.execute(user_retrieve_query, (service_user_id,))
             fetched_user = cur.fetchone()
             fetched_user = list(fetched_user)  # Convert to list type to delete item
             del fetched_user[3]
             del fetched_user[2]
-            self.leader = ServiceUserModel(*fetched_user).serialize()
+            self.service_user = ServiceUserModel(*fetched_user).serialize()
             
             # Load post and assign to instance variable
             post_retrieve_query = 'SELECT * FROM post WHERE post_id=%s;'
             cur.execute(post_retrieve_query, (post_id,))
             fetched_post = cur.fetchone()
-            self.post = ServiceUserModel(*fetched_post).serialize()
+            self.post = PostModel(*fetched_post).serialize()
 
     def serialize(self):
         return dict(

@@ -198,7 +198,54 @@ def post_detail(boardtype, postid):
 
     if user_has_permission:
         return render_template(
-            'postDetail.html', post=post, comments=comments
+            'postDetail.html', post=post, comments=comments, boardtype=boardtype, postid=postid
         )
     else:
         return redirect(url_for('boards.board_detail', boardtype=boardtype))
+
+
+# Comment, Thumbs Up/Down permissions are same
+# If user leave comment and thumbs up/down -> user can read and write post
+@bp.route('/<boardtype>/<int:postid>/comments/', methods=['POST'])
+def post_comment(boardtype, postid):
+    conn = Connection.get_connect()
+    cur = conn.cursor()
+    
+    if 'user' not in session:
+        return redirect(url_for('login.loginmain'))
+
+    user = session['user']
+    user_clan_id = user.get('clanID')
+
+    retrieve_post_query = 'SELECT * FROM post WHERE post_id=%s'
+    cur.execute(retrieve_post_query, (postid,))
+    post_fetch = cur.fetchone()
+    post = PostModel(*post_fetch, related_fetch=True).serialize()
+
+    # boardtype cannot restrict clan board
+    # So, we have permission check using post id (post -> board -> clan)
+    retrieve_board_query = 'SELECT * FROM board WHERE board_id=%s'
+    cur.execute(retrieve_board_query, (post['board_id'],))
+    board_fetch = cur.fetchone()
+    board = BoardModel(*board_fetch, related_fetch=True).serialize()
+
+    board_clan_id = board['clan_id']
+
+    user_has_permission = False
+    if board_clan_id is None:  # free board
+        user_has_permission = True
+    elif user_clan_id is None:  # If user not logged in or has not clan -> cannot use clan board
+        user_has_permission = False
+    elif user_clan_id != board_clan_id:  # User is not this clan member
+        user_has_permission = False
+    else:  # User has permission
+        user_has_permission = True
+
+    if user_has_permission:
+        content = request.form.get('content')
+        now = dt.now().strftime('%Y-%m-%d %H:%M:%S')
+        # Insert to comment, parameter of each posotion is comment_id, *content, *create_datetime, *service_user_id, *post_id
+        leave_comment_query = 'INSERT INTO comment VALUES (DEFAULT, %s, %s, %s, %s)'
+        cur.execute(leave_comment_query, (content, now, user['service_user_id'], postid))
+        conn.commit()
+    return redirect(url_for('boards.post_detail', boardtype=boardtype, postid=postid))

@@ -40,7 +40,7 @@
   </div>
 </div>
 {% if session.get('user') %}
-<form method="POST" action="/boards/{{boardtype}}/{{postID}}/comments/"> 
+<form method="POST" action="/boards/{{boardtype}}/{{postid}}/comments/"> 
     <div class="mb-3">
         <label for="content" class="form-label">Content</label>
         <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
