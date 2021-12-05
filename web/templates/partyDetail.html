@@ -22,6 +22,15 @@
         <small>at </small>
         <strong>{{ party['playStartDatetime'].strftime('%Y-%m-%d %H:%M') }}</strong><br>
         <small>We have </small> <strong>{{ party['popular'] }}</strong> <small>member{% if party['popular'] > 1 %}s{% endif %}</small>
+        
+        {% if 'user' in session and session['user'] in members %}
+            <div class="go-to-link-block">
+                <a href="{{ party['joinLink'] }}" target="_blank" class="btn btn-dark go-to-link">
+                    Go to Link
+                    <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+            </div>
+        {% endif %}
     </h1>
 
     {% if not session.get('user') %}
