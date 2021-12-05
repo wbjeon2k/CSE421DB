@@ -51,7 +51,7 @@ This is clan board
 <form method="POST" action="/boards/{{boardtype}}/{{postid}}/comments/"> 
     <div class="mb-3">
         <label for="content" class="form-label">Content</label>
-        <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+        <textarea class="form-control" id="content" name="content" rows="3" maxlength="85" required></textarea>
     </div>
     <button type="submit" class="btn btn-outline-dark">Leave comment</button>
 </form>

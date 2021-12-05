@@ -9,7 +9,7 @@
         <form method="POST" action="/parties/new/">
             <div class="mb-3">
                 <label for="name" class="form-label">Party Name</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <input type="text" class="form-control" id="name" name="name" maxlength="20" required>
             </div>
             <div class="mb-3">
                 <label for="playStartDateTime" class="form-label">Play Start Datetime</label>
@@ -17,7 +17,7 @@
             </div>
             <div class="mb-3">
                 <label for="joinLink" class="form-label">Join Link</label>
-                <input type="text" class="form-control" id="joinLink" name="joinLink" required>
+                <input type="text" class="form-control" id="joinLink" name="joinLink" maxlength="170" required>
             </div>
             <div class="mb-3">
                 <label for="gameID" class="form-label">Game to Play</label>
