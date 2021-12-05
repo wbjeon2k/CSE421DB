@@ -116,6 +116,8 @@ def post_new(boardtype):
 
     retrieve_notice_post = 'SELECT * FROM post WHERE board_id=%s'
     
+    clan = {}
+
     if boardtype == 'free':  # Set variable for free board
         retrieve_board_query = 'SELECT board_id FROM board WHERE clan_id is NULL'
         cur.execute(retrieve_board_query)
@@ -125,11 +127,11 @@ def post_new(boardtype):
         cur.execute(retrieve_board_query, (clan_id,))
         board_id = cur.fetchone()[0]
 
-    # Query for get clan
-    retrieve_clan_query = 'SELECT * FROM clan WHERE clan_id=%s'
-    cur.execute(retrieve_clan_query, (clan_id,))
-    clan_fetch = cur.fetchone()
-    clan = ClanModel(*clan_fetch, related_fetch=True).serialize()
+        # Query for get clan
+        retrieve_clan_query = 'SELECT * FROM clan WHERE clan_id=%s'
+        cur.execute(retrieve_clan_query, (clan_id,))
+        clan_fetch = cur.fetchone()
+        clan = ClanModel(*clan_fetch, related_fetch=True).serialize()
 
     if request.method == 'GET':
         return render_template(
