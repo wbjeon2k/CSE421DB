@@ -197,6 +197,10 @@ def post_detail(boardtype, postid):
         user_has_permission = True
 
     if user_has_permission:
+        # If access to post detail -> increase viewcount
+        update_viewcount_query = 'UPDATE post SET viewCount = viewCount + 1 WHERE post_id=%s'
+        cur.execute(update_viewcount_query, (postid,))
+        conn.commit()
         return render_template(
             'postDetail.html', post=post, comments=comments, boardtype=boardtype, postid=postid
         )
