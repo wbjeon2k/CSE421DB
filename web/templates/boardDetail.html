@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tablelist.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/board.css') }}">
+{% endblock %}
+
 {% block page_title %}
 {% if boardtype == 'free' %}
     Free board
@@ -31,7 +37,7 @@
     </thead>
     <tbody>
         {% for post in notice_posts %}
-            <tr>
+            <tr class="table-link-item" onclick="onClickPost('{{ boardtype }}', {{ post['post_id'] }})">
                 <td class="col"> {{post['post_id']}}</td> 
                 <td class="col">{{post['title']}}</td>
                 <td class="col">{{post['service_user']['nickname']}}</td>
@@ -62,7 +68,7 @@
     </thead>
     <tbody>
         {% for post in posts %}
-            <tr {% if post['isNotice'] %}class="bg-info" {% endif %}>
+            <tr class="table-link-item{% if post['isNotice'] %} bg-info{% endif %}" onclick="onClickPost('{{ boardtype }}', {{ post['post_id'] }})">
                 <td class="col"> {{post['post_id']}}</td> 
                 <td class="col">{{post['title']}}</td>
                 <td class="col">{{post['service_user']['nickname']}}</td>
@@ -79,4 +85,12 @@
         {% endfor %}
     </tbody>
 </table>
+{% endblock %}
+
+{% block script %}
+<script>
+  const onClickPost = (boardType, postID) => {
+    location.href = '/boards/' + boardType + '/' + postID + '/';
+  }
+</script>
 {% endblock %}
