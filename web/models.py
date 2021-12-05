@@ -455,6 +455,9 @@ class PostModel:
             service_user_retrieve_query = 'SELECT * FROM service_user WHERE service_user_id=%s;'
             cur.execute(service_user_retrieve_query, (service_user_id,))
             fetched_user = cur.fetchone()
+            fetched_user = list(fetched_user)  # Convert to list type to delete item
+            del fetched_user[3]
+            del fetched_user[2]
             self.service_user = ServiceUserModel(*fetched_user).serialize()
             
             # Load writer(service_user) and assign to instance variable
