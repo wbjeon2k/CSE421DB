@@ -464,7 +464,7 @@ class PostModel:
             board_retrieve_query = 'SELECT * FROM board WHERE board_id=%s;'
             cur.execute(board_retrieve_query, (board_id,))
             fetched_board = cur.fetchone()
-            self.board = ServiceUserModel(*fetched_board).serialize()
+            self.board = BoardModel(*fetched_board).serialize()
 
     def serialize(self):
         return dict(
