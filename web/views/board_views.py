@@ -75,7 +75,7 @@ def board_detail(boardtype):
         board_id = cur.fetchone()[0]
     elif boardtype == 'clan':  # Ser variable for clan board
         retrieve_board_query = 'SELECT board_id FROM board WHERE clan_id=%s'
-        cur.execute(retrieve_board_query, (clan_id))
+        cur.execute(retrieve_board_query, (clan_id,))
         board_id = cur.fetchone()[0]
     
     # Get notice post in this board -> if isNotice flag set to true, that post is notice.
@@ -83,12 +83,12 @@ def board_detail(boardtype):
     # Get all post which in this board
     retrieve_post_query = 'SELECT * FROM post WHERE board_id=%s ORDER BY create_datetime DESC'
 
-    cur.execute(retrieve_notice_post, (board_id))
+    cur.execute(retrieve_notice_post, (board_id,))
     notice_fetch = cur.fetchall()
     notice_objs = [PostModel(*each, related_fetch=True) for each in notice_fetch]
     notice_posts = PostModel.serialize_post_list(notice_objs)
 
-    cur.execute(retrieve_post_query, (board_id))
+    cur.execute(retrieve_post_query, (board_id,))
     post_fetch = cur.fetchall()
     post_objs = [PostModel(*each, related_fetch=True) for each in post_fetch]
     post = PostModel.serialize_post_list(post_objs)
