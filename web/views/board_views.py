@@ -80,7 +80,7 @@ def board_detail(boardtype):
         board_id = cur.fetchone()[0]
     
     # Get notice post in this board -> if isNotice flag set to true, that post is notice.
-    retrieve_notice_query = 'SELECT * FROM post WHERE board_id=%s WHERE isNotice=true ORDER BY create_datetime DESC'
+    retrieve_notice_query = 'SELECT * FROM post WHERE board_id=%s and isNotice=true ORDER BY create_datetime DESC'
     # Get all post which in this board
     retrieve_post_query = 'SELECT * FROM post WHERE board_id=%s ORDER BY create_datetime DESC'
 
