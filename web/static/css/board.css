@@ -1,0 +1,11 @@
+table {
+    margin-bottom: 5em !important;
+}
+.more-posts-link {
+    margin-left: 1em;
+    text-decoration: none;
+    color: #aaaaaa;
+}
+.more-posts-link:hover {
+    color: #333333;
+}

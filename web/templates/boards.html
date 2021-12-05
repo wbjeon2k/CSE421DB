@@ -1,63 +1,83 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tablelist.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/board.css') }}">
+{% endblock %}
 
+{% block content %}
 {% if clan != None %}
+<h1 class="page-title">Recent Clanboard Posts</h1>
+<a class="more-posts-link" href="/boards/clan/">More posts...</a>
 <table class="table table-hover caption-top">
-    <caption>Clan Board Preview</caption>
     <thead>
         <tr>
-        <th scope="col">PostID</th>
-        <th scope="col">Title</th>
-        <th scope="col">Writer</th> <!-- Writer 에는 user 의 nickname 이 들어가야하는데, 밑에서는 post['user'] 로 했어요(free board preview 도 동일)-->
-        <th scope="col">Date</th>
-        <th scope="col">Viewcount</th>
-        <th scope="col">Thumbs Up</th>
-        <th scope="col">Thumbs Down</th>
+        <th scope="col-1">#</th>
+        <th scope="col-5">Title</th>
+        <th scope="col-2">Writer</th>
+        <th scope="col-3">Date</th>
+        <th scope="col-1">Views</th>
         </tr>
     </thead>
     <tbody>
         {% for post in my_clan_post_recent %}
-        <tr onclick = "location.href = '{{post['postID']}}/'">
-        <td class="col-1"> {{post['postID']}}</td> 
-        <td class="col-4">{{post['title']}}</td>
-        <td class="col-2">{{post['user']}}</td>
-        <td class="col-2">{{post['createDatetime']}}</td>
-        <td class="col-1">{{post['viewCount']}}</td>
-        <td class="col-1">{{post['thumbsUp']}}</td>
-        <td class="col-1">{{post['thumbsDown']}}</td>
+            <tr class="table-link-item" onclick="onClickParty({{ party['partyID'] }})">
+                <td class="col"> {{post['post_id']}}</td> 
+                <td class="col">{{post['title']}}</td>
+                <td class="col">{{post['service_user']['nickname']}}</td>
+                <td class="col">{{post['create_datetime'].strftime('%Y-%m-%d %H:%M')}}</td>
+                <td class="col">{{post['viewCount']}}</td>
+            </tr>
+        {% else %}
+        <tr>
+            <td class="text-center" colspan="5">
+                There are no posts.
+                <a href="/boards/clan/new/">Write a post</a> and be the first author. 
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 {% endif %}
 
+<h1 class="page-title">Recent Freeboard Posts</h1>
+<a class="more-posts-link" href="/boards/free/">More posts...</a>
 <table class="table table-hover caption-top">
-    <caption>Free Board Preview</caption>
     <thead>
         <tr>
-        <th scope="col">PostID</th>
-        <th scope="col">Title</th>
-        <th scope="col">Writer</th>
-        <th scope="col">Date</th>
-        <th scope="col">Viewcount</th>
-        <th scope="col">Thumbs Up</th>
-        <th scope="col">Thumbs Down</th>
+        <th scope="col-1">#</th>
+        <th scope="col-4">Title</th>
+        <th scope="col-2">Writer</th>
+        <th scope="col-2">Date</th>
+        <th scope="col-1">Views</th>
         </tr>
     </thead>
     <tbody>
         {% for post in free_post_recent %}
-        <tr onclick = "location.href = '{{post['postID']}}/'">
-        <td class="col-1"> {{post['postID']}}</td> 
-        <td class="col-4">{{post['title']}}</td>
-        <td class="col-2">{{post['user']}}</td>
-        <td class="col-2">{{post['createDatetime']}}</td>
-        <td class="col-1">{{post['viewCount']}}</td>
-        <td class="col-1">{{post['thumbsUp']}}</td>
-        <td class="col-1">{{post['thumbsDown']}}</td>
+        <tr class="table-link-item" onclick="onClickParty({{ party['partyID'] }})">
+            <td class="col"> {{post['post_id']}}</td> 
+            <td class="col">{{post['title']}}</td>
+            <td class="col">{{post['service_user']['nickname']}}</td>
+            <td class="col">{{post['create_datetime'].strftime('%Y-%m-%d %H:%M')}}</td>
+            <td class="col">{{post['viewCount']}}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td class="text-center" colspan="5">
+                There are no posts.
+                <a href="/boards/free/new/">Write a post</a> and be the first author. 
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-
 {% endblock  %}
+
+{% block script %}
+<script>
+  const onClickParty = (partyID) => {
+    location.href = '/parties/' + partyID + '/';
+  }
+</script>
+{% endblock %}
