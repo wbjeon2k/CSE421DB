@@ -144,6 +144,10 @@ def new_clan_method():
         user_clan_id_update_query = 'UPDATE service_user SET clan_id=%s WHERE service_user_id=%s'
         cur.execute(user_clan_id_update_query, (new_clan_id, leader_id))
 
+        # Make board for this clan
+        create_clan_board_query = 'INSERT INTO board VALUES (DEFAULT, %s)'
+        cur.execute(create_clan_board_query, (new_clan_id,))
+
         conn.commit()
 
         # update session valuel; must using .update() method
