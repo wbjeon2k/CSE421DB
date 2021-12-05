@@ -49,3 +49,50 @@ def board_main():
     return render_template(
         'boards.html', my_clan_board=my_clan_board, my_clan_post_recent=my_clan_post_recent, free_board=free_board, free_post_recent=free_post_recent
     )
+
+@bp.route('/<boardtype>/')
+def board_detail(boardtype):
+    conn = Connection.get_connect()
+    cur = conn.cursor()
+
+    # If user exist, set user and if that user has clan, set clan_id variable
+    user = None
+    clan_id = None
+    if 'user' in session:
+        user = session['user']
+        if 'clanID' in user:
+            clan_id = user['clanID']
+        elif boardtype == 'clan':  # User has not clan but try to access clan board -> redirect
+            return redirect(url_for('boards.board_main'))
+    elif boardtype == 'clan':  # Not logged in but try to access clan boadrd -> redirect to login
+            return redirect(url_for('login.login_main'))
+
+    retrieve_notice_post = 'SELECT * FROM post WHERE board_id=%s'
+    
+    if boardtype == 'free':  # Set variable for free board
+        retrieve_board_query = 'SELECT board_id FROM board WHERE clan_id is NULL'
+        cur.execute(retrieve_board_query)
+        board_id = cur.fetchone()[0]
+    elif boardtype == 'clan':  # Ser variable for clan board
+        retrieve_board_query = 'SELECT board_id FROM board WHERE clan_id=%s'
+        cur.execute(retrieve_board_query, (clan_id))
+        board_id = cur.fetchone()[0]
+    
+    # Get notice post in this board -> if isNotice flag set to true, that post is notice.
+    retrieve_notice_query = 'SELECT * FROM post WHERE board_id=%s WHERE isNotice=true ORDER BY create_datetime DESC'
+    # Get all post which in this board
+    retrieve_post_query = 'SELECT * FROM post WHERE board_id=%s ORDER BY create_datetime DESC'
+
+    cur.execute(retrieve_notice_post, (board_id))
+    notice_fetch = cur.fetchall()
+    notice_objs = [PostModel(*each, related_fetch=True) for each in notice_fetch]
+    notice_posts = PostModel.serialize_post_list(notice_objs)
+
+    cur.execute(retrieve_post_query, (board_id))
+    post_fetch = cur.fetchall()
+    post_objs = [PostModel(*each, related_fetch=True) for each in post_fetch]
+    post = PostModel.serialize_post_list(post_objs)
+
+    return render_template(
+        'boardDetail.html', boardtype=boardtype, notice_posts=notice_posts, post=post
+    )
