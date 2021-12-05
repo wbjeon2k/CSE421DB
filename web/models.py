@@ -480,8 +480,61 @@ class PostModel:
 
     # cursor.fetchall() 을 통해 받아온 리스트 전체를
     # JSON 형태로 serialize 하는 메서드 입니다.
-    def serialize_post_list(clans):
+    def serialize_post_list(posts):
         ret = []
-        for clan in clans:
-            ret.append(clan.serialize())
+        for post in posts:
+            ret.append(post.serialize())
+        return ret
+
+
+class CommentModel:
+    """Model for the Comment table"""
+
+    __tablename__ = 'Comment'
+
+    def __init__(self, comment_id, content, create_datetime, service_user_id, post_id, related_fetch=False):
+        self.comment_id = comment_id
+        self.content = content
+        self.create_datetime = create_datetime
+        self.service_user_id = service_user_id
+        self.post_id = post_id
+
+        self.service_user = None
+        
+        if related_fetch:
+            conn = Connection.get_connect()
+            cur = conn.cursor()
+            
+            # Load leader(service_user) and assign to instance variable
+            user_retrieve_query = 'SELECT * FROM service_user WHERE service_user_id=%s;'
+            cur.execute(user_retrieve_query, (leader_id,))
+            fetched_user = cur.fetchone()
+            fetched_user = list(fetched_user)  # Convert to list type to delete item
+            del fetched_user[3]
+            del fetched_user[2]
+            self.leader = ServiceUserModel(*fetched_user).serialize()
+            
+            # Load post and assign to instance variable
+            post_retrieve_query = 'SELECT * FROM post WHERE post_id=%s;'
+            cur.execute(post_retrieve_query, (post_id,))
+            fetched_post = cur.fetchone()
+            self.post = ServiceUserModel(*fetched_post).serialize()
+
+    def serialize(self):
+        return dict(
+            comment_id=self.comment_id,
+            content=self.content,
+            create_datetime=self.create_datetime,
+            service_user_id=self.service_user_id,
+            post_id=self.post_id,
+            service_user=self.service_user,
+            post=self.post,
+        )
+
+    # cursor.fetchall() 을 통해 받아온 리스트 전체를
+    # JSON 형태로 serialize 하는 메서드 입니다.
+    def serialize_comment_list(comments):
+        ret = []
+        for comment in comments:
+            ret.append(comment.serialize())
         return ret
