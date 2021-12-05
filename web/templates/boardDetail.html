@@ -1,37 +1,80 @@
 {% extends 'base.html' %}
 
+{% block page_title %}
+{% if boardtype == 'free' %}
+    Free board
+{% else %} 
+    Clan board
+{% endif %}
+{% endblock %}
+
 {% block content %}
-<table class="table table-hover caption-top">
-    {% if boardtype == 'free' %} <!-- boardtype이 free 면 free board caption-->
-    <caption>Free Board</caption>
+<div class="d-flex flex-row-reverse action-btn-group">
+    {% if 'user' in session %}
+        <a href="/boards/{{ boardtype }}/new/" class="btn btn-outline-dark">Create New Post</a>
     {% else %}
-    <caption>Clan Board</caption>
+        <a href="/login/" class="btn btn-outline-dark">Login to Create New Post</a>
     {% endif %}
+</div>
+
+<!-- Notice posts -->
+<h2>Notices</h2>
+<table class="table table-hover caption-top">
     <thead>
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">Title</th>
-            <th scope="col">Writer</th> <!-- Writer 에는 user 의 nickname 이 들어가야하는데, 밑에서는 post['user'] 로 했어요-->
-            <th scope="col">Date</th>
-            <th scope="col">Viewcount</th>
-            <th scope="col">Thumbs Up</th>
-            <th scope="col">Thumbs Down</th>
+            <th scope="col-1">#</th>
+            <th scope="col-5">Title</th>
+            <th scope="col-2">Writer</th>
+            <th scope="col-3">Date</th>
+            <th scope="col-1">Viewcount</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for post in notice_posts %}
+            <tr>
+                <td class="col"> {{post['post_id']}}</td> 
+                <td class="col">{{post['title']}}</td>
+                <td class="col">{{post['service_user']['nickname']}}</td>
+                <td class="col">{{post['createDatetime']}}</td>
+                <td class="col">{{post['viewCount']}}</td>
+            </tr>
+        {% else %}
+        <tr>
+            <td class="text-center" colspan="5">
+                There are no notice.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- All posts -->
+<h2>All posts</h2>
+<table class="table table-hover caption-top">
+    <thead>
+        <tr>
+            <th scope="col-1">#</th>
+            <th scope="col-5">Title</th>
+            <th scope="col-2">Writer</th>
+            <th scope="col-3">Date</th>
+            <th scope="col-1">Viewcount</th>
         </tr>
     </thead>
     <tbody>
         {% for post in posts %}
-        {% if post['isNotice'] %}
-        <tr class = 'table-info' onclick = "location.href = '{{post['post_id']}}/'">
+            <tr {% if post['isNotice'] %}class="bg-info" {% endif %}>
+                <td class="col"> {{post['post_id']}}</td> 
+                <td class="col">{{post['title']}}</td>
+                <td class="col">{{post['service_user']['nickname']}}</td>
+                <td class="col">{{post['createDatetime']}}</td>
+                <td class="col">{{post['viewCount']}}</td>
+            </tr>
         {% else %}
-        <tr onclick = "location.href = '{{post['post_id']}}/'">
-        {% endif %}
-            <td class="col-1"> {{post['post_id']}}</td> 
-            <td class="col-4">{{post['title']}}</td>
-            <td class="col-2">{{post['user']}}</td>
-            <td class="col-2">{{post['createDatetime']}}</td>
-            <td class="col-1">{{post['viewCount']}}</td>
-            <td class="col-1">{{post['thumbsUp']}}</td>
-            <td class="col-1">{{post['thumbsDown']}}</td>
+        <tr>
+            <td class="text-center" colspan="5">
+                There are no posts.
+                <a href="/boards/{{ boardtype }}/new/">Write a post</a> and be the first author. 
+            </td>
         </tr>
         {% endfor %}
     </tbody>
