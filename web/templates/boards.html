@@ -22,7 +22,7 @@
     </thead>
     <tbody>
         {% for post in my_clan_post_recent %}
-            <tr class="table-link-item" onclick="onClickParty({{ post['post_id'] }})">
+            <tr class="table-link-item" onclick="onClickPost('clan', {{ post['post_id'] }})">
                 <td class="col"> {{post['post_id']}}</td> 
                 <td class="col">{{post['title']|truncate(30)}}</td>
                 <td class="col">{{post['service_user']['nickname']}}</td>
@@ -55,7 +55,7 @@
     </thead>
     <tbody>
         {% for post in free_post_recent %}
-        <tr class="table-link-item" onclick="onClickParty({{ post['post_id'] }})">
+        <tr class="table-link-item" onclick="onClickPost('free', {{ post['post_id'] }})">
             <td class="col"> {{post['post_id']}}</td> 
             <td class="col">{{post['title']|truncate(30)}}</td>
             <td class="col">{{post['service_user']['nickname']}}</td>
@@ -76,8 +76,8 @@
 
 {% block script %}
 <script>
-  const onClickParty = (partyID) => {
-    location.href = '/parties/' + partyID + '/';
+  const onClickPost = (boardType, postID) => {
+    location.href = '/boards/' + boardType + '/' + postID + '/';
   }
 </script>
 {% endblock %}
