@@ -67,8 +67,6 @@ def board_detail(boardtype):
             return redirect(url_for('boards.board_main'))
     elif boardtype == 'clan':  # Not logged in but try to access clan boadrd -> redirect to login
             return redirect(url_for('login.login_main'))
-
-    retrieve_notice_post = 'SELECT * FROM post WHERE board_id=%s'
     
     if boardtype == 'free':  # Set variable for free board
         retrieve_board_query = 'SELECT board_id FROM board WHERE clan_id is NULL'
@@ -84,7 +82,7 @@ def board_detail(boardtype):
     # Get all post which in this board
     retrieve_post_query = 'SELECT * FROM post WHERE board_id=%s ORDER BY create_datetime DESC'
 
-    cur.execute(retrieve_notice_post, (board_id,))
+    cur.execute(retrieve_notice_query, (board_id,))
     notice_fetch = cur.fetchall()
     notice_objs = [PostModel(*each, related_fetch=True) for each in notice_fetch]
     notice_posts = PostModel.serialize_post_list(notice_objs)
@@ -92,10 +90,10 @@ def board_detail(boardtype):
     cur.execute(retrieve_post_query, (board_id,))
     post_fetch = cur.fetchall()
     post_objs = [PostModel(*each, related_fetch=True) for each in post_fetch]
-    post = PostModel.serialize_post_list(post_objs)
+    posts = PostModel.serialize_post_list(post_objs)
 
     return render_template(
-        'boardDetail.html', boardtype=boardtype, notice_posts=notice_posts, post=post
+        'boardDetail.html', boardtype=boardtype, notice_posts=notice_posts, posts=posts
     )
 
 
