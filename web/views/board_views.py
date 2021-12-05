@@ -154,6 +154,7 @@ def post_new(boardtype):
 
         now = dt.now().strftime("%Y-%m-%d %H:%M:%S")
         cur.execute(create_post_query, (title, content, now, isNotice, user['service_user_id'], board_id))
+        conn.commit()
         post_id = cur.fetchone()[0]
         return redirect(url_for('boards.post_detail', boardtype=boardtype, postid=post_id))
 
