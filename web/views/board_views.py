@@ -27,8 +27,8 @@ def board_main():
     # Get my clan board and posts
     my_clan_board = []
     my_clan_post_recent = []
-    if 'user' in session and session['user'].get('clan_id'):  # If logged in and user has clan
-        cur.execute(retrieve_board_query, (session['user'].get('clan_id'),))
+    if 'user' in session and session['user'].get('clanID'):  # If logged in and user has clan
+        cur.execute(retrieve_board_query, (session['user'].get('clanID'),))
         my_clan_board_fetch = cur.fetchone()
         my_clan_board = BoardModel(*my_clan_board_fetch, related_fetch=True).serialize()
 
