@@ -1,26 +1,35 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/usersession.css') }}">
+{% endblock %}
 
-<form method="POST" action="/register/">
-    <div class="mb-3">
-        <label for="email" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="email" name="email" required>
+{% block content %}
+<div id="form-group" class="card mx-auto col-xg-4 col-lg-5 col-md-8 col-sm-12">
+    <div class="card-body">
+        <h4 class="card-title">
+            Register
+            <div class="subaction-btn">
+                Or, <a href="/login/">Do you already have an account?</a>
+            </div>
+        </h4>
+        <form method="POST" action="/register/">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ form.get('email', '') }}" maxlength="42" required>
+            </div>
+            <div class="mb-3">
+                <label for="nickname" class="form-label">Nickname</label>
+                <input type="text" class="form-control" id="nickname" name="nickname" value="{{ form.get('nickname', '') }}" maxlength="20" required>
+            </div>
+            <div class="mb-3">
+                <label for="rawPassword" class="form-label">Password</label>
+                <input type="password" class="form-control" id="rawPassword" name="rawPassword" required>
+            </div>
+            <button type="submit" class="btn btn-dark">Register</button>
+        </form>
     </div>
-    <div class="mb-3">
-        <label for="nickname" class="form-label">Nickname</label>
-        <input type="text" class="form-control" id="nickname" name="nickname" required>
-    </div>
-    <div class="mb-3">
-        <label for="rawPassword" class="form-label">Password</label>
-        <input type="password" class="form-control" id="rawPassword" name="rawPassword" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
-{% if error %}
-    <div class="alert alert-warning" role="alert">
-        {{ error }}
-    </div>
-{% endif %}
+</div>
 
 {% endblock content %}

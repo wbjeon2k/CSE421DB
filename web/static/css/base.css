@@ -1,0 +1,19 @@
+.error {
+    margin: 0;
+}
+
+.page-title {
+    border-bottom: 2px solid currentColor;
+    display: inline-block;
+    line-height: 1;
+    text-shadow:
+        2px 2px white,
+        2px -2px white,
+        -2px 2px white,
+        -2px -2px white;
+    margin: 0.5em 0 1em 0;
+}
+
+nav.navbar {
+    margin-bottom: 1em;
+}

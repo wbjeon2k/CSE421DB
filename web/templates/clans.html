@@ -1,41 +1,35 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tablelist.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/clans.css') }}">
+{% endblock %}
 
-{% if session.get('user') and session['user'].get('clanID') != None %}
-<div class="container">
-  <div class="row">
-    <div class="col-2">
-        Clan ID
-    </div>
-    <div class="col">
-        {{myclan['clanID']}}
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-2">
-      Name
-    </div>
-    <div class="col">
-      {{myclan['name']}}
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-2">
-      Leader
-    </div>
-    <div class="col">
-      {{myclan['leader']}} <!-- myclan['leader']에 리더의 닉네임을 넣는게 나을거 같아요 (밑의 clan['leader']도 동일)-->
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-2"> 
-      Users
-    </div>
-    <div class="col">
-      {{myclan['users']|length}} <!-- myclan['users'] 를 count를 한 int 값으로 할지, list로 해서 |length를 할지는 백엔드 쪽에서-->
-    </div>
-  </div>
+{% block page_title %}Clans{% endblock %}
+{% block content %}
+{% if session.get('user') and my_clan %}
+<h1 id="my-clan-info">
+  <small>Hello,</small> <strong class="rainbow-text">{{ session['user']['nickname'] }}</strong><br>
+  <small>Your clan is</small> <strong>{{ my_clan['name'] }}</strong>
+  <small>with</small> <strong>{{ my_clan['popular'] }}</strong> <small>members</small><br>
+  <small>and clan leader is</small>
+  {% if my_clan['leader_id'] == session['user']['service_user_id'] %} {# login user is clan leader #}
+    <strong>YOU</strong>!
+  {% else %}
+    <strong class="rainbow-text">{{ my_clan['leader']['nickname'] }}</strong>
+  {% endif %}
+</h1>
+{% elif session.get('user') %} {# user logged in but, has not clan #}
+<div class="d-flex flex-row-reverse action-btn-group">
+  <a href="/clans/new/" class="btn btn-outline-dark">Create New Clan</a>
+</div>
+<div class="alert alert-dark">
+  You have not a clan. Create new clan or join below list :)
+</div>
+{% else %}
+<div class="d-flex flex-row-reverse action-btn-group">
+  <a href="/login/" class="btn btn-outline-dark">Login to create new clan</a>
 </div>
 {% endif %}
 
@@ -43,22 +37,29 @@
   <caption>Clan List</caption>
   <thead>
     <tr>
-      <th scope="col">Clan ID</th>
+      <th scope="col">#</th>
       <th scope="col">Name</th>
       <th scope="col">Leader</th>
-      <th scope="col">Date</th>
-      <th scope="col">Popular</th>
+      <th scope="col">Popularity</th>
     </tr>
   </thead>
   <tbody>
     {% for clan in clans %}
-    <tr onclick = "location.href = '{{clan['clanID']}}/'">
-      <td class="col-1"> {{clan['clanID']}}</th>
+    <tr class="table-link-item" onclick="onClickClan({{ clan['clan_id'] }})">
+      <td class="col-1"> {{clan['clan_id']}}</th>
       <td class="col-5">{{clan['name']}}</td>
-      <td class="col-3">{{clan['leader']}}</td>
-      <td class="col-3">{{clan['users']|length}}</td> <!--myclan['users']와 동일-->
+      <td class="col-3">{{clan['leader']['nickname']}}</td>
+      <td class="col-3">{{clan['popular']}}</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 {% endblock content %}
+
+{% block script %}
+<script>
+  const onClickClan = (clanID) => {
+    location.href = '/clans/' + clanID + '/';
+  }
+</script>
+{% endblock %}

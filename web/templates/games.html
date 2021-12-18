@@ -1,23 +1,49 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tablelist.css') }}">
+{% endblock %}
 
+{% block page_title %}Games{% endblock %}
+
+{% block content %}
 <table class="table table-hover">
   <thead>
     <tr>
-      <th scope="col">GameID</th>
-      <th scope="col">Name<a href="?sort=name&order=asc">▲</a><a href="?sort=name&order=desc">▼</a></th>
-      <th scope="col">Users<a href="?sort=popular&order=asc">▲</a><a href="?sort=popular&order=desc">▼</a></th> <!-- popular 을 users로 하긴 했는데, dictionary의 key 에 관해서는 어떻게 해야할지 몰라서 무지성 작명했어요-->
+      <th scope="col">#</th>
+      <th scope="col">
+        Name
+        <span class="sort-btn-group">
+          <a href="?sort=name&order=asc"><i class="bi bi-caret-up"></i></a>
+          <a href="?sort=name&order=desc"><i class="bi bi-caret-down"></i></a>
+        </span>
+      </th>
+      <th scope="col">
+        Popularity
+        <span class="sort-btn-group">
+          <a href="?sort=popular&order=asc"><i class="bi bi-caret-up"></i></a>
+          <a href="?sort=popular&order=desc"><i class="bi bi-caret-down"></i></a>
+        </span>
+      </th>
     </tr>
   </thead>
   <tbody>
     {% for game in games %}
-    <tr onclick = "location.href = '{{game['gameID']}}/'">
+    <tr id="game-{{ game['gameID'] }}" class="table-link-item" onclick="onClickGame({{ game['gameID'] }})">
       <td class="col-1"> {{game['gameID']}}</th>
       <td class="col-7">{{game['name']}}</td>
-      <td class="col-4">{{game['users']}}</td>
+      <td class="col-4">{{game['popular']}}</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 {% endblock content %}
+
+{% block script %}
+<script>
+  const onClickGame = (gameID) => {
+    location.href = '/games/' + gameID + '/';
+  }
+</script>
+{% endblock %}

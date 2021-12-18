@@ -1,69 +1,72 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-2">
-            Title
-        </div>
-        <div class="col">
-            {{post['title']}}
-        </div>
-    </div>
-    <div class="row">
-      <div class="col-2">
-        Writer
-      </div>
-      <div class="col">
-        {{post['user']}} <!-- post['leader']에 리더의 닉네임을 넣는게 나을거 같아요 (아니면 key 값을 'nickname' 으로 바꾸던지)-->
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-2">
-        Date
-      </div>
-      <div class="col">
-        {{post['createDatetime']}}
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-2">
-        Content
-      </div>
-      <div class="col">
-        {{post['content']}}
-      </div>
-    </div>
-</div>
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tablelist.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/board.css') }}">
+{% endblock %}
 
-<a href="/boards/{{boardtype}}/{{postid}}/thumbsup" class="btn btn-primary"><i class="bi bi-hand-thumbs-up"></i> {{post['thumbsUp']}}</a>
-<a href="/boards/{{boardtype}}/{{postid}}/thumbsdown" class="btn btn-danger"><i class="bi bi-hand-thumbs-down"></i> {{post['thumbsDown']}}</a>
+{% block top_content %}
+<a href="/boards/{{ boardtype }}/">&lt; Back to Post List</a>
+{% endblock %}
+
+{% block page_title %}
+{% if boardtype == 'free' %}
+This is free board
+{% else %}
+This is clan board
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div id="post-content">
+  <div id="meta-box">
+    <div>
+      <strong id="post-title">
+        {{ post['title'] }}
+      </strong>
+    </div>
+    <div>
+      <a class="writer" href="/users/{{ post['service_user']['service_user_id'] }}/">@{{ post['service_user']['nickname'] }}</a>
+      Written at {{ post['create_datetime'].strftime('%Y-%m-%d %H:%M:%S') }}
+    </div>
+  </div>
+
+  <div id="content-box" class="card">
+    <div class="card-body">
+      {{ post['content'] }}
+    </div>
+  </div>
+
+  <div id="thumbs-box">
+    <a href="/boards/{{boardtype}}/{{postid}}/thumbsup" class="btn btn-outline-primary">
+      <i class="bi bi-hand-thumbs-up"></i> {{post['thumbsUp']}}
+    </a>
+    <a href="/boards/{{boardtype}}/{{postid}}/thumbsdown" class="btn btn-outline-danger">
+      <i class="bi bi-hand-thumbs-down"></i> {{post['thumbsDown']}}
+    </a>
+  </div>
+</div>
 {% if session.get('user') %}
-<form method="POST" action="/boards/{{boardtype}}/{{postID}}/comments/"> 
+<form method="POST" action="/boards/{{boardtype}}/{{postid}}/comments/"> 
     <div class="mb-3">
         <label for="content" class="form-label">Content</label>
-        <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+        <textarea class="form-control" id="content" name="content" rows="3" maxlength="85" required></textarea>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-outline-dark">Leave comment</button>
 </form>
 {% endif %}
-{% if comments != None %}
-<table class="table caption-top">
-    <caption>Comments ({{comments|length}})</caption>
-    <thead>
-    <tr>
-        <th scope="col">Nickname</th>
-        <th scope="col">Comment</th>
-        <th scope="col">Date</th>
-    </tr>
-    </thead>
-    <tbody>
-        {% for comment in comments %}
-        <td class="col-2">{{comment['nickname']}}</td>
-        <td class="col-8">{{comment['content']}}</td>
-        <td class="col-2">{{comment['createDatetime']}}</td>
-        {% endfor %}
-    </tbody>
-</table>
+{% if comments %}
+{% for comment in comments %}
+<div class="card comment">
+  <div class="card-header">
+    <a class="writer" href="/users/{{ post['service_user']['service_user_id'] }}/">@{{ comment['service_user']['nickname'] }}</a>
+    Written at {{ comment['create_datetime'].strftime('%Y-%m-%d %H:%M:%S') }}
+  </div>
+  <div class="card-body">
+    {{ comment['content'] }}
+  </div>
+</div>
+{% endfor %}
 {% endif %}
-{% endblock content %}
+{% endblock %}

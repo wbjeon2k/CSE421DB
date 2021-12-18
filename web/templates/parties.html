@@ -1,59 +1,146 @@
 {% extends 'base.html' %}
 
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tablelist.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/parties.css') }}">
+{% endblock %}
+
+{% block page_title %}Parties{% endblock %}
+
+
 {% block content %}
+<div class="d-flex flex-row-reverse action-btn-group">
+  <a href="/parties/new/" class="btn btn-outline-dark">Create New Party</a>
+</div>
 
-<a href="new/" class="btn btn-primary">Create</a>
+{% if session.get('user') %}
+<div class="party-group">
+  <div class="page-subtitle-box">
+      <h2 class="page-title">My Parties</h2>
+  </div>
+  <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">
+            Name
+            <span class="sort-btn-group">
+              <a href="?sort=name&order=asc"><i class="bi bi-caret-up"></i></a>
+              <a href="?sort=name&order=desc"><i class="bi bi-caret-down"></i></a>
+            </span>
+          </th>
+          <th scope="col">
+            Game
+            <span class="sort-btn-group">
+              <a href="?sort=game&order=asc"><i class="bi bi-caret-up"></i></a>
+              <a href="?sort=game&order=desc"><i class="bi bi-caret-down"></i></a>
+            </span>
+          </th>
+          <th scope="col">Leader</th>
+          <th scope="col">
+            Date
+            <span class="sort-btn-group">
+              <a href="?sort=date&order=asc"><i class="bi bi-caret-up"></i></a>
+              <a href="?sort=date&order=desc"><i class="bi bi-caret-down"></i></a>
+            </span>
+          </th>
+          <th scope="col">
+            Popularity
+            <span class="sort-btn-group">
+              <a href="?sort=popular&order=asc"><i class="bi bi-caret-up"></i></a>
+              <a href="?sort=popular&order=desc"><i class="bi bi-caret-down"></i></a>
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for myparty in my_parties %}
+        <tr id="myparty-{{ myparty['partyID'] }}" class="table-link-item" onclick="onClickParty({{ myparty['partyID'] }})">
+          <td class="col-1"> {{ myparty['partyID'] }}</td>
+          <td class="col-4">{{ myparty['name'] }}</td>
+          <td class="col-2">{{ myparty['game']['name'] }}</td>
+          <td class="col-1">{{ myparty['leader']['nickname'] }}</td>
+          <td class="col-2">{{ myparty['playStartDatetime'].strftime('%Y-%m-%d %H:%M') }}</td>
+          <td class="col-2">{{ myparty['popular'] }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="empty-table">
+            You don't belong to any party. <a href="/parties/new/">Create</a> or join a party :)
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+  </table>
+</div>
+{% endif %}
 
- {% if session.get('user') %}
-<table class="table table-hover">
+<div class="party-group">
+  <div class="page-subtitle-box">
+    <h2 class="page-title">All Parties</h2>
+  </div>
+  <table class="table table-hover">
     <thead>
       <tr>
-        <th scope="col">PartyID</th>
-        <th scope="col">Name<a href="?sort=name&order=asc">▲</a><a href="?sort=name&order=desc">▼</a></th>
-        <th scope="col">Game<a href="?sort=game&order=asc">▲</a><a href="?sort=game&order=desc">▼</a></th>
+        <th scope="col">#</th>
+        <th scope="col">
+          Name
+          <span class="sort-btn-group">
+            <a href="?sort=name&order=asc"><i class="bi bi-caret-up"></i></a>
+            <a href="?sort=name&order=desc"><i class="bi bi-caret-down"></i></a>
+          </span>
+        </th>
+        <th scope="col">
+          Game
+          <span class="sort-btn-group">
+            <a href="?sort=game&order=asc"><i class="bi bi-caret-up"></i></a>
+            <a href="?sort=game&order=desc"><i class="bi bi-caret-down"></i></a>
+          </span>
+        </th>
         <th scope="col">Leader</th>
-        <th scope="col">Date<a href="?sort=date&order=asc">▲</a><a href="?sort=date&order=desc">▼</a></th>
-        <th scope="col">Users<a href="?sort=popular&order=asc">▲</a><a href="?sort=popular&order=desc">▼</a></th>
+        <th scope="col">
+          Date
+          <span class="sort-btn-group">
+            <a href="?sort=date&order=asc"><i class="bi bi-caret-up"></i></a>
+            <a href="?sort=date&order=desc"><i class="bi bi-caret-down"></i></a>
+          </span>
+        </th>
+        <th scope="col">
+          Popularity
+          <span class="sort-btn-group">
+            <a href="?sort=popular&order=asc"><i class="bi bi-caret-up"></i></a>
+            <a href="?sort=popular&order=desc"><i class="bi bi-caret-down"></i></a>
+          </span>
+        </th>
       </tr>
     </thead>
     <tbody>
-      {% for myparty in myparties %}
-      <tr onclick = "location.href = '{{myparty['partyID']}}/'">
-        <td class="col-1"> {{myparty['partyID']}}</td>
-        <td class="col-5">{{myparty['name']}}</td>
-        <td class="col-5">{{myparty['game']}}</td>
-        <td class="col-2">{{myparty['leader']}}</td> <!-- myparty['leader']에 리더의 닉네임을 넣는게 나을거 같아요 (밑의 party['leader']도 동일)-->
-        <td class="col-2">{{myparty['date']}}</td>
-        <td class="col-2">{{myparty['users']}}</td>
+      {% for party in parties %}
+      <tr id="party-{{ party['partyID'] }}" class="table-link-item{% if party['leaderID'] == (session.get('user') and session['user']['service_user_id'])%} bg-success text-white{% elif party in my_parties %} bg-info{% endif %}" onclick="onClickParty({{ party['partyID'] }})">
+        <td class="col-1"> {{ party['partyID'] }}</td>
+        <td class="col-4">{{ party['name'] }}</td>
+        <td class="col-2">{{ party['game']['name'] }}</td>
+        <td class="col-1">{{ party['leader']['nickname'] }}</td>
+        <td class="col-2">{{ party['playStartDatetime'].strftime('%Y-%m-%d %H:%M') }}</td>
+        <td class="col-2">{{ party['popular'] }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" class="empty-table">
+          Nobody currently not recruiting any parties. you can <a href="/parties/new/">create</a> a new party :)
+        </td>
       </tr>
       {% endfor %}
     </tbody>
-</table>
-{% endif %}
-
-<table class="table table-hover">
-  <thead>
-    <tr>
-      <th scope="col">PartyID</th>
-        <th scope="col">Name<a href="?sort=name&order=asc">▲</a><a href="?sort=name&order=desc">▼</a></th>
-        <th scope="col">Game<a href="?sort=game&order=asc">▲</a><a href="?sort=game&order=desc">▼</a></th>
-        <th scope="col">Leader</th>
-        <th scope="col">Date<a href="?sort=date&order=asc">▲</a><a href="?sort=date&order=desc">▼</a></th>
-        <th scope="col">Users<a href="?sort=popular&order=asc">▲</a><a href="?sort=popular&order=desc">▼</a></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for party in parties %}
-    <tr onclick = "location.href = '{{party['partyID']}}/'">
-      <td class="col-1"> {{party['partyID']}}</td>
-      <td class="col-5">{{party['name']}}</td>
-      <td class="col-5">{{party['game']}}</td>
-      <td class="col-2">{{party['leader']}}</td>
-      <td class="col-2">{{party['date']}}</td>
-      <td class="col-2">{{party['users']}}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
+  </table>
+</div>
 {% endblock content %}
+
+{% block script %}
+<script>
+  const onClickParty = (partyID) => {
+    location.href = '/parties/' + partyID + '/';
+  }
+</script>
+{% endblock %}

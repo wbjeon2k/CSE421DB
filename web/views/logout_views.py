@@ -16,9 +16,10 @@ import hashlib
 # logout blueprint
 bp = Blueprint('logout', __name__, url_prefix='/logout')
 
+
 @bp.route('/', methods=['GET'])
 def logout_main():
     if 'user' in session:
-	    del session['user']
-        
+        del session['user']
+
     return redirect(url_for('main'))

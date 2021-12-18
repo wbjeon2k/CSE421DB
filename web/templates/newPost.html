@@ -1,23 +1,26 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block page_title %}
+Write post:
+<small>{{boardtype}} board</small>
+{%endblock %}
 
+{% block content %}
 <form method="POST" action="/boards/{{boardtype}}/new/">
+    {% if session.get('user') and (boardtype == 'free' and session['user'].get('isAdmin') or boardtype == 'clan' and session['user']['service_user_id'] == clan['leader_id']) %}
+    <div class="mb-3">
+        <input type="checkbox" class="form-check-input" id="isNotice" name="isNotice">
+        <label for="isNotice" class="form-label">Notice</label>
+    </div>
+    {% endif %}
     <div class="mb-3">
         <label for="title" class="form-label">Title</label>
-        <input type="text" class="form-control" id="title" name="title" required>
+        <input type="text" class="form-control" id="title" name="title" maxlength="40" required>
     </div>
     <div class="mb-3">
         <label for="content" class="form-label">Content</label>
         <textarea class="form-control" id="content" name="content" rows="10" required></textarea>
     </div>
-    {% if session.get('user') and session['user'].get('isAdmin') %}
-    <div class="mb-3">
-        <label for="isNotice" class="form-label">Notice</label>
-        <input type="checkbox" class="form-control" id="isNotice" name="isNotice" required>
-    </div>
-    {% endif %}
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-dark">Write</button>
 </form>
-
 {% endblock content %}
